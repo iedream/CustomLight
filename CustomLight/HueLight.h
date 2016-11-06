@@ -8,6 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HueLight : NSObject
+typedef NS_ENUM(NSInteger, LIGHTNAME)
+{
+    LIGHTNAME_NONE,
+    LIGHTNAME_CATHERINE_BEDROOM,
+    LIGHTNAME_LIVING_ROOM,
+    LIGHTNAME_ALL
+};
 
+@interface HueLight : NSObject
++ (HueLight*)sharedHueLight;
+- (void)toggleLightOnOff;
+- (void)detectSurrondingBrightness;
 @end

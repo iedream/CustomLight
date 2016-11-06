@@ -6,7 +6,10 @@
 //  Copyright © 2016 Catherine. All rights reserved.
 //
 
+#define UIAppDelegate  ((PHAppDelegate *)[[UIApplication sharedApplication] delegate])
+
 #import <UIKit/UIKit.h>
+#import <HueSDK_iOS/HueSDK.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

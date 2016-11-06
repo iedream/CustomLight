@@ -8,10 +8,14 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "HueLight.h"
+#import <CoreLocation/CoreLocation.h>
 
 @interface MasterViewController ()
 
 @property NSMutableArray *objects;
+@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) CLCircularRegion *geoRegion;
 @end
 
 @implementation MasterViewController
@@ -24,8 +28,51 @@
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
     self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged:) name:UIScreenBrightnessDidChangeNotification object:nil];
+    
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    [self.locationManager requestAlwaysAuthorization];
+    
+    if ([CLLocationManager locationServicesEnabled]) {
+        [self.locationManager requestLocation];
+    }
+    [self.locationManager startUpdatingLocation];
+
 }
 
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    [self.locationManager requestStateForRegion:self.geoRegion];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    if (self.geoRegion) {
+        [self.locationManager requestStateForRegion:self.geoRegion];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+    NSLog(@"Hello");
+}
+
+- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
+    NSLog(@"Bye");
+}
+
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
+//    if (state == CLRegionStateInside) {
+//        NSLog(@"Inside");
+//    } else if (state == CLRegionStateOutside) {
+//        NSLog(@"Outside");
+//    }
+    float differenceX = fabsf(self.locationManager.location.coordinate.latitude - region.center.latitude);
+    float differenceY = fabsf(self.locationManager.location.coordinate.longitude - region.center.longitude);
+    if (differenceX > 0.0001 || differenceY > 0.0001 ) {
+        NSLog(@"Turning Off");
+    }
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     self.clearsSelectionOnViewWillAppear = self.splitViewController.isCollapsed;
@@ -96,6 +143,21 @@
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+    }
+}
+
+- (void)brightnessChanged:(NSNotification *)notif {
+    [[HueLight sharedHueLight] detectSurrondingBrightness];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    if (motion == UIEventSubtypeMotionShake )
+    {
+        self.geoRegion = [[CLCircularRegion alloc]initWithCenter:self.locationManager.location.coordinate radius:10 identifier:@"LivingRoomRegion"];
+        [self.locationManager startMonitoringForRegion:self.geoRegion];
+        // User was shaking the device. Post a notification named "shake".
+        [[HueLight sharedHueLight] toggleLightOnOff];
     }
 }
 

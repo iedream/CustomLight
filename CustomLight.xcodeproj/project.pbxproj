@@ -16,6 +16,15 @@
 		4F909FB41DCDA4BF00593FDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F909FB21DCDA4BF00593FDF /* LaunchScreen.storyboard */; };
 		4F909FBF1DCDA4BF00593FDF /* CustomLightTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FBE1DCDA4BF00593FDF /* CustomLightTests.m */; };
 		4F909FCA1DCDA4BF00593FDF /* CustomLightUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FC91DCDA4BF00593FDF /* CustomLightUITests.m */; };
+		4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */; };
+		4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */; };
+		4FF724301DCE7EE300B1AB5E /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724231DCE7EE300B1AB5E /* DDASLLogger.m */; };
+		4FF724311DCE7EE300B1AB5E /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724251DCE7EE300B1AB5E /* DDFileLogger.m */; };
+		4FF724321DCE7EE300B1AB5E /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724271DCE7EE300B1AB5E /* DDLog.m */; };
+		4FF724331DCE7EE300B1AB5E /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724291DCE7EE300B1AB5E /* DDTTYLogger.m */; };
+		4FF724341DCE7EE300B1AB5E /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7242C1DCE7EE300B1AB5E /* ContextFilterLogFormatter.m */; };
+		4FF724351DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7242E1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m */; };
+		4FF724381DCE7F3700B1AB5E /* HueLight.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724371DCE7F3700B1AB5E /* HueLight.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +63,23 @@
 		4F909FC51DCDA4BF00593FDF /* CustomLightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomLightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909FC91DCDA4BF00593FDF /* CustomLightUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomLightUITests.m; sourceTree = "<group>"; };
 		4F909FCB1DCDA4BF00593FDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HueSDK_iOS.framework; sourceTree = "<group>"; };
+		4FF724201DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		4FF724221DCE7EE300B1AB5E /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
+		4FF724231DCE7EE300B1AB5E /* DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDASLLogger.m; sourceTree = "<group>"; };
+		4FF724241DCE7EE300B1AB5E /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDFileLogger.h; sourceTree = "<group>"; };
+		4FF724251DCE7EE300B1AB5E /* DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDFileLogger.m; sourceTree = "<group>"; };
+		4FF724261DCE7EE300B1AB5E /* DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDLog.h; sourceTree = "<group>"; };
+		4FF724271DCE7EE300B1AB5E /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDLog.m; sourceTree = "<group>"; };
+		4FF724281DCE7EE300B1AB5E /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
+		4FF724291DCE7EE300B1AB5E /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
+		4FF7242B1DCE7EE300B1AB5E /* ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		4FF7242C1DCE7EE300B1AB5E /* ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		4FF7242D1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		4FF7242E1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		4FF724361DCE7F3700B1AB5E /* HueLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HueLight.h; sourceTree = "<group>"; };
+		4FF724371DCE7F3700B1AB5E /* HueLight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HueLight.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +111,8 @@
 		4F909F951DCDA4BF00593FDF = {
 			isa = PBXGroup;
 			children = (
+				4FF7241F1DCE7EE300B1AB5E /* Lumberjack */,
+				4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */,
 				4F909FA01DCDA4BF00593FDF /* CustomLight */,
 				4F909FBD1DCDA4BF00593FDF /* CustomLightTests */,
 				4F909FC81DCDA4BF00593FDF /* CustomLightUITests */,
@@ -115,6 +144,8 @@
 				4F909FB21DCDA4BF00593FDF /* LaunchScreen.storyboard */,
 				4F909FB51DCDA4BF00593FDF /* Info.plist */,
 				4F909FA11DCDA4BF00593FDF /* Supporting Files */,
+				4FF724361DCE7F3700B1AB5E /* HueLight.h */,
+				4FF724371DCE7F3700B1AB5E /* HueLight.m */,
 			);
 			path = CustomLight;
 			sourceTree = "<group>";
@@ -143,6 +174,35 @@
 				4F909FCB1DCDA4BF00593FDF /* Info.plist */,
 			);
 			path = CustomLightUITests;
+			sourceTree = "<group>";
+		};
+		4FF7241F1DCE7EE300B1AB5E /* Lumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				4FF724201DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.h */,
+				4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */,
+				4FF724221DCE7EE300B1AB5E /* DDASLLogger.h */,
+				4FF724231DCE7EE300B1AB5E /* DDASLLogger.m */,
+				4FF724241DCE7EE300B1AB5E /* DDFileLogger.h */,
+				4FF724251DCE7EE300B1AB5E /* DDFileLogger.m */,
+				4FF724261DCE7EE300B1AB5E /* DDLog.h */,
+				4FF724271DCE7EE300B1AB5E /* DDLog.m */,
+				4FF724281DCE7EE300B1AB5E /* DDTTYLogger.h */,
+				4FF724291DCE7EE300B1AB5E /* DDTTYLogger.m */,
+				4FF7242A1DCE7EE300B1AB5E /* Extensions */,
+			);
+			path = Lumberjack;
+			sourceTree = "<group>";
+		};
+		4FF7242A1DCE7EE300B1AB5E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4FF7242B1DCE7EE300B1AB5E /* ContextFilterLogFormatter.h */,
+				4FF7242C1DCE7EE300B1AB5E /* ContextFilterLogFormatter.m */,
+				4FF7242D1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.h */,
+				4FF7242E1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,6 +274,11 @@
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 2269Y262Z6;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					4F909FB91DCDA4BF00593FDF = {
 						CreatedOnToolsVersion = 8.1;
@@ -283,8 +348,16 @@
 			files = (
 				4F909FA61DCDA4BF00593FDF /* AppDelegate.m in Sources */,
 				4F909FA91DCDA4BF00593FDF /* MasterViewController.m in Sources */,
+				4FF724301DCE7EE300B1AB5E /* DDASLLogger.m in Sources */,
+				4FF724341DCE7EE300B1AB5E /* ContextFilterLogFormatter.m in Sources */,
+				4FF724331DCE7EE300B1AB5E /* DDTTYLogger.m in Sources */,
+				4FF724311DCE7EE300B1AB5E /* DDFileLogger.m in Sources */,
+				4FF724321DCE7EE300B1AB5E /* DDLog.m in Sources */,
+				4FF724381DCE7F3700B1AB5E /* HueLight.m in Sources */,
 				4F909FA31DCDA4BF00593FDF /* main.m in Sources */,
+				4FF724351DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m in Sources */,
 				4F909FAC1DCDA4BF00593FDF /* DetailViewController.m in Sources */,
+				4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,6 +455,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -423,6 +497,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -434,8 +509,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 2269Y262Z6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -446,8 +526,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 2269Y262Z6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -460,6 +545,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLightTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CustomLight.app/CustomLight";
@@ -473,6 +559,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLightTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CustomLight.app/CustomLight";
@@ -485,6 +572,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLightUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CustomLight;
@@ -497,6 +585,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLightUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CustomLight;
@@ -522,6 +611,7 @@
 				4F909FD01DCDA4BF00593FDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4F909FD11DCDA4BF00593FDF /* Build configuration list for PBXNativeTarget "CustomLightTests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +620,7 @@
 				4F909FD31DCDA4BF00593FDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4F909FD41DCDA4BF00593FDF /* Build configuration list for PBXNativeTarget "CustomLightUITests" */ = {
 			isa = XCConfigurationList;
@@ -538,6 +629,7 @@
 				4F909FD61DCDA4BF00593FDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
