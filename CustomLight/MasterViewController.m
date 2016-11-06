@@ -10,12 +10,21 @@
 #import "DetailViewController.h"
 #import "HueLight.h"
 #import <CoreLocation/CoreLocation.h>
+#import <AVFoundation/AVFoundation.h>
+#import <ImageIO/ImageIO.h>
+#import <MapKit/MapKit.h>
 
 @interface MasterViewController ()
 
 @property NSMutableArray *objects;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) CLCircularRegion *geoRegion;
+@property (nonatomic, strong) CLRegion *geoRegion;
+@property (nonatomic, strong) AVCaptureSession *captureSession;
+
+@property (nonatomic) CGFloat lowestLatitude;
+@property (nonatomic) CGFloat lowestLongitude;
+@property (nonatomic) CGFloat highestLatitude;
+@property (nonatomic) CGFloat highestLongitude;
 @end
 
 @implementation MasterViewController
@@ -29,18 +38,43 @@
     self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged:) name:UIScreenBrightnessDidChangeNotification object:nil];
     
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-    [self.locationManager requestAlwaysAuthorization];
     
-    if ([CLLocationManager locationServicesEnabled]) {
-        [self.locationManager requestLocation];
-    }
-    [self.locationManager startUpdatingLocation];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged:) name:UIScreenBrightnessDidChangeNotification object:nil];
 
+    
+    
+//    self.locationManager = [[CLLocationManager alloc] init];
+//    self.locationManager.delegate = self;
+//    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+//    [self.locationManager requestAlwaysAuthorization];
+//    if ([CLLocationManager locationServicesEnabled]) {
+//        [self.locationManager requestLocation];
+//    }
+//    [self.locationManager startUpdatingLocation];
+    
+    
+    AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
+    captureSession.sessionPreset = AVCaptureSessionPresetMedium;
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    NSError *err;
+    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&err];
+    [captureSession addInput:input];
+    AVCaptureVideoDataOutput *output = [[AVCaptureVideoDataOutput alloc] init];
+    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+    dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
+    [output setSampleBufferDelegate:self queue:queue];
+    [captureSession addOutput:output];
+    self.captureSession = captureSession;
+    [self.captureSession startRunning];
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    CFDictionaryRef metadataDict = CMCopyDictionaryOfAttachments(NULL, sampleBuffer, kCMAttachmentMode_ShouldPropagate);
+    NSDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:(__bridge NSDictionary*)metadataDict];
+    NSDictionary *exifMetadata = [[metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary] mutableCopy];
+    float brightnessValue = [[exifMetadata objectForKey:(NSString *)kCGImagePropertyExifBrightnessValue] floatValue];
+    NSLog(@"new brighness");
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -48,8 +82,58 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    if (self.geoRegion) {
-        [self.locationManager requestStateForRegion:self.geoRegion];
+    [self createRectangle];
+    CLLocationCoordinate2D coord = locations.firstObject.coordinate;
+    if ([self withinRange:coord]) {
+        NSLog(@"Inside");
+    } else {
+        NSLog(@"Outside");
+    }
+}
+
+- (BOOL)withinRange:(CLLocationCoordinate2D )currentPoint {
+    if (currentPoint.latitude < self.highestLatitude && currentPoint.latitude > self.lowestLatitude) {
+        if (currentPoint.longitude < self.highestLongitude && currentPoint.longitude > self.lowestLongitude) {
+            return YES;
+        }
+        return NO;
+    }
+    return NO;
+}
+
+- (void)createRectangle {
+    CLLocationCoordinate2D corner1 = CLLocationCoordinate2DMake(+43.84679991,-79.42567142);
+    CLLocationCoordinate2D corner2 = CLLocationCoordinate2DMake(+43.84680946,-79.42567033);
+    CLLocationCoordinate2D corner3 = CLLocationCoordinate2DMake(+43.84682887,-79.42569271);
+    CLLocationCoordinate2D corner4 = CLLocationCoordinate2DMake(+43.84679987,-79.42566907);
+    
+    self.lowestLatitude = corner1.latitude;
+    self.highestLatitude = corner1.longitude;
+    self.lowestLongitude = corner1.latitude;
+    self.highestLongitude = corner1.longitude;
+    
+    for (int i = 0; i < 3; i++) {
+        CLLocationCoordinate2D corner;
+        if (i == 0) {
+            corner = corner2;
+        } else if (i == 1) {
+            corner = corner3;
+        } else if (i == 2) {
+            corner = corner4;
+        }
+         
+        if (corner.latitude < self.lowestLatitude) {
+            self.lowestLatitude = corner.latitude - 0.0001;
+        }
+        if (corner.longitude < self.lowestLongitude) {
+            self.lowestLongitude = corner.longitude - 0.0001;
+        }
+        if (corner.latitude > self.highestLatitude) {
+            self.highestLatitude = corner.latitude + 0.0001;
+        }
+        if (corner.longitude > self.highestLongitude) {
+            self.highestLongitude = corner.longitude + 0.0001;
+        }
     }
 }
 
@@ -154,6 +238,7 @@
 {
     if (motion == UIEventSubtypeMotionShake )
     {
+        
         self.geoRegion = [[CLCircularRegion alloc]initWithCenter:self.locationManager.location.coordinate radius:10 identifier:@"LivingRoomRegion"];
         [self.locationManager startMonitoringForRegion:self.geoRegion];
         // User was shaking the device. Post a notification named "shake".

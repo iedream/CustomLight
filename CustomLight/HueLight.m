@@ -78,6 +78,8 @@ const NSString *ipAddress = @"192.168.2.28";
     [self setLightState:lightState andLightId:light.identifier];
 }
 
+- (NSNumber *)getBrightnessFromLevel:
+
 - (void)detectSurrondingBrightness {
     PHLight *light = [self.cache.lights objectForKey:@"1"];
     PHLightState *lightState = light.lightState;
