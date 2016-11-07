@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, LIGHTNAME)
 {
@@ -17,7 +18,11 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 };
 
 @interface HueLight : NSObject
+@property (nonatomic, strong) UIActivityIndicatorView *spinnerView;
 + (HueLight*)sharedHueLight;
 - (void)toggleLightOnOff;
 - (void)detectSurrondingBrightness;
+- (NSArray*)getGroupData;
+- (void)startLoading;
+- (void)stopLoading;
 @end

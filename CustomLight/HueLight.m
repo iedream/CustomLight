@@ -36,9 +36,19 @@ const NSString *ipAddress = @"192.168.2.28";
             self.hueNotificationManager = [PHNotificationManager defaultManager];
             self.sendAPI = [[PHBridgeSendAPI alloc] init];
             [self setUpConnection];
+            [self stopLoading];
         }];
+        
     }
     return self;
+}
+
+- (void)startLoading {
+    [self.spinnerView startAnimating];
+}
+
+- (void)stopLoading {
+    [self.spinnerView stopAnimating];
 }
 
 - (void)authenticate {
@@ -78,8 +88,6 @@ const NSString *ipAddress = @"192.168.2.28";
     [self setLightState:lightState andLightId:light.identifier];
 }
 
-- (NSNumber *)getBrightnessFromLevel:
-
 - (void)detectSurrondingBrightness {
     PHLight *light = [self.cache.lights objectForKey:@"1"];
     PHLightState *lightState = light.lightState;
@@ -102,6 +110,14 @@ const NSString *ipAddress = @"192.168.2.28";
             NSLog(@"Failure");
         }
     }];
+}
+
+-(NSArray*)getGroupData {
+    NSMutableArray *groupData = [[NSMutableArray alloc] init];
+    for (PHGroup *groupInfo in self.cache.groups.allValues) {
+        [groupData addObject:groupInfo.name];
+    }
+    return groupData;
 }
 
 - (void)authenticationSuccess:(NSNotification *)notif {

@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DetailViewController : UIViewController
+typedef NS_ENUM(NSInteger, DETAILVIEWTYPE)
+{
+    DETAILVIEWTYPE_NONE,
+    DETAILVIEWTYPE_SHAKE,
+    DETAILVIEWTYPE_BRIGHTNESS,
+    LIGHTNAME_PROXIMITY
+};
 
-@property (strong, nonatomic) NSDate *detailItem;
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
-
+@interface DetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 @end
 

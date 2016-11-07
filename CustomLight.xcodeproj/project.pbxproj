@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		466B98628AD1BFFBD1690522 /* libPods-CustomLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5247765D7CDAFF1635617AA4 /* libPods-CustomLight.a */; };
 		4F909FA31DCDA4BF00593FDF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA21DCDA4BF00593FDF /* main.m */; };
 		4F909FA61DCDA4BF00593FDF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA51DCDA4BF00593FDF /* AppDelegate.m */; };
 		4F909FA91DCDA4BF00593FDF /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA81DCDA4BF00593FDF /* MasterViewController.m */; };
@@ -16,6 +17,10 @@
 		4F909FB41DCDA4BF00593FDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F909FB21DCDA4BF00593FDF /* LaunchScreen.storyboard */; };
 		4F909FBF1DCDA4BF00593FDF /* CustomLightTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FBE1DCDA4BF00593FDF /* CustomLightTests.m */; };
 		4F909FCA1DCDA4BF00593FDF /* CustomLightUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FC91DCDA4BF00593FDF /* CustomLightUITests.m */; };
+		4FDCF8701DD010390083F3CE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF86F1DD010390083F3CE /* AVFoundation.framework */; };
+		4FDCF8721DD0103F0083F3CE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */; };
+		4FDCF8781DD02B180083F3CE /* CustomLightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */; };
+		4FDCF87A1DD02C680083F3CE /* checkMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 4FDCF8791DD02C680083F3CE /* checkMark.png */; };
 		4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */; };
 		4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */; };
 		4FF724301DCE7EE300B1AB5E /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724231DCE7EE300B1AB5E /* DDASLLogger.m */; };
@@ -25,6 +30,8 @@
 		4FF724341DCE7EE300B1AB5E /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7242C1DCE7EE300B1AB5E /* ContextFilterLogFormatter.m */; };
 		4FF724351DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7242E1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m */; };
 		4FF724381DCE7F3700B1AB5E /* HueLight.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724371DCE7F3700B1AB5E /* HueLight.m */; };
+		85DE9B4C0DBCB73053EC7EA8 /* libPods-CustomLightTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 022D39C8FE636EC563ED069B /* libPods-CustomLightTests.a */; };
+		90EBE78DBBE0F927F2CDBEBB /* libPods-CustomLightUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D99CAACB5CE515C3341A1084 /* libPods-CustomLightUITests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		022D39C8FE636EC563ED069B /* libPods-CustomLightTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CustomLightTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909F9E1DCDA4BF00593FDF /* CustomLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909FA21DCDA4BF00593FDF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F909FA41DCDA4BF00593FDF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -63,6 +71,11 @@
 		4F909FC51DCDA4BF00593FDF /* CustomLightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomLightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909FC91DCDA4BF00593FDF /* CustomLightUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomLightUITests.m; sourceTree = "<group>"; };
 		4F909FCB1DCDA4BF00593FDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4FDCF86F1DD010390083F3CE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		4FDCF8761DD02B180083F3CE /* CustomLightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLightTableViewCell.h; sourceTree = "<group>"; };
+		4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLightTableViewCell.m; sourceTree = "<group>"; };
+		4FDCF8791DD02C680083F3CE /* checkMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkMark.png; path = ../../../Downloads/checkMark.png; sourceTree = "<group>"; };
 		4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HueSDK_iOS.framework; sourceTree = "<group>"; };
 		4FF724201DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
 		4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
@@ -80,6 +93,14 @@
 		4FF7242E1DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
 		4FF724361DCE7F3700B1AB5E /* HueLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HueLight.h; sourceTree = "<group>"; };
 		4FF724371DCE7F3700B1AB5E /* HueLight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HueLight.m; sourceTree = "<group>"; };
+		5247765D7CDAFF1635617AA4 /* libPods-CustomLight.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CustomLight.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5481900A36A8136A1E240F4A /* Pods-CustomLightUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightUITests/Pods-CustomLightUITests.release.xcconfig"; sourceTree = "<group>"; };
+		5946AE26BBD5F6445E81AA2A /* Pods-CustomLightTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightTests/Pods-CustomLightTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5D751E3D7283999E1D63832E /* Pods-CustomLight.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLight.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLight/Pods-CustomLight.debug.xcconfig"; sourceTree = "<group>"; };
+		8BBFF52B0FEF880364E99EEB /* Pods-CustomLightTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightTests/Pods-CustomLightTests.release.xcconfig"; sourceTree = "<group>"; };
+		9A84C3BF37F4A4DCC2DA6FE2 /* Pods-CustomLight.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLight.release.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLight/Pods-CustomLight.release.xcconfig"; sourceTree = "<group>"; };
+		D99CAACB5CE515C3341A1084 /* libPods-CustomLightUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CustomLightUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E31F8B78A290C84B31797772 /* Pods-CustomLightUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightUITests/Pods-CustomLightUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +108,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FDCF8721DD0103F0083F3CE /* CoreLocation.framework in Frameworks */,
+				4FDCF8701DD010390083F3CE /* AVFoundation.framework in Frameworks */,
 				4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */,
+				466B98628AD1BFFBD1690522 /* libPods-CustomLight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85DE9B4C0DBCB73053EC7EA8 /* libPods-CustomLightTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90EBE78DBBE0F927F2CDBEBB /* libPods-CustomLightUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +143,8 @@
 				4F909FBD1DCDA4BF00593FDF /* CustomLightTests */,
 				4F909FC81DCDA4BF00593FDF /* CustomLightUITests */,
 				4F909F9F1DCDA4BF00593FDF /* Products */,
+				C0FB8824B8B3E6AED0B735A4 /* Pods */,
+				A60BBAC4D6ADC12F5F32CFA1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,6 +161,7 @@
 		4F909FA01DCDA4BF00593FDF /* CustomLight */ = {
 			isa = PBXGroup;
 			children = (
+				4FDCF8791DD02C680083F3CE /* checkMark.png */,
 				4F909FA41DCDA4BF00593FDF /* AppDelegate.h */,
 				4F909FA51DCDA4BF00593FDF /* AppDelegate.m */,
 				4F909FA71DCDA4BF00593FDF /* MasterViewController.h */,
@@ -146,6 +175,8 @@
 				4F909FA11DCDA4BF00593FDF /* Supporting Files */,
 				4FF724361DCE7F3700B1AB5E /* HueLight.h */,
 				4FF724371DCE7F3700B1AB5E /* HueLight.m */,
+				4FDCF8761DD02B180083F3CE /* CustomLightTableViewCell.h */,
+				4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */,
 			);
 			path = CustomLight;
 			sourceTree = "<group>";
@@ -205,6 +236,31 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		A60BBAC4D6ADC12F5F32CFA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */,
+				4FDCF86F1DD010390083F3CE /* AVFoundation.framework */,
+				5247765D7CDAFF1635617AA4 /* libPods-CustomLight.a */,
+				022D39C8FE636EC563ED069B /* libPods-CustomLightTests.a */,
+				D99CAACB5CE515C3341A1084 /* libPods-CustomLightUITests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C0FB8824B8B3E6AED0B735A4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5D751E3D7283999E1D63832E /* Pods-CustomLight.debug.xcconfig */,
+				9A84C3BF37F4A4DCC2DA6FE2 /* Pods-CustomLight.release.xcconfig */,
+				5946AE26BBD5F6445E81AA2A /* Pods-CustomLightTests.debug.xcconfig */,
+				8BBFF52B0FEF880364E99EEB /* Pods-CustomLightTests.release.xcconfig */,
+				E31F8B78A290C84B31797772 /* Pods-CustomLightUITests.debug.xcconfig */,
+				5481900A36A8136A1E240F4A /* Pods-CustomLightUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -212,9 +268,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4F909FCE1DCDA4BF00593FDF /* Build configuration list for PBXNativeTarget "CustomLight" */;
 			buildPhases = (
+				5D00534D8CA95C4914E8FA02 /* [CP] Check Pods Manifest.lock */,
 				4F909F9A1DCDA4BF00593FDF /* Sources */,
 				4F909F9B1DCDA4BF00593FDF /* Frameworks */,
 				4F909F9C1DCDA4BF00593FDF /* Resources */,
+				C8AA0CB05798FA416C8D4F12 /* [CP] Embed Pods Frameworks */,
+				667D85868C87370BBD5FA616 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -229,9 +288,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4F909FD11DCDA4BF00593FDF /* Build configuration list for PBXNativeTarget "CustomLightTests" */;
 			buildPhases = (
+				EABA1E5CB4762A034A3D41CA /* [CP] Check Pods Manifest.lock */,
 				4F909FB61DCDA4BF00593FDF /* Sources */,
 				4F909FB71DCDA4BF00593FDF /* Frameworks */,
 				4F909FB81DCDA4BF00593FDF /* Resources */,
+				6417EC57149FE0D4DC2A09FB /* [CP] Embed Pods Frameworks */,
+				925760BB2B1245DECE4705AF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -247,9 +309,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4F909FD41DCDA4BF00593FDF /* Build configuration list for PBXNativeTarget "CustomLightUITests" */;
 			buildPhases = (
+				238315290C88D2241C6C4803 /* [CP] Check Pods Manifest.lock */,
 				4F909FC11DCDA4BF00593FDF /* Sources */,
 				4F909FC21DCDA4BF00593FDF /* Frameworks */,
 				4F909FC31DCDA4BF00593FDF /* Resources */,
+				93D771A96A57EC9C1D897222 /* [CP] Embed Pods Frameworks */,
+				5CE46BAE7DEA06E462EFC859 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -320,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F909FB41DCDA4BF00593FDF /* LaunchScreen.storyboard in Resources */,
+				4FDCF87A1DD02C680083F3CE /* checkMark.png in Resources */,
 				4F909FB11DCDA4BF00593FDF /* Assets.xcassets in Resources */,
 				4F909FAF1DCDA4BF00593FDF /* Main.storyboard in Resources */,
 			);
@@ -341,6 +407,144 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		238315290C88D2241C6C4803 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		5CE46BAE7DEA06E462EFC859 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLightUITests/Pods-CustomLightUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5D00534D8CA95C4914E8FA02 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		6417EC57149FE0D4DC2A09FB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLightTests/Pods-CustomLightTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		667D85868C87370BBD5FA616 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLight/Pods-CustomLight-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		925760BB2B1245DECE4705AF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLightTests/Pods-CustomLightTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93D771A96A57EC9C1D897222 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLightUITests/Pods-CustomLightUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C8AA0CB05798FA416C8D4F12 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CustomLight/Pods-CustomLight-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EABA1E5CB4762A034A3D41CA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		4F909F9A1DCDA4BF00593FDF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -358,6 +562,7 @@
 				4FF724351DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m in Sources */,
 				4F909FAC1DCDA4BF00593FDF /* DetailViewController.m in Sources */,
 				4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */,
+				4FDCF8781DD02B180083F3CE /* CustomLightTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +711,7 @@
 		};
 		4F909FCF1DCDA4BF00593FDF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5D751E3D7283999E1D63832E /* Pods-CustomLight.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 2269Y262Z6;
@@ -516,7 +722,11 @@
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"$(inherited)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -524,6 +734,7 @@
 		};
 		4F909FD01DCDA4BF00593FDF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A84C3BF37F4A4DCC2DA6FE2 /* Pods-CustomLight.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 2269Y262Z6;
@@ -534,7 +745,11 @@
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"$(inherited)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Catherine.CustomLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -542,6 +757,7 @@
 		};
 		4F909FD21DCDA4BF00593FDF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5946AE26BBD5F6445E81AA2A /* Pods-CustomLightTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 2269Y262Z6;
@@ -556,6 +772,7 @@
 		};
 		4F909FD31DCDA4BF00593FDF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8BBFF52B0FEF880364E99EEB /* Pods-CustomLightTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 2269Y262Z6;
@@ -570,6 +787,7 @@
 		};
 		4F909FD51DCDA4BF00593FDF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E31F8B78A290C84B31797772 /* Pods-CustomLightUITests.debug.xcconfig */;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightUITests/Info.plist;
@@ -583,6 +801,7 @@
 		};
 		4F909FD61DCDA4BF00593FDF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5481900A36A8136A1E240F4A /* Pods-CustomLightUITests.release.xcconfig */;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightUITests/Info.plist;
