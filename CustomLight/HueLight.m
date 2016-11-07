@@ -107,6 +107,7 @@ const NSString *ipAddress = @"192.168.2.28";
         if (!errors) {
             NSLog(@"Success");
         } else {
+            [self authenticate];
             NSLog(@"Failure");
         }
     }];

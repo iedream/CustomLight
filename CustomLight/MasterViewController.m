@@ -47,14 +47,14 @@
 
     
     
-//    self.locationManager = [[CLLocationManager alloc] init];
-//    self.locationManager.delegate = self;
-//    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-//    [self.locationManager requestAlwaysAuthorization];
-//    if ([CLLocationManager locationServicesEnabled]) {
-//        [self.locationManager requestLocation];
-//    }
-//    [self.locationManager startUpdatingLocation];
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    [self.locationManager requestAlwaysAuthorization];
+    if ([CLLocationManager locationServicesEnabled]) {
+        [self.locationManager requestLocation];
+    }
+    [self.locationManager startUpdatingLocation];
     
     
 //    AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
@@ -126,16 +126,16 @@
         }
          
         if (corner.latitude < self.lowestLatitude) {
-            self.lowestLatitude = corner.latitude - 0.0001;
+            self.lowestLatitude = corner.latitude - 0.00005;
         }
         if (corner.longitude < self.lowestLongitude) {
-            self.lowestLongitude = corner.longitude - 0.0001;
+            self.lowestLongitude = corner.longitude - 0.00005;
         }
         if (corner.latitude > self.highestLatitude) {
-            self.highestLatitude = corner.latitude + 0.0001;
+            self.highestLatitude = corner.latitude + 0.00005;
         }
         if (corner.longitude > self.highestLongitude) {
-            self.highestLongitude = corner.longitude + 0.0001;
+            self.highestLongitude = corner.longitude + 0.0005;
         }
     }
 }
