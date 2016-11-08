@@ -21,7 +21,9 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 @property (nonatomic, strong) UIActivityIndicatorView *spinnerView;
 + (HueLight*)sharedHueLight;
 - (void)toggleLightOnOff;
-- (void)detectSurrondingBrightness;
+- (void)detectSurrondingBrightness:(CGFloat)brightness;
+- (void)turnLightOn;
+- (void)turnLightOff;
 - (NSArray*)getGroupData;
 - (void)startLoading;
 - (void)stopLoading;

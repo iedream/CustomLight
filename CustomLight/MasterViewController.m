@@ -13,18 +13,21 @@
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/ImageIO.h>
 #import <MapKit/MapKit.h>
+#import <CoreMotion/CoreMotion.h>
 
 @interface MasterViewController ()
 
 @property NSMutableArray *objects;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) CLRegion *geoRegion;
+@property (nonatomic, strong) CLBeaconRegion *geoRegion;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 
 @property (nonatomic) CGFloat lowestLatitude;
 @property (nonatomic) CGFloat lowestLongitude;
 @property (nonatomic) CGFloat highestLatitude;
 @property (nonatomic) CGFloat highestLongitude;
+
+@property (nonatomic, strong) CMMotionManager *motionManager;
 @end
 
 @implementation MasterViewController
@@ -42,10 +45,9 @@
     [self.view addSubview:spinnerView];
     [HueLight sharedHueLight].spinnerView = spinnerView;
     [[HueLight sharedHueLight] startLoading];
-    
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged:) name:UIScreenBrightnessDidChangeNotification object:nil];
 
-    
+    self.motionManager = [[CMMotionManager alloc] init];
+    [self.motionManager startDeviceMotionUpdates];
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
@@ -53,23 +55,15 @@
     [self.locationManager requestAlwaysAuthorization];
     if ([CLLocationManager locationServicesEnabled]) {
         [self.locationManager requestLocation];
+        self.locationManager.allowsBackgroundLocationUpdates = YES;
     }
     [self.locationManager startUpdatingLocation];
     
-    
-//    AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
-//    captureSession.sessionPreset = AVCaptureSessionPresetMedium;
-//    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-//    NSError *err;
-//    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&err];
-//    [captureSession addInput:input];
-//    AVCaptureVideoDataOutput *output = [[AVCaptureVideoDataOutput alloc] init];
-//    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
-//    dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
-//    [output setSampleBufferDelegate:self queue:queue];
-//    [captureSession addOutput:output];
-//    self.captureSession = captureSession;
-//    [self.captureSession startRunning];
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:@"8492E75F-4FD6-469D-B132-043FE94921D8"];
+    self.geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:@"beaconRegion"];
+    self.geoRegion.notifyOnEntry=YES;
+    self.geoRegion.notifyOnExit=YES;
+    [self.locationManager startMonitoringForRegion:self.geoRegion];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
@@ -77,21 +71,30 @@
     NSDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:(__bridge NSDictionary*)metadataDict];
     NSDictionary *exifMetadata = [[metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary] mutableCopy];
     float brightnessValue = [[exifMetadata objectForKey:(NSString *)kCGImagePropertyExifBrightnessValue] floatValue];
-    NSLog(@"new brighness");
+    [[HueLight sharedHueLight] detectSurrondingBrightness:brightnessValue];
+}
+
+- (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
+{
+    [self.locationManager requestStateForRegion:self.geoRegion];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    [self.locationManager requestStateForRegion:self.geoRegion];
+
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     [self createRectangle];
-    CLLocationCoordinate2D coord = locations.firstObject.coordinate;
-    if ([self withinRange:coord]) {
-        NSLog(@"Inside");
-    } else {
-        NSLog(@"Outside");
+    double y = self.motionManager.deviceMotion.userAcceleration.y;
+    if (fabs(y) > 5) {
+        [[HueLight sharedHueLight] toggleLightOnOff];
     }
+//    CLLocationCoordinate2D coord = locations.firstObject.coordinate;
+//    if ([self withinRange:coord]) {
+//        NSLog(@"Inside");
+//    } else {
+//        NSLog(@"Outside");
+//    }
 }
 
 - (BOOL)withinRange:(CLLocationCoordinate2D )currentPoint {
@@ -140,6 +143,15 @@
     }
 }
 
+- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray<CLBeacon *> *)beacons inRegion:(CLBeaconRegion *)region {
+    CLBeacon *beacon = beacons.firstObject;
+    if (beacon.proximity == CLProximityNear || beacon.proximity == CLProximityImmediate) {
+        [[HueLight sharedHueLight] turnLightOn];
+    } else {
+        [[HueLight sharedHueLight] turnLightOff];
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     NSLog(@"Hello");
 }
@@ -149,21 +161,21 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
-//    if (state == CLRegionStateInside) {
-//        NSLog(@"Inside");
-//    } else if (state == CLRegionStateOutside) {
-//        NSLog(@"Outside");
-//    }
-    float differenceX = fabsf(self.locationManager.location.coordinate.latitude - region.center.latitude);
-    float differenceY = fabsf(self.locationManager.location.coordinate.longitude - region.center.longitude);
-    if (differenceX > 0.0001 || differenceY > 0.0001 ) {
-        NSLog(@"Turning Off");
+    if (state == CLRegionStateInside)
+    {
+        //Start Ranging
+        [manager startRangingBeaconsInRegion:self.geoRegion];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [self becomeFirstResponder];
     self.clearsSelectionOnViewWillAppear = self.splitViewController.isCollapsed;
     [super viewWillAppear:animated];
+}
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
 
@@ -203,22 +215,6 @@
     NSString *text = self.objects[indexPath.row];
     cell.textLabel.text = text;
     return cell;
-}
-
-- (void)brightnessChanged:(NSNotification *)notif {
-    [[HueLight sharedHueLight] detectSurrondingBrightness];
-}
-
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
-{
-    if (motion == UIEventSubtypeMotionShake )
-    {
-        
-        self.geoRegion = [[CLCircularRegion alloc]initWithCenter:self.locationManager.location.coordinate radius:10 identifier:@"LivingRoomRegion"];
-        [self.locationManager startMonitoringForRegion:self.geoRegion];
-        // User was shaking the device. Post a notification named "shake".
-        [[HueLight sharedHueLight] toggleLightOnOff];
-    }
 }
 
 

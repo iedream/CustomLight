@@ -19,6 +19,9 @@ const NSString *ipAddress = @"192.168.2.28";
 @property (nonatomic, strong) PHBridgeSendAPI *sendAPI;
 
 @property (nonatomic) int time;
+
+@property (nonatomic) BOOL actionInProgress;
+@property (nonatomic) BOOL initSetUpDone;
 @end
 
 @implementation HueLight
@@ -35,6 +38,8 @@ const NSString *ipAddress = @"192.168.2.28";
         [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
             self.hueNotificationManager = [PHNotificationManager defaultManager];
             self.sendAPI = [[PHBridgeSendAPI alloc] init];
+            //[self authenticate];
+            _initSetUpDone = YES;
             [self setUpConnection];
             [self stopLoading];
         }];
@@ -76,6 +81,21 @@ const NSString *ipAddress = @"192.168.2.28";
     [self.hueSDK enableLocalConnection];
 }
 
+- (void)turnLightOn {
+    PHLight *light = [self.cache.lights objectForKey:@"1"];
+    PHLightState *lightState = light.lightState;
+    lightState.on = [NSNumber numberWithBool:YES];
+    lightState.brightness = @(254);
+    [self setLightState:lightState andLightId:light.identifier];
+}
+
+- (void)turnLightOff {
+    PHLight *light = [self.cache.lights objectForKey:@"1"];
+    PHLightState *lightState = light.lightState;
+    lightState.on = [NSNumber numberWithBool:NO];
+    [self setLightState:lightState andLightId:light.identifier];
+}
+
 - (void)toggleLightOnOff {
     PHLight *light = [self.cache.lights objectForKey:@"1"];
     PHLightState *lightState = light.lightState;
@@ -88,22 +108,30 @@ const NSString *ipAddress = @"192.168.2.28";
     [self setLightState:lightState andLightId:light.identifier];
 }
 
-- (void)detectSurrondingBrightness {
+- (void)detectSurrondingBrightness:(CGFloat)brightness {
+    if (_actionInProgress || !_initSetUpDone) {
+        return;
+    }
+    _actionInProgress = YES;
+    
     PHLight *light = [self.cache.lights objectForKey:@"1"];
     PHLightState *lightState = light.lightState;
     
-    CGFloat brightness = [[UIScreen mainScreen] brightness];
-    if (brightness < 0.3) {
+    if (brightness < 1 && lightState.on == [NSNumber numberWithBool:NO]) {
         lightState.on = [NSNumber numberWithBool:YES];
-    } else {
+        lightState.brightness = @(254);
+        [self setLightState:lightState andLightId:light.identifier];
+    } else if (brightness > 3 && lightState.on == [NSNumber numberWithBool:YES]){
         lightState.on = [NSNumber numberWithBool:NO];
+        lightState.brightness = @(254);
+        [self setLightState:lightState andLightId:light.identifier];
     }
-    lightState.brightness = @(254);
-    [self setLightState:lightState andLightId:light.identifier];
+    _actionInProgress = NO;
 }
          
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
     [self.sendAPI updateLightStateForId:lightId withLightState:lightState completionHandler:^(NSArray *errors) {
+        _actionInProgress = NO;
         if (!errors) {
             NSLog(@"Success");
         } else {
@@ -126,7 +154,7 @@ const NSString *ipAddress = @"192.168.2.28";
 }
 
 - (void)authenticationFailure:(NSNotification *)notif {
-    [self authenticate];
+    //[self authenticate];
 }
 
 - (void)noLocalConnection:(NSNotification *)notif {
@@ -134,20 +162,11 @@ const NSString *ipAddress = @"192.168.2.28";
 }
 
 - (void)localConnection:(NSNotification *)notif {
-    self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
-    PHLight *light = [self.cache.lights objectForKey:@"1"];
-    PHLightState *lightState = light.lightState;
-    self.time++;
-    if (self.time <= 1) {
-        //[self turnOnLight];
-    }
-}
+    self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];}
 
 + (HueLight*)sharedHueLight {
     static HueLight *_sharedInstance = nil;
-    
     static dispatch_once_t oncePredicate;
-    
     dispatch_once(&oncePredicate, ^{
         _sharedInstance = [[HueLight alloc] init];
     });
