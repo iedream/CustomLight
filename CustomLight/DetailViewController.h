@@ -13,9 +13,10 @@ typedef NS_ENUM(NSInteger, DETAILVIEWTYPE)
     DETAILVIEWTYPE_NONE,
     DETAILVIEWTYPE_SHAKE,
     DETAILVIEWTYPE_BRIGHTNESS,
-    LIGHTNAME_PROXIMITY
+    DETAILVIEWTYPE_PROXIMITY
 };
 
 @interface DetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic) DETAILVIEWTYPE detailType;
 @end
 

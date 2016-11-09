@@ -78,13 +78,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kDm-WG-jf3">
-                                <rect key="frame" x="164" y="617" width="46" height="30"/>
-                                <state key="normal" title="Save"/>
-                                <connections>
-                                    <action selector="save:" destination="JEX-9P-axG" eventType="touchUpInside" id="4cz-jO-J3c"/>
-                                </connections>
-                            </button>
                             <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8iA-Ek-K1q">
                                 <rect key="frame" x="171" y="406" width="187" height="150"/>
                                 <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -127,13 +120,31 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d3P-Cu-lhM">
+                                <rect key="frame" x="118" y="618" width="51" height="31"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="iBeacon" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GVD-el-drC">
+                                <rect key="frame" x="16" y="622" width="103" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kDm-WG-jf3">
+                                <rect key="frame" x="215" y="622" width="46" height="30"/>
+                                <state key="normal" title="Save"/>
+                                <connections>
+                                    <action selector="save:" destination="JEX-9P-axG" eventType="touchUpInside" id="4cz-jO-J3c"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="GVD-el-drC" firstAttribute="centerY" secondItem="d3P-Cu-lhM" secondAttribute="centerY" id="266-5W-3T5"/>
                             <constraint firstAttribute="trailing" secondItem="8iA-Ek-K1q" secondAttribute="trailing" constant="20" id="2zl-oL-q5s"/>
                             <constraint firstItem="ibr-jp-mbE" firstAttribute="height" secondItem="svH-Pt-448" secondAttribute="height" multiplier="0.25" id="3Dj-ca-cF3"/>
                             <constraint firstItem="do0-T5-nQf" firstAttribute="centerY" secondItem="tSU-lA-oRa" secondAttribute="centerY" id="41i-8i-sUc"/>
-                            <constraint firstItem="kDm-WG-jf3" firstAttribute="centerX" secondItem="svH-Pt-448" secondAttribute="centerX" id="54z-2o-Tib"/>
+                            <constraint firstItem="d3P-Cu-lhM" firstAttribute="top" secondItem="c0I-Dq-Vfz" secondAttribute="bottom" constant="10" id="8BD-mE-j1t"/>
+                            <constraint firstItem="d3P-Cu-lhM" firstAttribute="leading" secondItem="c0I-Dq-Vfz" secondAttribute="leading" id="96P-eL-vdW"/>
                             <constraint firstItem="NyS-HD-Xao" firstAttribute="top" secondItem="Rv6-bH-5Z7" secondAttribute="bottom" constant="5" id="BiW-bu-qvK"/>
                             <constraint firstItem="tSU-lA-oRa" firstAttribute="width" secondItem="svH-Pt-448" secondAttribute="width" multiplier="0.7" id="FIC-Es-Rxa"/>
                             <constraint firstItem="1am-cE-Fpl" firstAttribute="top" secondItem="8iA-Ek-K1q" secondAttribute="top" id="Fc0-Vc-MeQ"/>
@@ -143,6 +154,7 @@
                             <constraint firstItem="NyS-HD-Xao" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" constant="10" id="Ks1-4W-eKR"/>
                             <constraint firstItem="ibr-jp-mbE" firstAttribute="width" secondItem="svH-Pt-448" secondAttribute="width" multiplier="0.5" id="Liu-yO-OAx"/>
                             <constraint firstItem="Rv6-bH-5Z7" firstAttribute="height" secondItem="ibr-jp-mbE" secondAttribute="height" id="MTh-LX-Pqz"/>
+                            <constraint firstItem="kDm-WG-jf3" firstAttribute="centerX" secondItem="svH-Pt-448" secondAttribute="centerX" id="NAn-31-lbr"/>
                             <constraint firstItem="g0K-zV-aJG" firstAttribute="centerX" secondItem="ibr-jp-mbE" secondAttribute="centerX" id="O0M-dR-csq"/>
                             <constraint firstItem="tSU-lA-oRa" firstAttribute="top" secondItem="NyS-HD-Xao" secondAttribute="bottom" constant="15" id="PhI-tg-6eb"/>
                             <constraint firstItem="tSU-lA-oRa" firstAttribute="top" secondItem="Znq-UN-BZj" secondAttribute="bottom" constant="-11" id="Q7W-bO-RAm"/>
@@ -168,6 +180,7 @@
                             <constraint firstItem="NyS-HD-Xao" firstAttribute="height" secondItem="8iA-Ek-K1q" secondAttribute="height" multiplier="0.2" id="ooN-VQ-0K4"/>
                             <constraint firstItem="1am-cE-Fpl" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" constant="10" id="paL-el-uuh"/>
                             <constraint firstItem="8iA-Ek-K1q" firstAttribute="height" secondItem="ibr-jp-mbE" secondAttribute="height" id="qjs-qX-swA"/>
+                            <constraint firstItem="GVD-el-drC" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" constant="10" id="v6H-KD-yDm"/>
                             <constraint firstItem="kvk-G3-aif" firstAttribute="top" secondItem="SYR-Wa-9uf" secondAttribute="bottom" constant="10" id="vKT-yO-aS7"/>
                             <constraint firstItem="Rv6-bH-5Z7" firstAttribute="top" secondItem="kvk-G3-aif" secondAttribute="bottom" constant="5" id="ylo-2L-Kyv"/>
                         </constraints>
@@ -180,10 +193,13 @@
                         <outlet property="colorPickerView" destination="8iA-Ek-K1q" id="9Et-T1-mre"/>
                         <outlet property="endTime" destination="Rv6-bH-5Z7" id="dzW-JK-5Fz"/>
                         <outlet property="groupTableView" destination="1am-cE-Fpl" id="YGN-UM-rZC"/>
+                        <outlet property="iBeaconLabel" destination="GVD-el-drC" id="PDl-nm-Kqo"/>
                         <outlet property="rangeSlider" destination="c0I-Dq-Vfz" id="YVa-Um-0TQ"/>
+                        <outlet property="rangeTitleLabel" destination="VRO-Qd-EY2" id="9Rj-sU-ghZ"/>
                         <outlet property="rangeValueLabel" destination="E5Z-Gi-Vdl" id="NFD-cP-gC4"/>
                         <outlet property="repeatDaySelectionView" destination="NyS-HD-Xao" id="MGk-6g-vLk"/>
                         <outlet property="startTime" destination="ibr-jp-mbE" id="WxE-0f-x9A"/>
+                        <outlet property="useiBeaconSwitch" destination="d3P-Cu-lhM" id="NfS-qi-nVi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>

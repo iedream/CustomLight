@@ -11,6 +11,10 @@
 
 const NSString *ipAddress = @"192.168.2.28";
 
+const NSString *BRIGHTNESS = @"Brightness";
+const NSString *PROXIMITY = @"Proximity";
+const NSString *SHAKE = @"Shake";
+
 @interface HueLight()
 @property (nonatomic, strong) PHHueSDK *hueSDK;
 @property (nonatomic, strong) PHBridgeSearching *bridgeSearching;
@@ -22,6 +26,8 @@ const NSString *ipAddress = @"192.168.2.28";
 
 @property (nonatomic) BOOL actionInProgress;
 @property (nonatomic) BOOL initSetUpDone;
+
+@property (nonatomic, strong) NSMutableDictionary *settings;
 @end
 
 @implementation HueLight
@@ -147,6 +153,64 @@ const NSString *ipAddress = @"192.168.2.28";
         [groupData addObject:groupInfo.name];
     }
     return groupData;
+}
+
+-(NSDictionary*)convertUIColorToHueColorNumber:(UIColor *)color andGroupName:(NSArray *)groupNames {
+    NSMutableDictionary *resultDic = [[NSMutableDictionary alloc] init];
+    
+    for (NSString *groupName in groupNames) {
+        for (PHGroup *groupInfo in self.cache.groups.allValues) {
+            if ([groupInfo.name isEqualToString:groupName]) {
+                for (NSString *lightId in groupInfo.lightIdentifiers) {
+                    PHLight *light = [self.cache.lights objectForKey:lightId];
+                    NSString *lightModel = light.modelNumber;
+                    if (![resultDic valueForKey: lightModel]) {
+                        CGPoint xy = [PHUtilities calculateXY:color forModel:lightModel];
+                        NSDictionary *dict = @{@"x":@(xy.x), @"y":@(xy.y)};
+                        [resultDic setValue:dict forKey:lightModel];
+                    }
+                }
+            }
+        }
+    }
+    return resultDic;
+}
+
+- (void)writeToPlistSetting {
+    NSURL *fileURL = [self fileURL];
+    if (!fileURL) {
+        return;
+    }
+    [self.settings writeToURL:fileURL atomically:YES];
+
+}
+
+- (void)readFromPlistSetting {
+    NSURL *fileURL = [self fileURL];
+    if (!fileURL) {
+        return;
+    }
+    NSFileManager *fileManage = [NSFileManager defaultManager];
+    if(![fileManage fileExistsAtPath:fileURL.path]){
+        NSDictionary *defaultDict = @{BRIGHTNESS:@[], SHAKE:@[], PROXIMITY:@[]};
+        self.settings = [[NSMutableDictionary alloc] initWithDictionary:defaultDict];
+    }
+    self.settings = [[NSMutableDictionary alloc] initWithContentsOfFile:fileURL.path];
+}
+
+- (NSURL *)fileURL {
+    NSString *filename = @"plistSetting.txt";
+    NSString *localDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *localPath = [localDir stringByAppendingPathComponent:filename];
+    NSFileManager *fileManage = [NSFileManager defaultManager];
+    if(![fileManage fileExistsAtPath:localPath]){
+        return nil;
+    }
+    
+    NSString *plistName = [[NSString alloc]initWithContentsOfFile:localPath encoding:NSUTF8StringEncoding error:NULL];
+    NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+    NSURL *fileURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",plistName]];
+    return fileURL;
 }
 
 - (void)authenticationSuccess:(NSNotification *)notif {
