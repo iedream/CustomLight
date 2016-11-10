@@ -32,6 +32,7 @@
 
 @property (nonatomic, strong) NSArray *groupData;
 @property (nonatomic, strong) NSMutableArray *selectedRooms;
+@property (nonatomic, strong) NSMutableArray *brightnessDetectionArr;
 
 @end
 
@@ -153,9 +154,9 @@
     NSString *endTime = [outputFormatter stringFromDate:self.endTime.date];
     
     NSArray *selectedDays = self.repeatDaySelectionControl.selectedSegmentTitles;
-    NSString *selectedDaysString = @"";
+    NSMutableArray *selectedDaysArr = [[NSMutableArray alloc] init];
     for (NSString *day in selectedDays) {
-        selectedDaysString = [NSString stringWithFormat:@"%@%@ ", selectedDaysString, day];
+        [selectedDaysArr addObject:day];
     }
     
     NSNumber *brightnessValue = @(self.brightnessSlider.value*254);
@@ -163,10 +164,13 @@
     UIColor *color = [self.colorPickerWheel currentColor];
     NSDictionary *colorDict = [[HueLight sharedHueLight] convertUIColorToHueColorNumber:color andGroupName:self.selectedRooms];
     
+    NSDictionary *rangeDict;
     if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
-        NSDictionary *rangeDict = @{@"useiBeacon": [NSNumber numberWithBool:self.useiBeaconSwitch.on], @"rangeValue": self.rangeValueLabel.text};
+        rangeDict = @{@"useiBeacon": [NSNumber numberWithBool:self.useiBeaconSwitch.on], @"rangeValue": self.rangeValueLabel.text};
     }
-
+    
+    NSDictionary *dict = @{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"range": rangeDict, @"groupId": self.selectedRooms};
+    [self.brightnessDetectionArr addObject:dict];
 }
 
 @end

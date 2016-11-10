@@ -27,5 +27,5 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 - (NSArray*)getGroupData;
 - (void)startLoading;
 - (void)stopLoading;
-- (NSDictionary*)convertUIColorToHueColorNumber:(UIColor *)color andGroupName:(NSString *)groupName;
+- (NSDictionary*)convertUIColorToHueColorNumber:(UIColor *)color andGroupName:(NSArray *)groupNames;
 @end

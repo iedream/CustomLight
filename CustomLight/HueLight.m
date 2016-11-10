@@ -54,6 +54,8 @@ const NSString *SHAKE = @"Shake";
     return self;
 }
 
+// MARK: - Spinner Related View -
+
 - (void)startLoading {
     [self.spinnerView startAnimating];
 }
@@ -61,6 +63,8 @@ const NSString *SHAKE = @"Shake";
 - (void)stopLoading {
     [self.spinnerView stopAnimating];
 }
+
+// MARK: - Hue Light Setup -
 
 - (void)authenticate {
     self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:ipAddress];
@@ -87,54 +91,106 @@ const NSString *SHAKE = @"Shake";
     [self.hueSDK enableLocalConnection];
 }
 
-- (void)turnLightOn {
-    PHLight *light = [self.cache.lights objectForKey:@"1"];
-    PHLightState *lightState = light.lightState;
-    lightState.on = [NSNumber numberWithBool:YES];
-    lightState.brightness = @(254);
-    [self setLightState:lightState andLightId:light.identifier];
+- (void)authenticationSuccess:(NSNotification *)notif {
+    [self setUpConnection];
 }
 
-- (void)turnLightOff {
-    PHLight *light = [self.cache.lights objectForKey:@"1"];
-    PHLightState *lightState = light.lightState;
-    lightState.on = [NSNumber numberWithBool:NO];
-    [self setLightState:lightState andLightId:light.identifier];
+- (void)authenticationFailure:(NSNotification *)notif {
+    //[self authenticate];
 }
 
-- (void)toggleLightOnOff {
-    PHLight *light = [self.cache.lights objectForKey:@"1"];
-    PHLightState *lightState = light.lightState;
-    if ([lightState.on isEqualToNumber:@(0)]) {
-        lightState.on = [NSNumber numberWithBool:YES];
-    } else {
-        lightState.on = [NSNumber numberWithBool:NO];
-    }
-    lightState.brightness = @(254);
-    [self setLightState:lightState andLightId:light.identifier];
+- (void)noLocalConnection:(NSNotification *)notif {
+    
 }
 
-- (void)detectSurrondingBrightness:(CGFloat)brightness {
+- (void)localConnection:(NSNotification *)notif {
+    self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
+}
+
+// MARK: - Hue Light Action Methods -
+
+- (void)toggleLightOnOffWithActiveDict:(NSDictionary *)activeDict {
     if (_actionInProgress || !_initSetUpDone) {
         return;
     }
     _actionInProgress = YES;
     
-    PHLight *light = [self.cache.lights objectForKey:@"1"];
-    PHLightState *lightState = light.lightState;
-    
-    if (brightness < 1 && lightState.on == [NSNumber numberWithBool:NO]) {
-        lightState.on = [NSNumber numberWithBool:YES];
-        lightState.brightness = @(254);
-        [self setLightState:lightState andLightId:light.identifier];
-    } else if (brightness > 3 && lightState.on == [NSNumber numberWithBool:YES]){
-        lightState.on = [NSNumber numberWithBool:NO];
-        lightState.brightness = @(254);
-        [self setLightState:lightState andLightId:light.identifier];
+    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
+        PHGroup *group = [self.cache.groups objectForKey:groupId];
+        for (NSString *lightId in group.lightIdentifiers) {
+            PHLight *light = [self.cache.lights objectForKey:lightId];
+            if (light.lightState.on) {
+                light.lightState.on = [NSNumber numberWithBool:NO];
+            } else {
+                light.lightState.on = [NSNumber numberWithBool:YES];
+            }
+            light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+            [self setLightStateColorForLight:light andActiveDict:activeDict];
+            [self setLightState:light.lightState andLightId:light.identifier];
+        }
     }
-    _actionInProgress = NO;
 }
-         
+
+- (void)detectSurrondingBrightness:(CGFloat)brightness andActiveDict:(NSDictionary *)activeDict{
+    if (_actionInProgress || !_initSetUpDone) {
+        return;
+    }
+    _actionInProgress = YES;
+    
+    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
+        PHGroup *group = [self.cache.groups objectForKey:groupId];
+        for (NSString *lightId in group.lightIdentifiers) {
+            PHLight *light = [self.cache.lights objectForKey:lightId];
+            
+            NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
+            if (![lightStateValue isEqualToNumber:@(-1)]) {
+                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                [self setLightStateColorForLight:light andActiveDict:activeDict];
+                light.lightState.on = lightStateValue;
+                [self setLightState:light.lightState andLightId:light.identifier];
+            }
+        }
+    }
+}
+
+- (void)configureLightWithActiveDict:(NSDictionary *)activeDict andLightSwitch:(BOOL)lightSwitch{
+    if (_actionInProgress || !_initSetUpDone) {
+        return;
+    }
+    _actionInProgress = YES;
+    
+    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
+        PHGroup *group = [self.cache.groups objectForKey:groupId];
+        for (NSString *lightId in group.lightIdentifiers) {
+            PHLight *light = [self.cache.lights objectForKey:lightId];
+            light.lightState.on = [NSNumber numberWithBool:NO];
+            light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+            [self setLightStateColorForLight:light andActiveDict:activeDict];
+            [self setLightState:light.lightState andLightId:light.identifier];
+        }
+    }
+}
+
+// MARK: - Hue Light Action Helper Methods -
+
+- (NSNumber *)getLightStateWithBrightness:(CGFloat)brightness andLightState:(PHLightState*)lightState{
+    if (brightness < 1 && lightState.on == [NSNumber numberWithBool:NO]) {
+        return [NSNumber numberWithBool:YES];
+    } else if (brightness > 3 && lightState.on == [NSNumber numberWithBool:YES]){
+        return [NSNumber numberWithBool:NO];
+    }
+    return @(-1);
+
+}
+
+- (void)setLightStateColorForLight:(PHLight *)light andActiveDict:(NSDictionary *)activeDict {
+    NSDictionary *valueDict = [activeDict objectForKey:@"color"];
+    NSDictionary *colorDictForLightModel = [valueDict objectForKey:light.modelNumber];
+    CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
+    light.lightState.x = @(lightColorPoint.x);
+    light.lightState.y = @(lightColorPoint.y);
+}
+
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
     [self.sendAPI updateLightStateForId:lightId withLightState:lightState completionHandler:^(NSArray *errors) {
         _actionInProgress = NO;
@@ -146,6 +202,8 @@ const NSString *SHAKE = @"Shake";
         }
     }];
 }
+
+// MARK: - Hue Light Data Helper Methods -
 
 -(NSArray*)getGroupData {
     NSMutableArray *groupData = [[NSMutableArray alloc] init];
@@ -176,57 +234,7 @@ const NSString *SHAKE = @"Shake";
     return resultDic;
 }
 
-- (void)writeToPlistSetting {
-    NSURL *fileURL = [self fileURL];
-    if (!fileURL) {
-        return;
-    }
-    [self.settings writeToURL:fileURL atomically:YES];
-
-}
-
-- (void)readFromPlistSetting {
-    NSURL *fileURL = [self fileURL];
-    if (!fileURL) {
-        return;
-    }
-    NSFileManager *fileManage = [NSFileManager defaultManager];
-    if(![fileManage fileExistsAtPath:fileURL.path]){
-        NSDictionary *defaultDict = @{BRIGHTNESS:@[], SHAKE:@[], PROXIMITY:@[]};
-        self.settings = [[NSMutableDictionary alloc] initWithDictionary:defaultDict];
-    }
-    self.settings = [[NSMutableDictionary alloc] initWithContentsOfFile:fileURL.path];
-}
-
-- (NSURL *)fileURL {
-    NSString *filename = @"plistSetting.txt";
-    NSString *localDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    NSString *localPath = [localDir stringByAppendingPathComponent:filename];
-    NSFileManager *fileManage = [NSFileManager defaultManager];
-    if(![fileManage fileExistsAtPath:localPath]){
-        return nil;
-    }
-    
-    NSString *plistName = [[NSString alloc]initWithContentsOfFile:localPath encoding:NSUTF8StringEncoding error:NULL];
-    NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
-    NSURL *fileURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",plistName]];
-    return fileURL;
-}
-
-- (void)authenticationSuccess:(NSNotification *)notif {
-    [self setUpConnection];
-}
-
-- (void)authenticationFailure:(NSNotification *)notif {
-    //[self authenticate];
-}
-
-- (void)noLocalConnection:(NSNotification *)notif {
-    
-}
-
-- (void)localConnection:(NSNotification *)notif {
-    self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];}
+// MARK: - Get Hue Light -
 
 + (HueLight*)sharedHueLight {
     static HueLight *_sharedInstance = nil;
