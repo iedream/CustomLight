@@ -56,6 +56,7 @@
     self.lightSettingsTableView = [[UITableView alloc] init];
     self.lightSettingsTableView.delegate = self;
     self.lightSettingsTableView.dataSource = self;
+    [self.view addSubview:self.lightSettingsTableView];
     
     CGRect frame;
     frame.origin.x = 10.0;
@@ -183,9 +184,17 @@
         self.endTimeLabel.hidden = YES;
         self.endTime.hidden = YES;
         
+        self.repeatDaySelectionView.hidden = YES;
+        self.repeatDaySelectionControl.hidden = YES;
+        
         self.brightnessLabel.hidden = YES;
         self.brightnessValueLabel.hidden = YES;
         self.brightnessSlider.hidden = YES;
+        
+        self.groupTableView.hidden = YES;
+        
+        self.colorPickerView.hidden = YES;
+        self.colorPickerWheel.hidden = YES;
         
         self.rangeTitleLabel.hidden = YES;
         self.rangeValueLabel.hidden = YES;
@@ -194,6 +203,7 @@
         self.iBeaconLabel.hidden = YES;
         self.useiBeaconSwitch.hidden = YES;
         
+        
         self.lightSettingsTableView.hidden = NO;
     } else {
         self.startTimeLabel.hidden = NO;
@@ -201,9 +211,17 @@
         self.endTimeLabel.hidden = NO;
         self.endTime.hidden = NO;
         
+        self.repeatDaySelectionView.hidden = NO;
+        self.repeatDaySelectionControl.hidden = NO;
+        
         self.brightnessLabel.hidden = NO;
         self.brightnessValueLabel.hidden = NO;
         self.brightnessSlider.hidden = NO;
+        
+        self.groupTableView.hidden = NO;
+        
+        self.colorPickerView.hidden = NO;
+        self.colorPickerWheel.hidden = NO;
         
         self.lightSettingsTableView.hidden = YES;
 
