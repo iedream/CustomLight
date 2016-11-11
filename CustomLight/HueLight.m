@@ -115,18 +115,21 @@ const NSString *SHAKE = @"Shake";
     }
     _actionInProgress = YES;
     
-    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
-        PHGroup *group = [self.cache.groups objectForKey:groupId];
-        for (NSString *lightId in group.lightIdentifiers) {
-            PHLight *light = [self.cache.lights objectForKey:lightId];
-            if (light.lightState.on) {
-                light.lightState.on = [NSNumber numberWithBool:NO];
-            } else {
-                light.lightState.on = [NSNumber numberWithBool:YES];
+    
+    NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
+    for (PHGroup *group in self.cache.groups) {
+        if ([groupNames containsObject:group.name]) {
+            for (NSString *lightId in group.lightIdentifiers) {
+                PHLight *light = [self.cache.lights objectForKey:lightId];
+                if (light.lightState.on) {
+                    light.lightState.on = [NSNumber numberWithBool:NO];
+                } else {
+                    light.lightState.on = [NSNumber numberWithBool:YES];
+                }
+                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                [self setLightStateColorForLight:light andActiveDict:activeDict];
+                [self setLightState:light.lightState andLightId:light.identifier];
             }
-            light.lightState.brightness = [activeDict objectForKey:@"brightness"];
-            [self setLightStateColorForLight:light andActiveDict:activeDict];
-            [self setLightState:light.lightState andLightId:light.identifier];
         }
     }
 }
@@ -137,17 +140,18 @@ const NSString *SHAKE = @"Shake";
     }
     _actionInProgress = YES;
     
-    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
-        PHGroup *group = [self.cache.groups objectForKey:groupId];
-        for (NSString *lightId in group.lightIdentifiers) {
-            PHLight *light = [self.cache.lights objectForKey:lightId];
-            
-            NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
-            if (![lightStateValue isEqualToNumber:@(-1)]) {
-                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
-                [self setLightStateColorForLight:light andActiveDict:activeDict];
-                light.lightState.on = lightStateValue;
-                [self setLightState:light.lightState andLightId:light.identifier];
+    NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
+    for (PHGroup *group in self.cache.groups) {
+        if ([groupNames containsObject:group.name]) {
+            for (NSString *lightId in group.lightIdentifiers) {
+                PHLight *light = [self.cache.lights objectForKey:lightId];
+                NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
+                if (![lightStateValue isEqualToNumber:@(-1)]) {
+                    light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                    [self setLightStateColorForLight:light andActiveDict:activeDict];
+                    light.lightState.on = lightStateValue;
+                    [self setLightState:light.lightState andLightId:light.identifier];
+                }
             }
         }
     }
@@ -159,14 +163,16 @@ const NSString *SHAKE = @"Shake";
     }
     _actionInProgress = YES;
     
-    for (NSString *groupId in [activeDict objectForKey:@"groupId"]) {
-        PHGroup *group = [self.cache.groups objectForKey:groupId];
-        for (NSString *lightId in group.lightIdentifiers) {
-            PHLight *light = [self.cache.lights objectForKey:lightId];
-            light.lightState.on = [NSNumber numberWithBool:NO];
-            light.lightState.brightness = [activeDict objectForKey:@"brightness"];
-            [self setLightStateColorForLight:light andActiveDict:activeDict];
-            [self setLightState:light.lightState andLightId:light.identifier];
+    NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
+    for (PHGroup *group in self.cache.groups) {
+        if ([groupNames containsObject:group.name]) {
+            for (NSString *lightId in group.lightIdentifiers) {
+                PHLight *light = [self.cache.lights objectForKey:lightId];
+                light.lightState.on = [NSNumber numberWithBool:NO];
+                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                [self setLightStateColorForLight:light andActiveDict:activeDict];
+                [self setLightState:light.lightState andLightId:light.identifier];
+            }
         }
     }
 }

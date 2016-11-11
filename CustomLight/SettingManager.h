@@ -17,5 +17,9 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 };
 
 @interface SettingManager : NSObject
+@property (nonatomic, strong) NSMutableArray *brightnessArray;
+@property (nonatomic, strong) NSMutableArray *shakeArray;
+@property (nonatomic, strong) NSMutableArray *proximityArray;
++ (SettingManager*)sharedSettingManager;
 
 @end

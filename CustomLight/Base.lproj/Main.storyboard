@@ -188,10 +188,12 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Detail" id="mOI-FS-AaM"/>
                     <connections>
+                        <outlet property="brightnessLabel" destination="do0-T5-nQf" id="hZ1-Sw-VAv"/>
                         <outlet property="brightnessSlider" destination="tSU-lA-oRa" id="4H2-uz-yqc"/>
                         <outlet property="brightnessValueLabel" destination="Znq-UN-BZj" id="Ao5-an-z1C"/>
                         <outlet property="colorPickerView" destination="8iA-Ek-K1q" id="9Et-T1-mre"/>
                         <outlet property="endTime" destination="Rv6-bH-5Z7" id="dzW-JK-5Fz"/>
+                        <outlet property="endTimeLabel" destination="kvk-G3-aif" id="8eM-iI-mBU"/>
                         <outlet property="groupTableView" destination="1am-cE-Fpl" id="YGN-UM-rZC"/>
                         <outlet property="iBeaconLabel" destination="GVD-el-drC" id="PDl-nm-Kqo"/>
                         <outlet property="rangeSlider" destination="c0I-Dq-Vfz" id="YVa-Um-0TQ"/>
@@ -199,6 +201,7 @@
                         <outlet property="rangeValueLabel" destination="E5Z-Gi-Vdl" id="NFD-cP-gC4"/>
                         <outlet property="repeatDaySelectionView" destination="NyS-HD-Xao" id="MGk-6g-vLk"/>
                         <outlet property="startTime" destination="ibr-jp-mbE" id="WxE-0f-x9A"/>
+                        <outlet property="startTimeLabel" destination="g0K-zV-aJG" id="V2h-m6-zTC"/>
                         <outlet property="useiBeaconSwitch" destination="d3P-Cu-lhM" id="NfS-qi-nVi"/>
                     </connections>
                 </viewController>
@@ -281,6 +284,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="6S0-TO-JiA"/>
+        <segue reference="Tll-UG-LXB"/>
     </inferredMetricsTieBreakers>
 </document>

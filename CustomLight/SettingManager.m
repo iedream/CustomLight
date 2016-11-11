@@ -11,9 +11,6 @@
 
 @interface SettingManager()
 @property (nonatomic, strong) NSURL *fileURL;
-@property (nonatomic, strong) NSMutableArray *brightnessArray;
-@property (nonatomic, strong) NSMutableArray *shakeArray;
-@property (nonatomic, strong) NSMutableArray *proximityArray;
 @end
 
 @implementation SettingManager
@@ -88,6 +85,14 @@
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     [currentArray addObject:newSettingDic];
     [self writeToPlistSetting];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LightSettingsDidUpdate" object:nil];
+}
+
+- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType {
+    NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
+    [currentArray removeObject:existingSettingDic];
+    [self writeToPlistSetting];
 }
 
 - (void)writeToPlistSetting {
@@ -115,6 +120,15 @@
     _brightnessArray = [dict objectForKey:@"brightness"];
     _shakeArray = [dict objectForKey:@"shake"];
     _proximityArray = [dict objectForKey:@"proximity"];
+}
+
++ (SettingManager*)sharedSettingManager {
+    static SettingManager *_sharedSettingManager = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+        _sharedSettingManager = [[SettingManager alloc] init];
+    });
+    return _sharedSettingManager;
 }
 
 @end

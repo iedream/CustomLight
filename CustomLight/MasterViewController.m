@@ -18,6 +18,7 @@
 const NSString *SHAKE_ACTION = @"Detect Shake";
 const NSString *BRIGHTNESS_ACTION = @"Detect Brightness";
 const NSString *PROXIMITY_ACTION = @"Detect Proximity";
+const NSString *SETTING_PAGE = @"Setting Page";
 
 @interface MasterViewController ()
 
@@ -225,6 +226,8 @@ const NSString *PROXIMITY_ACTION = @"Detect Proximity";
             controller.detailType = DETAILVIEWTYPE_BRIGHTNESS;
         } else if ([text isEqualToString:PROXIMITY_ACTION]) {
             controller.detailType = DETAILVIEWTYPE_PROXIMITY;
+        } else if ([text isEqualToString:SETTING_PAGE]) {
+            controller.detailType = DETAILVIEWTYPE_SETTINGS;
         } else {
             controller.detailType = DETAILVIEWTYPE_NONE;
         }
