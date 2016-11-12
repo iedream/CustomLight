@@ -17,13 +17,23 @@
 
 @implementation CustomLightSettingTableViewCell
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    self.timeLabel = [[UILabel alloc] init];
-    self.groupLabel = [[UILabel alloc] init];
-    self.typeLabel = [[UILabel alloc] init];
-    self.repeatDaysLabel = [[UILabel alloc] init];
-    // Initialization code
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.timeLabel = [[UILabel alloc] init];
+        self.timeLabel.adjustsFontSizeToFitWidth = YES;
+        [self addSubview:self.timeLabel];
+        self.groupLabel = [[UILabel alloc] init];
+        self.groupLabel.adjustsFontSizeToFitWidth = YES;
+        [self addSubview:self.groupLabel];
+        self.typeLabel = [[UILabel alloc] init];
+        self.typeLabel.adjustsFontSizeToFitWidth = YES;
+        [self addSubview:self.typeLabel];
+        self.repeatDaysLabel = [[UILabel alloc] init];
+        self.repeatDaysLabel.adjustsFontSizeToFitWidth = YES;
+        [self addSubview:self.repeatDaysLabel];
+    }
+    return self;
 }
 
 - (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict andSettingType:(SETTINGTYPE)settingType{
@@ -31,26 +41,36 @@
     NSString *groupName = [self groupNameString:currentDict];
     NSString *time = [self timeString:currentDict];
     NSString *repeatDays = [self repeateDaysString:currentDict];
+    UIColor *color = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:[currentDict objectForKey:@"uicolor"]];
     
     self.timeLabel.text = time;
     self.groupLabel.text = groupName;
     self.typeLabel.text = lightSettingType;
     self.repeatDaysLabel.text = repeatDays;
+    self.backgroundColor = color;
+}
+
+- (void)prepareForReuse {
+    self.timeLabel.text = @"";
+    self.groupLabel.text = @"";
+    self.typeLabel.text = @"";
+    self.repeatDaysLabel.text = @"";
+    self.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     CGRect frame = self.bounds;
     CGFloat horizontalSizeFirstPart = frame.size.width * 0.5;
-    CGFloat horizontalSizeSecondPart = frame.size.width * 0.5 - 10.0;
+    CGFloat horizontalSizeSecondPart = frame.size.width * 0.5 - 5.0;
     CGFloat verticalSizeFirstLine = frame.size.height * 0.6;
-    CGFloat verticalSizeSecondLine = frame.size.height * 0.4 - 5.0;
+    CGFloat verticalSizeSecondLine = frame.size.height * 0.4 - 1.0;
     self.separatorInset = UIEdgeInsetsZero;
     
     self.typeLabel.frame = CGRectMake(0, 0, horizontalSizeFirstPart, verticalSizeFirstLine);
-    self.groupLabel.frame = CGRectMake(0, horizontalSizeFirstPart + 5.0, horizontalSizeFirstPart, verticalSizeSecondLine);
-    self.timeLabel.frame = CGRectMake(horizontalSizeFirstPart + 10.0, 0, horizontalSizeSecondPart, verticalSizeFirstLine);
-    self.repeatDaysLabel.frame = CGRectMake(horizontalSizeFirstPart + 10.0, verticalSizeFirstLine + 5.0, horizontalSizeSecondPart, verticalSizeSecondLine);
+    self.groupLabel.frame = CGRectMake(0, verticalSizeFirstLine + 1.0, horizontalSizeFirstPart, verticalSizeSecondLine);
+    self.timeLabel.frame = CGRectMake(horizontalSizeFirstPart + 5.0, 0, horizontalSizeSecondPart, verticalSizeFirstLine);
+    self.repeatDaysLabel.frame = CGRectMake(horizontalSizeFirstPart + 5.0, verticalSizeFirstLine + 1.0, horizontalSizeSecondPart, verticalSizeSecondLine);
 }
 
 - (NSString *)repeateDaysString:(NSDictionary *)currentDict {

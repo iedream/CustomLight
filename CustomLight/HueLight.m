@@ -105,6 +105,8 @@ const NSString *SHAKE = @"Shake";
 
 - (void)localConnection:(NSNotification *)notif {
     self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
+    _initSetUpDone = YES;
+    [self stopLoading];
 }
 
 // MARK: - Hue Light Action Methods -
@@ -113,21 +115,20 @@ const NSString *SHAKE = @"Shake";
     if (_actionInProgress || !_initSetUpDone) {
         return;
     }
-    _actionInProgress = YES;
-    
     
     NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
-    for (PHGroup *group in self.cache.groups) {
+    for (PHGroup *group in self.cache.groups.allValues) {
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
-                if (light.lightState.on) {
+                if (light.lightState.on == [NSNumber numberWithBool:YES]) {
                     light.lightState.on = [NSNumber numberWithBool:NO];
                 } else {
                     light.lightState.on = [NSNumber numberWithBool:YES];
                 }
-                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                 [self setLightStateColorForLight:light andActiveDict:activeDict];
+                 _actionInProgress = YES;
                 [self setLightState:light.lightState andLightId:light.identifier];
             }
         }
@@ -138,18 +139,18 @@ const NSString *SHAKE = @"Shake";
     if (_actionInProgress || !_initSetUpDone) {
         return;
     }
-    _actionInProgress = YES;
     
     NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
-    for (PHGroup *group in self.cache.groups) {
+    for (PHGroup *group in self.cache.groups.allValues) {
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
                 NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
                 if (![lightStateValue isEqualToNumber:@(-1)]) {
-                    light.lightState.brightness = [activeDict objectForKey:@"brightness"];
+                    light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                     [self setLightStateColorForLight:light andActiveDict:activeDict];
                     light.lightState.on = lightStateValue;
+                     _actionInProgress = YES;
                     [self setLightState:light.lightState andLightId:light.identifier];
                 }
             }
@@ -161,17 +162,19 @@ const NSString *SHAKE = @"Shake";
     if (_actionInProgress || !_initSetUpDone) {
         return;
     }
-    _actionInProgress = YES;
     
     NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
-    for (PHGroup *group in self.cache.groups) {
+    for (PHGroup *group in self.cache.groups.allValues) {
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
-                light.lightState.on = [NSNumber numberWithBool:NO];
-                light.lightState.brightness = [activeDict objectForKey:@"brightness"];
-                [self setLightStateColorForLight:light andActiveDict:activeDict];
-                [self setLightState:light.lightState andLightId:light.identifier];
+                if (![light.lightState.on boolValue] == lightSwitch) {
+                    light.lightState.on = [NSNumber numberWithBool:lightSwitch];
+                    light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                    [self setLightStateColorForLight:light andActiveDict:activeDict];
+                     _actionInProgress = YES;
+                    [self setLightState:light.lightState andLightId:light.identifier];
+                }
             }
         }
     }

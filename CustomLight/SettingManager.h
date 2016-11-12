@@ -21,5 +21,8 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 @property (nonatomic, strong) NSMutableArray *shakeArray;
 @property (nonatomic, strong) NSMutableArray *proximityArray;
 + (SettingManager*)sharedSettingManager;
+- (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType;
+- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType;
+- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
 
 @end

@@ -37,7 +37,6 @@
 
 @property (nonatomic, strong) NSArray *groupData;
 @property (nonatomic, strong) NSMutableArray *selectedRooms;
-@property (nonatomic, strong) NSMutableArray *brightnessDetectionArr;
 
 @property (nonatomic, strong) UITableView *lightSettingsTableView;
 
@@ -103,7 +102,7 @@
             currentDict = [settingManager.proximityArray objectAtIndex:currentIndex];
             currentSettingType = SETTINGTYPE_PROXIMITY;
         } else if (currentIndex - settingManager.proximityArray.count < settingManager.brightnessArray.count) {
-            currentIndex = currentIndex - settingManager.brightnessArray.count;
+            currentIndex = currentIndex - settingManager.proximityArray.count;
             currentDict = [settingManager.brightnessArray objectAtIndex:currentIndex];
             currentSettingType = SETTINGTYPE_BRIGHTNESS;
         }
@@ -131,6 +130,31 @@
         [self.selectedRooms removeObject:roomName];
     }
 }
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
+            NSInteger currentIndex = indexPath.row;
+            SettingManager *settingManager = [SettingManager sharedSettingManager];
+            NSDictionary *currentDict = @{};
+            SETTINGTYPE currentSettingType = SETTINGTYPE_NONE;
+            if (currentIndex < settingManager.shakeArray.count) {
+                currentDict = [settingManager.shakeArray objectAtIndex:currentIndex];
+                currentSettingType = SETTINGTYPE_SHAKE;
+            } else if (currentIndex - settingManager.shakeArray.count < settingManager.proximityArray.count) {
+                currentIndex = currentIndex - settingManager.shakeArray.count;
+                currentDict = [settingManager.proximityArray objectAtIndex:currentIndex];
+                currentSettingType = SETTINGTYPE_PROXIMITY;
+            } else if (currentIndex - settingManager.proximityArray.count < settingManager.brightnessArray.count) {
+                currentIndex = currentIndex - settingManager.proximityArray.count;
+                currentDict = [settingManager.brightnessArray objectAtIndex:currentIndex];
+                currentSettingType = SETTINGTYPE_BRIGHTNESS;
+            }
+            [settingManager removeExistingSetting:currentDict WithSettingType:currentSettingType];
+        }
+    }
+}
+
 - (IBAction)brightnessSliderValueChanged:(id)sender {
     float value = roundf(self.brightnessSlider.value * 100);
     self.brightnessValueLabel.text = [NSString stringWithFormat:@"%.f%%", value];
@@ -258,18 +282,32 @@
         [selectedDaysArr addObject:day];
     }
     
-    NSNumber *brightnessValue = @(self.brightnessSlider.value*254);
+    int aroundedBrightness = roundf(self.brightnessSlider.value*254);
+    NSNumber *brightnessValue = @(aroundedBrightness);
     
     UIColor *color = [self.colorPickerWheel currentColor];
+    NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:color];
     NSDictionary *colorDict = [[HueLight sharedHueLight] convertUIColorToHueColorNumber:color andGroupName:self.selectedRooms];
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"groupNames": self.selectedRooms}];
     
     NSDictionary *rangeDict;
     if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
         rangeDict = @{@"useiBeacon": [NSNumber numberWithBool:self.useiBeaconSwitch.on], @"rangeValue": self.rangeValueLabel.text};
+        [dict setValue:rangeDict forKey:@"range"];
     }
     
-    NSDictionary *dict = @{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"range": rangeDict, @"groupNames": self.selectedRooms};
-    [self.brightnessDetectionArr addObject:dict];
+    SETTINGTYPE settingType = SETTINGTYPE_NONE;
+    if (self.detailType == DETAILVIEWTYPE_BRIGHTNESS) {
+        settingType = SETTINGTYPE_BRIGHTNESS;
+    } else if (self.detailType == DETAILVIEWTYPE_SHAKE) {
+        settingType = SETTINGTYPE_SHAKE;
+    } else if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
+        settingType = SETTINGTYPE_PROXIMITY;
+    }
+    
+    [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType];
 }
 
 @end

@@ -18,12 +18,9 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSString *filename = @"plistSetting.txt";
-        NSString *localDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-        NSString *localPath = [localDir stringByAppendingPathComponent:filename];
-        NSString *plistName = [[NSString alloc]initWithContentsOfFile:localPath encoding:NSUTF8StringEncoding error:NULL];
         NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
-        self.fileURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",plistName]];
+        self.fileURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",@"plistSetting"]];
+        [self readFromPlistSetting];
 
     }
     return self;
@@ -44,22 +41,24 @@
 - (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     for (NSDictionary *currentDict in currentArray) {
-        NSArray *startTime = [currentDict[@"startTime"] componentsSeparatedByString:@":"];
-        NSArray *endTime = [currentDict[@"endTime"] componentsSeparatedByString:@":"];
-        NSString *selectedDays = currentDict[@"selectedRepeatDays"];
-        
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
         [outputFormatter setDateFormat:@"HH:mm"];
+        outputFormatter.timeZone = [NSTimeZone systemTimeZone];
+        
         NSDateFormatter* day = [[NSDateFormatter alloc] init];
         [day setDateFormat: @"EEEE"];
         
-        NSDate *currentTime = [NSDate date];
-        NSArray *currentTimeValues = [[outputFormatter stringFromDate:currentTime] componentsSeparatedByString:@":"];
-        NSString *currentDay = [day stringFromDate:currentTime];
+        NSDate *startTime = [outputFormatter dateFromString:currentDict[@"startTime"]];
+        NSDate *endTime = [outputFormatter dateFromString:currentDict[@"endTime"]];
+        NSArray *selectedDays = currentDict[@"selectedRepeatDays"];
         
-        if ([currentDay containsString:selectedDays]) {
-            if (currentTimeValues[0] > startTime[0] && currentTimeValues[0] < endTime[0]) {
-                if (currentTimeValues[1] > startTime[1] && currentTimeValues[1] < endTime[1]) {
+        NSDate *currentTime = [NSDate date];
+        NSString *currentDay = [day stringFromDate:currentTime];
+        currentTime = [outputFormatter dateFromString:[outputFormatter stringFromDate:currentTime]];
+        
+        for (NSString *selectedDay in selectedDays) {
+            if ([currentDay containsString:selectedDay]) {
+                if ([startTime compare:currentTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
                     return currentDict;
                 }
             }
@@ -96,30 +95,23 @@
 }
 
 - (void)writeToPlistSetting {
-    NSURL *fileURL = [self fileURL];
-    if (!fileURL) {
-        return;
-    }
     NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy]};
-    [dict writeToURL:fileURL atomically:YES];
+    [dict writeToURL:self.fileURL atomically:YES];
     
 }
 
 - (void)readFromPlistSetting {
-    NSURL *fileURL = [self fileURL];
-    if (!fileURL) {
-        return;
-    }
     NSFileManager *fileManage = [NSFileManager defaultManager];
-    if(![fileManage fileExistsAtPath:fileURL.path]){
+    if(![fileManage fileExistsAtPath:self.fileURL.path]){
         _brightnessArray = [[NSMutableArray alloc]init];
         _shakeArray = [[NSMutableArray alloc]init];
         _proximityArray = [[NSMutableArray alloc]init];;
+    } else {
+        NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
+        _brightnessArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"brightness"]];
+        _shakeArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"shake"]];
+        _proximityArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"proximity"]];
     }
-    NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:fileURL.path];
-    _brightnessArray = [dict objectForKey:@"brightness"];
-    _shakeArray = [dict objectForKey:@"shake"];
-    _proximityArray = [dict objectForKey:@"proximity"];
 }
 
 + (SettingManager*)sharedSettingManager {

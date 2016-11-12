@@ -20,10 +20,9 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 @interface HueLight : NSObject
 @property (nonatomic, strong) UIActivityIndicatorView *spinnerView;
 + (HueLight*)sharedHueLight;
-- (void)toggleLightOnOff;
-- (void)detectSurrondingBrightness:(CGFloat)brightness;
-- (void)turnLightOn;
-- (void)turnLightOff;
+- (void)toggleLightOnOffWithActiveDict:(NSDictionary *)activeDict;
+- (void)configureLightWithActiveDict:(NSDictionary *)activeDict andLightSwitch:(BOOL)lightSwitch;
+- (void)detectSurrondingBrightness:(CGFloat)brightness andActiveDict:(NSDictionary *)activeDict;
 - (NSArray*)getGroupData;
 - (void)startLoading;
 - (void)stopLoading;

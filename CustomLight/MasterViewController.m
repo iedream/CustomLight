@@ -14,6 +14,7 @@
 #import <ImageIO/ImageIO.h>
 #import <MapKit/MapKit.h>
 #import <CoreMotion/CoreMotion.h>
+#import "SettingManager.h"
 
 const NSString *SHAKE_ACTION = @"Detect Shake";
 const NSString *BRIGHTNESS_ACTION = @"Detect Brightness";
@@ -39,6 +40,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [SettingManager sharedSettingManager];
 
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
@@ -48,8 +51,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
     spinnerView.backgroundColor = [UIColor grayColor];
     spinnerView.alpha = 0.6;
     [self.view addSubview:spinnerView];
-    //[HueLight sharedHueLight].spinnerView = spinnerView;
-    //[[HueLight sharedHueLight] startLoading];
+    [HueLight sharedHueLight].spinnerView = spinnerView;
+    [[HueLight sharedHueLight] startLoading];
 
     self.motionManager = [[CMMotionManager alloc] init];
     [self.motionManager startDeviceMotionUpdates];
@@ -103,18 +106,22 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    [self createRectangle];
-    CMAcceleration userAcceleration = self.motionManager.deviceMotion.userAcceleration;
-    double totalAcceleration = sqrt(userAcceleration.x * userAcceleration.x +
-                                    userAcceleration.y * userAcceleration.y + userAcceleration.z * userAcceleration.z);
-    NSLog(@"%@", [NSString stringWithFormat:@"Accelaration: %f", totalAcceleration]);
-    if (totalAcceleration > 0.7) {
-        [[HueLight sharedHueLight] toggleLightOnOff];
+    //[self createRectangle];
+    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
+    if (activeDict) {
+        CMAcceleration userAcceleration = self.motionManager.deviceMotion.userAcceleration;
+        double totalAcceleration = sqrt(userAcceleration.x * userAcceleration.x +
+                                        userAcceleration.y * userAcceleration.y + userAcceleration.z * userAcceleration.z);
+        if (totalAcceleration > 0.7) {
+            [[HueLight sharedHueLight] toggleLightOnOffWithActiveDict:activeDict];
+        }
     }
-//    if (fabs(y) > 2) {
-//        //[[HueLight sharedHueLight] toggleLightOnOff];
-//    }
-//    NSLog(@"%@", [NSString stringWithFormat:@"y: %f", y]);
+    
+    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS];
+    if (activeDict) {
+        float brightness = [UIScreen mainScreen].brightness;
+        [[HueLight sharedHueLight] detectSurrondingBrightness:brightness andActiveDict:activeDict];
+    }
 //    CLLocationCoordinate2D coord = locations.firstObject.coordinate;
 //    if ([self withinRange:coord]) {
 //        NSLog(@"Inside");
@@ -170,27 +177,32 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray<CLBeacon *> *)beacons inRegion:(CLBeaconRegion *)region {
-    CLBeacon *beacon = beacons.firstObject;
-    if (beacon.proximity == CLProximityNear || beacon.proximity == CLProximityImmediate) {
-        //[[HueLight sharedHueLight] turnLightOn];
-    } else {
-        //[[HueLight sharedHueLight] turnLightOff];
+    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
+    if (activeDict) {
+        CLBeacon *beacon = beacons.firstObject;
+        if (beacon.proximity == CLProximityNear || beacon.proximity == CLProximityImmediate) {
+            [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:YES];
+        } else {
+            [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:NO];
+        }
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
-    NSLog(@"Hello");
+    //Start Ranging
+    [manager startRangingBeaconsInRegion:self.geoRegion];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    NSLog(@"Bye");
+   [manager stopRangingBeaconsInRegion:self.geoRegion];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
-    if (state == CLRegionStateInside)
-    {
+    if (state == CLRegionStateInside) {
         //Start Ranging
         [manager startRangingBeaconsInRegion:self.geoRegion];
+    } else {
+        [manager stopRangingBeaconsInRegion:self.geoRegion];
     }
 }
 
