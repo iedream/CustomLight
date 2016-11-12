@@ -42,7 +42,7 @@
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     for (NSDictionary *currentDict in currentArray) {
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-        [outputFormatter setDateFormat:@"HH:mm"];
+        [outputFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
         outputFormatter.timeZone = [NSTimeZone systemTimeZone];
         
         NSDateFormatter* day = [[NSDateFormatter alloc] init];

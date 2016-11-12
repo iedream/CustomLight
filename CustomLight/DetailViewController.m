@@ -151,6 +151,7 @@
                 currentSettingType = SETTINGTYPE_BRIGHTNESS;
             }
             [settingManager removeExistingSetting:currentDict WithSettingType:currentSettingType];
+            [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
         }
     }
 }
@@ -272,7 +273,7 @@
 
 - (IBAction)save:(id)sender {
     NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-    [outputFormatter setDateFormat:@"HH:mm"];
+    [outputFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     NSString *startTime = [outputFormatter stringFromDate:self.startTime.date];
     NSString *endTime = [outputFormatter stringFromDate:self.endTime.date];
     

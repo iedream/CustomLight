@@ -87,8 +87,10 @@
 }
 
 - (NSString *)timeString:(NSDictionary *)currentDict {
-    NSString *startTime = [currentDict objectForKey:@"startTime"];
-    NSString *endTime = [currentDict objectForKey:@"endTime"];
+    NSArray *startTimeArr = [[currentDict objectForKey:@"startTime"] componentsSeparatedByString:@" "];
+    NSString *startTime = startTimeArr[1];
+    NSArray *endTimeArr = [[currentDict objectForKey:@"endTime"] componentsSeparatedByString:@" "];
+    NSString *endTime = endTimeArr[1];
     NSString *timeString = [NSString stringWithFormat:@"%@ - %@", startTime, endTime];
     return timeString;
 }
