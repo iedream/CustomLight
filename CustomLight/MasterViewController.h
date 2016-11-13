@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "DetailViewController.h"
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController <CLLocationManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
+@interface MasterViewController : UITableViewController <CLLocationManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, DetailViewControllerDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 

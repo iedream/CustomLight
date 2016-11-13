@@ -42,7 +42,7 @@
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     for (NSDictionary *currentDict in currentArray) {
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-        [outputFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        [outputFormatter setDateFormat:@"HH:mm"];
         outputFormatter.timeZone = [NSTimeZone systemTimeZone];
         
         NSDateFormatter* day = [[NSDateFormatter alloc] init];
@@ -55,6 +55,10 @@
         NSDate *currentTime = [NSDate date];
         NSString *currentDay = [day stringFromDate:currentTime];
         currentTime = [outputFormatter dateFromString:[outputFormatter stringFromDate:currentTime]];
+        
+        if ([endTime compare:startTime] == NSOrderedAscending) {
+            endTime = [endTime dateByAddingTimeInterval:60*60*24];
+        }
         
         for (NSString *selectedDay in selectedDays) {
             if ([currentDay containsString:selectedDay]) {

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		466B98628AD1BFFBD1690522 /* libPods-CustomLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5247765D7CDAFF1635617AA4 /* libPods-CustomLight.a */; };
 		4F00361D1DD4213B00991B02 /* SettingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F00361C1DD4213B00991B02 /* SettingManager.m */; };
+		4F1896321DD7D43B00B07558 /* CornerCoordinateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */; };
 		4F909FA31DCDA4BF00593FDF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA21DCDA4BF00593FDF /* main.m */; };
 		4F909FA61DCDA4BF00593FDF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA51DCDA4BF00593FDF /* AppDelegate.m */; };
 		4F909FA91DCDA4BF00593FDF /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA81DCDA4BF00593FDF /* MasterViewController.m */; };
@@ -57,6 +58,8 @@
 		022D39C8FE636EC563ED069B /* libPods-CustomLightTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CustomLightTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F00361B1DD4213B00991B02 /* SettingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingManager.h; sourceTree = "<group>"; };
 		4F00361C1DD4213B00991B02 /* SettingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingManager.m; sourceTree = "<group>"; };
+		4F1896301DD7D43B00B07558 /* CornerCoordinateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CornerCoordinateView.h; sourceTree = "<group>"; };
+		4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CornerCoordinateView.m; sourceTree = "<group>"; };
 		4F909F9E1DCDA4BF00593FDF /* CustomLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909FA21DCDA4BF00593FDF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F909FA41DCDA4BF00593FDF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -187,6 +190,8 @@
 				4F00361C1DD4213B00991B02 /* SettingManager.m */,
 				4FF5FF851DD56FC700523C8A /* CustomLightSettingTableViewCell.h */,
 				4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */,
+				4F1896301DD7D43B00B07558 /* CornerCoordinateView.h */,
+				4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */,
 			);
 			path = CustomLight;
 			sourceTree = "<group>";
@@ -573,6 +578,7 @@
 				4F00361D1DD4213B00991B02 /* SettingManager.m in Sources */,
 				4FF5FF871DD56FC700523C8A /* CustomLightSettingTableViewCell.m in Sources */,
 				4F909FAC1DCDA4BF00593FDF /* DetailViewController.m in Sources */,
+				4F1896321DD7D43B00B07558 /* CornerCoordinateView.m in Sources */,
 				4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */,
 				4FDCF8781DD02B180083F3CE /* CustomLightTableViewCell.m in Sources */,
 			);

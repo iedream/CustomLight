@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CornerCoordinateView.h"
 
 typedef NS_ENUM(NSInteger, DETAILVIEWTYPE)
 {
@@ -17,7 +18,12 @@ typedef NS_ENUM(NSInteger, DETAILVIEWTYPE)
     DETAILVIEWTYPE_SETTINGS
 };
 
-@interface DetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@protocol DetailViewControllerDelegate <NSObject>
+- (CLLocationCoordinate2D)getCurrentLocation;
+@end
+
+@interface DetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CornerCoordinateViewDelegate>
 @property (nonatomic) DETAILVIEWTYPE detailType;
+@property (nonatomic, weak) id<DetailViewControllerDelegate> delegate;
 @end
 

@@ -44,9 +44,9 @@ const NSString *SHAKE = @"Shake";
         [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
             self.hueNotificationManager = [PHNotificationManager defaultManager];
             self.sendAPI = [[PHBridgeSendAPI alloc] init];
-            [self authenticate];
+            //[self authenticate];
             _initSetUpDone = YES;
-            //[self setUpConnection];
+            [self setUpConnection];
             [self stopLoading];
         }];
         

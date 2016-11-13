@@ -13,6 +13,7 @@
 #import "CustomLightTableViewCell.h"
 #import "CustomLightSettingTableViewCell.h"
 #import "SettingManager.h"
+#import "CornerCoordinateView.h"
 
 @interface DetailViewController ()
 @property (weak, nonatomic) IBOutlet UIDatePicker *startTime;
@@ -198,6 +199,10 @@
     }
 }
 
+- (IBAction)useiBeaconSwitchValueChanged:(id)sender {
+    [self rangeSliderValueChanged:self.rangeSlider];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.selectedRooms = [[NSMutableArray alloc] init];
@@ -262,6 +267,7 @@
             self.useiBeaconSwitch.hidden = NO;
             self.rangeTitleLabel.hidden = NO;
             self.iBeaconLabel.hidden = NO;
+            [self rangeSliderValueChanged:self.rangeSlider];
         }
     }
 }
@@ -271,9 +277,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)save:(id)sender {
+- (void)finishedSavingWithRangeDict:(NSDictionary *)rangeDict {
     NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-    [outputFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    [outputFormatter setDateFormat:@"HH:mm"];
     NSString *startTime = [outputFormatter stringFromDate:self.startTime.date];
     NSString *endTime = [outputFormatter stringFromDate:self.endTime.date];
     
@@ -293,10 +299,11 @@
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"groupNames": self.selectedRooms}];
     
-    NSDictionary *rangeDict;
-    if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
-        rangeDict = @{@"useiBeacon": [NSNumber numberWithBool:self.useiBeaconSwitch.on], @"rangeValue": self.rangeValueLabel.text};
-        [dict setValue:rangeDict forKey:@"range"];
+    if (rangeDict) {
+        NSMutableDictionary *finalRangeDict = [[NSMutableDictionary alloc] initWithDictionary:rangeDict];
+        [finalRangeDict setValue:self.rangeValueLabel.text forKey:@"rangeValue"];
+        [finalRangeDict setValue:[NSNumber numberWithBool:self.useiBeaconSwitch.on] forKey:@"useiBeacon"];
+        [dict setValue:finalRangeDict forKey:@"range"];
     }
     
     SETTINGTYPE settingType = SETTINGTYPE_NONE;
@@ -311,4 +318,43 @@
     [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType];
 }
 
+- (IBAction)save:(id)sender {
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
+        if (self.useiBeaconSwitch.on) {
+            UIAlertController *useiBeacon = [UIAlertController alertControllerWithTitle:@"Create iBeacon Range" message:@"Create iBeacon Boundry" preferredStyle:UIAlertControllerStyleAlert];
+            [useiBeacon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                textField.placeholder = @"Enter iBeacon UUID";
+                textField.clearsOnBeginEditing = YES;
+            }];
+            UIAlertAction *submitAction = [UIAlertAction actionWithTitle:@"Submit" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                NSString *iBeaconUUID = useiBeacon.textFields.firstObject.text;
+                NSDictionary *rangeDict = @{@"useiBeacon": [NSNumber numberWithBool:self.useiBeaconSwitch.on], @"rangeValue": self.rangeValueLabel.text, @"iBeaconUUID": iBeaconUUID};
+                [self finishedSavingWithRangeDict:rangeDict];
+            }];
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+            [useiBeacon addAction:submitAction];
+            [useiBeacon addAction:cancelAction];
+            [self presentViewController:useiBeacon animated:true completion:nil];
+        } else {
+            CGRect frame;
+            frame.size.width = self.view.bounds.size.width * 0.8;
+            frame.size.height = self.view.bounds.size.height * 0.5;
+            frame.origin.y = self.view.bounds.size.height * 0.25;
+            frame.origin.x = (self.view.bounds.size.width - frame.size.width) / 2.0;
+            CornerCoordinateView *cornerCoordinateView = [[CornerCoordinateView alloc]initWithFrame:frame];
+            cornerCoordinateView.delegate = self;
+            [self.view addSubview:cornerCoordinateView];
+        }
+    } else {
+        [self finishedSavingWithRangeDict:nil];
+    }
+}
+- (CLLocationCoordinate2D)getCurrentLocationCoordinate {
+    return [self.delegate getCurrentLocation];
+}
+
+- (void)proceedToSave:(CornerCoordinateView *)cornerCoordinateView {
+    NSDictionary *rangeDict = [cornerCoordinateView getRectangularDict];
+    [self finishedSavingWithRangeDict:rangeDict];
+}
 @end
