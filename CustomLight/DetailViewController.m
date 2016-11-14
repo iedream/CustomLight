@@ -188,6 +188,8 @@
         }
     }
     self.currentActiveDict = currentDict;
+    
+    [self.selectedRooms addObjectsFromArray:[currentDict objectForKey:@"groupNames"]];
     [self.groupTableView reloadData];
 }
 

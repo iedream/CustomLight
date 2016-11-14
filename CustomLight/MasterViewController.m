@@ -98,7 +98,9 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
 {
-    [self.locationManager requestStateForRegion:self.geoRegion];
+    if (self.geoRegion) {
+        [self.locationManager requestStateForRegion:self.geoRegion];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -130,7 +132,9 @@ const NSString *SETTING_PAGE = @"Setting Page";
             self.geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:@"beaconRegion"];
             self.geoRegion.notifyOnEntry=YES;
             self.geoRegion.notifyOnExit=YES;
-            [self.locationManager startMonitoringForRegion:self.geoRegion];
+            if (self.geoRegion) {
+                [self.locationManager startMonitoringForRegion:self.geoRegion];
+            }
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.lowestLatitude && !self.lowestLongitude && !self.highestLatitude && !self.highestLongitude) {
             [self createRectangleWithRangeDict:rangeDict];
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue]) {
@@ -211,8 +215,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-   [manager stopRangingBeaconsInRegion:self.geoRegion];
-    self.geoRegion = nil;
+    if (self.geoRegion) {
+        [manager stopRangingBeaconsInRegion:self.geoRegion];
+        self.geoRegion = nil;
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
@@ -221,8 +227,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
         self.geoRegion = region;
         [manager startRangingBeaconsInRegion:self.geoRegion];
     } else {
-        [manager stopRangingBeaconsInRegion:self.geoRegion];
-        self.geoRegion = nil;
+        if (self.geoRegion) {
+            [manager stopRangingBeaconsInRegion:self.geoRegion];
+            self.geoRegion = nil;
+        }
     }
 }
 
