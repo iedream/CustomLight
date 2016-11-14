@@ -12,4 +12,5 @@
 @property (nonatomic) BOOL isSelected;
 - (void)setTitle:(NSString *)title;
 - (void)getSelected;
+- (void)applyCurrentSetting:(NSDictionary *)currentActiveDict;
 @end

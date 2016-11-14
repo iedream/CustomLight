@@ -11,4 +11,7 @@
 
 @interface CustomLightSettingTableViewCell : UITableViewCell
 - (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict andSettingType:(SETTINGTYPE)settingType;
+- (NSDictionary *)currentDict;
+@property (nonatomic, strong) NSDictionary *currentDict;
+@property (nonatomic) SETTINGTYPE lightSettingType;
 @end

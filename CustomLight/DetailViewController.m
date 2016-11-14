@@ -41,11 +41,15 @@
 
 @property (nonatomic, strong) UITableView *lightSettingsTableView;
 
+@property (nonatomic, strong) NSDictionary *currentActiveDict;
+
 @end
 
 @implementation DetailViewController
 
 - (void)configureView {
+    self.currentActiveDict = nil;
+    
     // Update the user interface for the detail item.
     
     self.colorPickerWheel = [[ISColorWheel alloc] initWithFrame: self.colorPickerView.bounds];
@@ -116,20 +120,104 @@
             groupCell = [[CustomLightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GroupTableViewCell"];
         }
         [groupCell setTitle:[self.groupData objectAtIndex:indexPath.row]];
+        [groupCell applyCurrentSetting:self.currentActiveDict];
         return groupCell;
     }
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    CustomLightTableViewCell *groupCell = [self.groupTableView cellForRowAtIndexPath:indexPath];
-    [groupCell getSelected];
+- (void)configureSettingView:(NSDictionary *)currentDict {
+    NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+    [outputFormatter setDateFormat:@"HH:mm"];
+    outputFormatter.timeZone = [NSTimeZone systemTimeZone];
+    NSDate *startTime = [outputFormatter dateFromString:currentDict[@"startTime"]];
+    NSDate *endTime = [outputFormatter dateFromString:currentDict[@"endTime"]];
+    [self.startTime setDate:startTime animated:YES];
+    [self.endTime setDate:endTime animated:YES];
     
-    NSString *roomName = [self.groupData objectAtIndex:indexPath.row];
-    if (groupCell.isSelected) {
-        [self.selectedRooms addObject:roomName];
-    } else {
-        [self.selectedRooms removeObject:roomName];
+    NSArray *selectedDays = currentDict[@"selectedRepeatDays"];
+    NSMutableIndexSet *indexSets = [[NSMutableIndexSet alloc] init];
+    if ([selectedDays containsObject:@"Mon"]) {
+        [indexSets addIndex:0];
     }
+    if ([selectedDays containsObject:@"Tue"]) {
+        [indexSets addIndex:1];
+    }
+    if ([selectedDays containsObject:@"Wed"]) {
+        [indexSets addIndex:2];
+    }
+    if ([selectedDays containsObject:@"Thu"]) {
+        [indexSets addIndex:3];
+    }
+    if ([selectedDays containsObject:@"Fri"]) {
+        [indexSets addIndex:4];
+    }
+    if ([selectedDays containsObject:@"Sat"]) {
+        [indexSets addIndex:5];
+    }
+    if ([selectedDays containsObject:@"Sun"]) {
+        [indexSets addIndex:6];
+    }
+    [self.repeatDaySelectionControl setSelectedSegmentIndexes:indexSets];
+    
+    NSDictionary *colorDict = currentDict[@"uicolorDict"];
+    [self.colorPickerWheel setTouchPointWithDict:colorDict];
+    
+    double brightness = [currentDict[@"brightness"] doubleValue];
+    brightness = brightness / 254.0;
+    [self.brightnessSlider setValue:brightness animated:YES];
+    self.brightnessValueLabel.text = [NSString stringWithFormat:@"%d%%",(int)roundf(brightness*100)];
+    
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
+        self.useiBeaconSwitch.userInteractionEnabled = NO;
+        self.useiBeaconSwitch.alpha = 0.6;
+        BOOL useiBeacon = [[[currentDict objectForKey:@"range"] objectForKey:@"useiBeacon"] boolValue];
+        [self.useiBeaconSwitch setOn:useiBeacon];
+        NSString *rangeValueString = [[currentDict objectForKey:@"range"] objectForKey:@"rangeValue"];
+        self.rangeValueLabel.text = rangeValueString;
+        if (useiBeacon) {
+            if ([rangeValueString isEqualToString:@"Far"]) {
+                [self.rangeSlider setValue:1.0 animated:YES];
+            } else if ([rangeValueString isEqualToString:@"Near"]) {
+                [self.rangeSlider setValue:0.66 animated:YES];
+            } else {
+                [self.rangeSlider setValue:0.33 animated:YES];
+            }
+        } else {
+            double rangeValue = [rangeValueString doubleValue] / 10;
+            [self.rangeSlider setValue:rangeValue animated:YES];
+        }
+    }
+    self.currentActiveDict = currentDict;
+    [self.groupTableView reloadData];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
+        CustomLightSettingTableViewCell *groupCell = [self.lightSettingsTableView cellForRowAtIndexPath:indexPath];
+        NSDictionary *currentDict = groupCell.currentDict;
+        if (groupCell.lightSettingType == SETTINGTYPE_SHAKE) {
+            self.detailType = DETAILVIEWTYPE_SHAKE;
+        } else if (groupCell.lightSettingType == SETTINGTYPE_BRIGHTNESS) {
+            self.detailType = DETAILVIEWTYPE_BRIGHTNESS;
+        } else if (groupCell.lightSettingType == SETTINGTYPE_PROXIMITY) {
+            self.detailType = DETAILVIEWTYPE_PROXIMITY;
+        }
+        [self resetViews];
+        [self configureSettingView:currentDict];
+    } else {
+        CustomLightTableViewCell *groupCell = [self.groupTableView cellForRowAtIndexPath:indexPath];
+        [groupCell getSelected];
+        
+        NSString *roomName = [self.groupData objectAtIndex:indexPath.row];
+        if (groupCell.isSelected) {
+            [self.selectedRooms addObject:roomName];
+        } else {
+            [self.selectedRooms removeObject:roomName];
+        }
+
+    }
+    
 }
 
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -203,11 +291,7 @@
     [self rangeSliderValueChanged:self.rangeSlider];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.selectedRooms = [[NSMutableArray alloc] init];
-    // Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
+- (void)resetViews {
     if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
         self.startTimeLabel.hidden = YES;
         self.startTime.hidden = YES;
@@ -254,7 +338,7 @@
         self.colorPickerWheel.hidden = NO;
         
         self.lightSettingsTableView.hidden = YES;
-
+        
         if (self.detailType != DETAILVIEWTYPE_PROXIMITY) {
             [self.rangeSlider setHidden:YES];
             self.rangeValueLabel.hidden = YES;
@@ -270,6 +354,14 @@
             [self rangeSliderValueChanged:self.rangeSlider];
         }
     }
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.selectedRooms = [[NSMutableArray alloc] init];
+    // Do any additional setup after loading the view, typically from a nib.
+    [self configureView];
+    [self resetViews];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -293,11 +385,16 @@
     NSNumber *brightnessValue = @(aroundedBrightness);
     
     UIColor *color = [self.colorPickerWheel currentColor];
+    NSDictionary *uicolorDict = [self.colorPickerWheel getTouchPoint];
     NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:color];
     NSDictionary *colorDict = [[HueLight sharedHueLight] convertUIColorToHueColorNumber:color andGroupName:self.selectedRooms];
     
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"groupNames": self.selectedRooms}];
+    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms}];
+    
+    if (self.currentActiveDict) {
+        rangeDict = self.currentActiveDict[@"range"];
+    }
     
     if (rangeDict) {
         NSMutableDictionary *finalRangeDict = [[NSMutableDictionary alloc] initWithDictionary:rangeDict];
@@ -315,11 +412,14 @@
         settingType = SETTINGTYPE_PROXIMITY;
     }
     
+    if (self.currentActiveDict) {
+        [[SettingManager sharedSettingManager] removeExistingSetting:self.currentActiveDict WithSettingType:settingType];
+    }
     [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType];
 }
 
 - (IBAction)save:(id)sender {
-    if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY && !self.currentActiveDict) {
         if (self.useiBeaconSwitch.on) {
             UIAlertController *useiBeacon = [UIAlertController alertControllerWithTitle:@"Create iBeacon Range" message:@"Create iBeacon Boundry" preferredStyle:UIAlertControllerStyleAlert];
             [useiBeacon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {

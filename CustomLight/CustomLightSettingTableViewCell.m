@@ -37,6 +37,9 @@
 }
 
 - (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict andSettingType:(SETTINGTYPE)settingType{
+    self.currentDict = currentDict;
+    self.lightSettingType = settingType;
+    
     NSString *lightSettingType = [self lightSettingTypeString:settingType];
     NSString *groupName = [self groupNameString:currentDict];
     NSString *time = [self timeString:currentDict];

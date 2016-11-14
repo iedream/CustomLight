@@ -38,6 +38,16 @@
     self.textView.text = title;
 }
 
+- (void)applyCurrentSetting:(NSDictionary *)currentActiveDict {
+    NSArray *groupNames = currentActiveDict[@"groupNames"];
+    for (NSString *groupName in groupNames) {
+        if ([groupName isEqualToString:self.textView.text]) {
+            self.isSelected = YES;
+            self.customImageView.hidden = NO;
+        }
+    }
+}
+
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     CGRect frame = self.bounds;

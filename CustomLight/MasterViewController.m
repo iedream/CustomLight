@@ -179,11 +179,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
         NSDictionary *rangeDict = [activeDict objectForKey:@"range"];
         BOOL isWithinRange;
         if ([rangeDict[@"rangeValue"] isEqualToString:@"Far"]) {
-            if (beacon.proximity != CLProximityUnknown) {
-                isWithinRange = YES;
-            } else {
-                isWithinRange = NO;
-            }
+            isWithinRange = YES;
         } else if ([rangeDict[@"rangeValue"] isEqualToString:@"Near"]) {
             if (beacon.proximity == CLProximityNear || beacon.proximity == CLProximityImmediate) {
                 isWithinRange = YES;
