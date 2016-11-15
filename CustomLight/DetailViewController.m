@@ -43,6 +43,8 @@
 
 @property (nonatomic, strong) NSDictionary *currentActiveDict;
 
+@property (nonatomic, strong) UIVisualEffectView *visualEffectView;
+
 @end
 
 @implementation DetailViewController
@@ -443,6 +445,13 @@
             frame.size.height = self.view.bounds.size.height * 0.5;
             frame.origin.y = self.view.bounds.size.height * 0.25;
             frame.origin.x = (self.view.bounds.size.width - frame.size.width) / 2.0;
+            
+            UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            self.visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+            self.visualEffectView.frame = self.view.bounds;
+            self.visualEffectView.alpha = 0.9;
+            [self.view addSubview:self.visualEffectView];
+            
             CornerCoordinateView *cornerCoordinateView = [[CornerCoordinateView alloc]initWithFrame:frame];
             cornerCoordinateView.delegate = self;
             [self.view addSubview:cornerCoordinateView];
@@ -458,5 +467,6 @@
 - (void)proceedToSave:(CornerCoordinateView *)cornerCoordinateView {
     NSDictionary *rangeDict = [cornerCoordinateView getRectangularDict];
     [self finishedSavingWithRangeDict:rangeDict];
+    [self.visualEffectView removeFromSuperview];
 }
 @end

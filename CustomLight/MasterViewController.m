@@ -45,14 +45,6 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
-    
-    UIActivityIndicatorView *spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    spinnerView.center = self.view.center;
-    spinnerView.backgroundColor = [UIColor grayColor];
-    spinnerView.alpha = 0.6;
-    [self.view addSubview:spinnerView];
-    [HueLight sharedHueLight].spinnerView = spinnerView;
-    [[HueLight sharedHueLight] startLoading];
 
     self.motionManager = [[CMMotionManager alloc] init];
     [self.motionManager startDeviceMotionUpdates];
@@ -86,6 +78,18 @@ const NSString *SETTING_PAGE = @"Setting Page";
 //    [captureSession addOutput:output];
 //    self.captureSession = captureSession;
 //    [self.captureSession startRunning];
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    blurEffectView.frame = self.view.bounds;
+    blurEffectView.alpha = 0.9;
+    [self.view addSubview:blurEffectView];
+    [HueLight sharedHueLight].visualEffectView = blurEffectView;
+    
+    UIActivityIndicatorView *spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    spinnerView.center = blurEffectView.center;
+    [self.view addSubview:spinnerView];
+    [HueLight sharedHueLight].spinnerView = spinnerView;
+    [[HueLight sharedHueLight] startLoading];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
@@ -185,13 +189,13 @@ const NSString *SETTING_PAGE = @"Setting Page";
         if ([rangeDict[@"rangeValue"] isEqualToString:@"Far"]) {
             isWithinRange = YES;
         } else if ([rangeDict[@"rangeValue"] isEqualToString:@"Near"]) {
-            if (beacon.proximity == CLProximityNear || beacon.proximity == CLProximityImmediate) {
+            if (beacon.proximity != CLProximityFar) {
                 isWithinRange = YES;
             } else {
                 isWithinRange = NO;
             }
         } else if ([rangeDict[@"rangeValue"] isEqualToString:@"Immediate"]) {
-            if (beacon.proximity == CLProximityImmediate) {
+            if (beacon.proximity == CLProximityImmediate || beacon.proximity == CLProximityUnknown) {
                 isWithinRange = YES;
             } else {
                 isWithinRange = NO;

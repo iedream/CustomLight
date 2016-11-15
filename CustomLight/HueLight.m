@@ -48,6 +48,7 @@ const NSString *SHAKE = @"Shake";
             _initSetUpDone = YES;
             [self setUpConnection];
             [self stopLoading];
+            [self.visualEffectView removeFromSuperview];
         }];
         
     }
