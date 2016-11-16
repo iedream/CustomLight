@@ -68,6 +68,12 @@ const NSString *SHAKE = @"Shake";
 // MARK: - Hue Light Setup -
 
 - (void)authenticate {
+    UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+    [authenticateAlert addAction:okAction];
+    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [vc presentViewController:authenticateAlert animated:true completion:nil];
+    
     self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:ipAddress];
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
         [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.firstObject ipAddress:bridgesFound.allValues.firstObject];
@@ -87,27 +93,39 @@ const NSString *SHAKE = @"Shake";
     
     [self.hueSDK setLocalHeartbeatInterval:2.0f forResourceType:RESOURCES_LIGHTS];
     [self.hueSDK setLocalHeartbeatInterval:5.0f forResourceType:RESOURCES_GROUPS];
-    [self.hueSDK setLocalHeartbeatInterval:5.0f forResourceType:RESOURCES_SCHEDULES];
     
     [self.hueSDK enableLocalConnection];
 }
 
 - (void)authenticationSuccess:(NSNotification *)notif {
+    _actionInProgress = NO;
+    self.hueNotificationManager = [PHNotificationManager defaultManager];
+    self.sendAPI = [[PHBridgeSendAPI alloc] init];
+    
     [self setUpConnection];
 }
 
 - (void)authenticationFailure:(NSNotification *)notif {
-    //[self authenticate];
+    if (!_actionInProgress) {
+        _actionInProgress = YES;
+        [self authenticate];
+    }
 }
 
 - (void)noLocalConnection:(NSNotification *)notif {
-    
+    if (!_actionInProgress) {
+        _actionInProgress = YES;
+        [self authenticate];
+    }
 }
 
 - (void)localConnection:(NSNotification *)notif {
+    if (!_initSetUpDone) {
+        _initSetUpDone = YES;
+        [self.visualEffectView removeFromSuperview];
+        [self stopLoading];
+    }
     self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
-    _initSetUpDone = YES;
-    [self stopLoading];
 }
 
 // MARK: - Hue Light Action Methods -
