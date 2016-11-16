@@ -24,5 +24,7 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 - (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType;
 - (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType;
 - (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
+- (void)writeBridgeSetupToPlistSetting;
+- (BOOL)readBridgeSetupFromPlistSetting;
 
 @end

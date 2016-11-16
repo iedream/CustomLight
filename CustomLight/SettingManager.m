@@ -101,7 +101,22 @@
 - (void)writeToPlistSetting {
     NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy]};
     [dict writeToURL:self.fileURL atomically:YES];
-    
+}
+
+- (void)writeBridgeSetupToPlistSetting {
+    NSDictionary *dict = @{@"authenticated": [NSNumber numberWithBool:YES]};
+    [dict writeToURL:self.fileURL atomically:YES];
+}
+
+- (BOOL)readBridgeSetupFromPlistSetting {
+    NSFileManager *fileManage = [NSFileManager defaultManager];
+    if(![fileManage fileExistsAtPath:self.fileURL.path]){
+        return NO;
+    } else {
+        NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
+        BOOL bridgeSetup = [[dict objectForKey:@"authenticated"] boolValue];
+        return bridgeSetup;
+    }
 }
 
 - (void)readFromPlistSetting {
