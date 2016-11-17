@@ -88,8 +88,6 @@
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     [currentArray addObject:newSettingDic];
     [self writeToPlistSetting];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LightSettingsDidUpdate" object:nil];
 }
 
 - (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType {
@@ -99,7 +97,8 @@
 }
 
 - (void)writeToPlistSetting {
-    NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy]};
+    NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
+    NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy], @"authenticated": originaldict[@"authenticated"]};
     [dict writeToURL:self.fileURL atomically:YES];
 }
 

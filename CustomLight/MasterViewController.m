@@ -34,6 +34,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
 @property (nonatomic) CGFloat highestLongitude;
 
 @property (nonatomic, strong) CMMotionManager *motionManager;
+
+@property (nonatomic, strong) NSTimer *iBeaconProximityTimer;
 @end
 
 @implementation MasterViewController
@@ -205,11 +207,19 @@ const NSString *SETTING_PAGE = @"Setting Page";
         }
         
         if (isWithinRange) {
+            [self.iBeaconProximityTimer invalidate];
             [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:YES];
         } else {
-            [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:NO];
+            if (!self.iBeaconProximityTimer.valid) {
+                self.iBeaconProximityTimer = [NSTimer timerWithTimeInterval:60 target:self selector:@selector(iBeaconProximityTimerExpire:) userInfo:activeDict repeats:NO];
+                [[NSRunLoop currentRunLoop] addTimer: self.iBeaconProximityTimer forMode: NSDefaultRunLoopMode];
+            }
         }
     }
+}
+
+- (void)iBeaconProximityTimerExpire:(NSTimer *)timer {
+    [[HueLight sharedHueLight] configureLightWithActiveDict:timer.userInfo andLightSwitch:NO];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {

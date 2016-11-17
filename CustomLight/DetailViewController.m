@@ -147,7 +147,7 @@
     if ([selectedDays containsObject:@"Wed"]) {
         [indexSets addIndex:2];
     }
-    if ([selectedDays containsObject:@"Thu"]) {
+    if ([selectedDays containsObject:@"Thur"]) {
         [indexSets addIndex:3];
     }
     if ([selectedDays containsObject:@"Fri"]) {
