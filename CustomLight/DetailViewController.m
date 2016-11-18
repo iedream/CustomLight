@@ -33,6 +33,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *rangeTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *iBeaconLabel;
 
+@property (weak, nonatomic) IBOutlet UISwitch *onSwitch;
 @property (nonatomic, strong) MultiSelectSegmentedControl *repeatDaySelectionControl;
 @property (nonatomic, strong) ISColorWheel *colorPickerWheel;
 
@@ -93,7 +94,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
-        CustomLightSettingTableViewCell *lightSettingCell = [self.groupTableView dequeueReusableCellWithIdentifier:@"LightSettingTableViewCell"];
+        CustomLightSettingTableViewCell *lightSettingCell = [self.lightSettingsTableView dequeueReusableCellWithIdentifier:@"LightSettingTableViewCell"];
         if (lightSettingCell == nil) {
             lightSettingCell = [[CustomLightSettingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LightSettingTableViewCell"];
         }
@@ -394,7 +395,7 @@
     NSDictionary *colorDict = [[HueLight sharedHueLight] convertUIColorToHueColorNumber:color andGroupName:self.selectedRooms];
     
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms}];
+    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms, @"on":[NSNumber numberWithBool:self.onSwitch.on]}];
     
     if (self.currentActiveDict) {
         rangeDict = self.currentActiveDict[@"range"];

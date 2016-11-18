@@ -38,9 +38,20 @@
     return [self getActiveSettingWith:SETTINGTYPE_SHAKE];
 }
 
+- (void)editActiveSettingWith:(SETTINGTYPE)settingType andState:(BOOL)state{
+    NSDictionary *currentActiveSetting = [self getActiveSettingWith:settingType];
+    NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:currentActiveSetting];
+    mutableDict[@"on"] = [NSNumber numberWithBool:state];
+    [self removeExistingSetting:currentActiveSetting WithSettingType:settingType];
+    [self addNewSetting:mutableDict WithSettingType:settingType];
+}
+
 - (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
     NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
     for (NSDictionary *currentDict in currentArray) {
+        if ([currentDict[@"on"] boolValue] == NO) {
+            break;
+        }
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
         [outputFormatter setDateFormat:@"HH:mm"];
         outputFormatter.timeZone = [NSTimeZone systemTimeZone];
@@ -100,6 +111,14 @@
     NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
     NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy], @"authenticated": originaldict[@"authenticated"]};
     [dict writeToURL:self.fileURL atomically:YES];
+    [self shareToWidges];
+}
+
+- (void)shareToWidges {
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
+    NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy]};
+    [sharedDefaults setObject:dict forKey:@"LightSettingData"];
+    [sharedDefaults synchronize];
 }
 
 - (void)writeBridgeSetupToPlistSetting {
