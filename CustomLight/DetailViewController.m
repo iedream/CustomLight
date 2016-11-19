@@ -38,6 +38,7 @@
 @property (nonatomic, strong) ISColorWheel *colorPickerWheel;
 
 @property (nonatomic, strong) NSArray *groupData;
+@property (nonatomic, strong) NSMutableArray *settingData;
 @property (nonatomic, strong) NSMutableArray *selectedRooms;
 
 @property (nonatomic, strong) UITableView *lightSettingsTableView;
@@ -65,6 +66,8 @@
     self.lightSettingsTableView.dataSource = self;
     [self.view addSubview:self.lightSettingsTableView];
     
+    [self.lightSettingsTableView registerClass:[CustomLightSettingTableViewCell class] forCellReuseIdentifier:@"LightSettingTableViewCell"];
+    
     CGRect frame;
     frame.origin.x = 10.0;
     frame.origin.y = self.startTimeLabel.frame.origin.y;
@@ -76,6 +79,7 @@
     self.groupTableView.dataSource = self;
     
     self.groupData = [[HueLight sharedHueLight] getGroupData];
+    self.settingData = [[SettingManager sharedSettingManager] getAllSettingData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -84,9 +88,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
-        SettingManager *settingManager = [SettingManager sharedSettingManager];
-        int count = settingManager.shakeArray.count + settingManager.proximityArray.count + settingManager.brightnessArray.count;
-        return count;
+        return [self.settingData count];
     } else {
         return [self.groupData count];
     }
@@ -98,22 +100,17 @@
         if (lightSettingCell == nil) {
             lightSettingCell = [[CustomLightSettingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LightSettingTableViewCell"];
         }
-        NSInteger currentIndex = indexPath.row;
         SettingManager *settingManager = [SettingManager sharedSettingManager];
-        NSDictionary *currentDict = @{};
+        NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
         SETTINGTYPE currentSettingType = SETTINGTYPE_NONE;
-        if (currentIndex < settingManager.shakeArray.count) {
-            currentDict = [settingManager.shakeArray objectAtIndex:currentIndex];
-            currentSettingType = SETTINGTYPE_SHAKE;
-        } else if (currentIndex - settingManager.shakeArray.count < settingManager.proximityArray.count) {
-            currentIndex = currentIndex - settingManager.shakeArray.count;
-            currentDict = [settingManager.proximityArray objectAtIndex:currentIndex];
-            currentSettingType = SETTINGTYPE_PROXIMITY;
-        } else if (currentIndex - settingManager.proximityArray.count < settingManager.brightnessArray.count) {
-            currentIndex = currentIndex - settingManager.proximityArray.count;
-            currentDict = [settingManager.brightnessArray objectAtIndex:currentIndex];
+        if ([settingManager.brightnessArray containsObject:currentDict]) {
             currentSettingType = SETTINGTYPE_BRIGHTNESS;
+        } else if ([settingManager.shakeArray containsObject:currentDict]) {
+            currentSettingType = SETTINGTYPE_SHAKE;
+        } else if ([settingManager.proximityArray containsObject:currentDict]) {
+            currentSettingType = SETTINGTYPE_PROXIMITY;
         }
+        
         [lightSettingCell setCellTextWithCurrentDict:currentDict andSettingType:currentSettingType];
         return lightSettingCell;
         
@@ -169,6 +166,8 @@
     brightness = brightness / 254.0;
     [self.brightnessSlider setValue:brightness animated:YES];
     self.brightnessValueLabel.text = [NSString stringWithFormat:@"%d%%",(int)roundf(brightness*100)];
+    
+    self.onSwitch.on = [currentDict[@"on"] boolValue];
     
     if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
         self.useiBeaconSwitch.userInteractionEnabled = NO;
@@ -228,24 +227,19 @@
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
-            NSInteger currentIndex = indexPath.row;
             SettingManager *settingManager = [SettingManager sharedSettingManager];
-            NSDictionary *currentDict = @{};
+            NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
             SETTINGTYPE currentSettingType = SETTINGTYPE_NONE;
-            if (currentIndex < settingManager.shakeArray.count) {
-                currentDict = [settingManager.shakeArray objectAtIndex:currentIndex];
-                currentSettingType = SETTINGTYPE_SHAKE;
-            } else if (currentIndex - settingManager.shakeArray.count < settingManager.proximityArray.count) {
-                currentIndex = currentIndex - settingManager.shakeArray.count;
-                currentDict = [settingManager.proximityArray objectAtIndex:currentIndex];
-                currentSettingType = SETTINGTYPE_PROXIMITY;
-            } else if (currentIndex - settingManager.proximityArray.count < settingManager.brightnessArray.count) {
-                currentIndex = currentIndex - settingManager.proximityArray.count;
-                currentDict = [settingManager.brightnessArray objectAtIndex:currentIndex];
+            if ([settingManager.brightnessArray containsObject:currentDict]) {
                 currentSettingType = SETTINGTYPE_BRIGHTNESS;
+            } else if ([settingManager.shakeArray containsObject:currentDict]) {
+                currentSettingType = SETTINGTYPE_SHAKE;
+            } else if ([settingManager.proximityArray containsObject:currentDict]) {
+                currentSettingType = SETTINGTYPE_PROXIMITY;
             }
-            [settingManager removeExistingSetting:currentDict WithSettingType:currentSettingType];
-            [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
+            [settingManager removeExistingSetting:currentDict WithSettingType:currentSettingType writeToSetting:YES];
+            [self.settingData removeObjectAtIndex:indexPath.row];
+            [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationFade];
         }
     }
 }
@@ -418,9 +412,9 @@
     }
     
     if (self.currentActiveDict) {
-        [[SettingManager sharedSettingManager] removeExistingSetting:self.currentActiveDict WithSettingType:settingType];
+        [[SettingManager sharedSettingManager] removeExistingSetting:self.currentActiveDict WithSettingType:settingType writeToSetting:NO];
     }
-    [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType];
+    [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType writeToSetting:YES];
 }
 
 - (IBAction)save:(id)sender {

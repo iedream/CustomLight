@@ -8,17 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, SETTINGTYPE)
-{
-    SETTINGTYPE_NONE,
-    SETTINGTYPE_BRIGHTNESS,
-    SETTINGTYPE_PROXIMITY,
-    SETTINGTYPE_SHAKE
-};
-
 @interface WidgesSettingManager : NSObject
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
+- (NSMutableArray *)setUpData;
 + (WidgesSettingManager*)sharedSettingManager;
-- (void)editActiveSettingWith:(SETTINGTYPE)settingType andState:(BOOL)state;
-- (void)reloadData;
+- (void)editActiveSettingWith:(NSDictionary *)dict andState:(BOOL)state;
 @end

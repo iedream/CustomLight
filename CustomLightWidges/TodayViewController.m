@@ -13,7 +13,7 @@
 #import "WidgesSettingManager.h"
 
 @interface TodayViewController () <NCWidgetProviding>
-@property (nonatomic, strong) NSArray *data;
+@property (nonatomic, strong) NSMutableArray *data;
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSDictionary *settingData;
 @end
@@ -34,8 +34,7 @@
 - (void)viewDidLoad {
     //NSLog(@"reload widges");
     [super viewDidLoad];
-    [[WidgesSettingManager sharedSettingManager] reloadData];
-    [self setUpData];
+    self.data = [[WidgesSettingManager sharedSettingManager] setUpData];
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     self.collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
@@ -50,27 +49,8 @@
 }
 
 - (void)userDefaultsDidChange:(NSNotification *)notification {
-    [[WidgesSettingManager sharedSettingManager] reloadData];
-    [self setUpData];
+    self.data = [[WidgesSettingManager sharedSettingManager] setUpData];
     [self.collectionView reloadData];
-    NSLog(@"Got new data");
-}
-
-- (void)setUpData {
-    NSMutableArray *data = [[NSMutableArray alloc] init];
-    NSDictionary *brightnessDict = [[WidgesSettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS];
-    NSDictionary *proximityDict = [[WidgesSettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
-    NSDictionary *shakeDict = [[WidgesSettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
-    for (NSString *groupName in brightnessDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_BRIGHTNESS), @"state": brightnessDict[@"on"]}];
-    }
-    for (NSString *groupName in proximityDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_PROXIMITY), @"state": proximityDict[@"on"]}];
-    }
-    for (NSString *groupName in shakeDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_SHAKE), @"state": shakeDict[@"on"]}];
-    }
-    self.data = data;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -97,7 +77,7 @@
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // Adjust cell size for orientation
-    return CGSizeMake(100, self.view.bounds.size.height);
+    return CGSizeMake(80, self.view.bounds.size.height * 0.75);
 }
 
 

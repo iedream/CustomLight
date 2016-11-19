@@ -115,7 +115,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     //[self createRectangle];
-    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
+    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE includeInActive:NO];
     if (activeDict) {
         BOOL shakeDetected = [self detectShakeMotion:self.motionManager.deviceMotion];
         if (shakeDetected) {
@@ -123,13 +123,13 @@ const NSString *SETTING_PAGE = @"Setting Page";
         }
     }
     
-    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS];
+    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS includeInActive:NO];
     if (activeDict) {
         float brightness = [UIScreen mainScreen].brightness;
         [[HueLight sharedHueLight] detectSurrondingBrightness:brightness andActiveDict:activeDict];
     }
     
-    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
+    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY includeInActive:NO];
     if (activeDict) {
         NSDictionary *rangeDict = [activeDict objectForKey:@"range"];
         if ([[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.geoRegion) {
@@ -183,7 +183,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray<CLBeacon *> *)beacons inRegion:(CLBeaconRegion *)region {
-    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
+    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY includeInActive:NO];
     if (activeDict) {
         CLBeacon *beacon = beacons.firstObject;
         NSDictionary *rangeDict = [activeDict objectForKey:@"range"];

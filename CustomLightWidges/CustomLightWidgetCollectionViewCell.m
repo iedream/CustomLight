@@ -14,6 +14,8 @@
 @property (nonatomic, strong) UILabel *groupNameLabel;
 @property (nonatomic, strong) UILabel *typeLabel;
 @property (nonatomic) SETTINGTYPE settingType;
+
+@property (nonatomic, strong) NSDictionary *currentDict;
 @end
 
 @implementation CustomLightWidgetCollectionViewCell
@@ -21,44 +23,45 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.backgroundColor = [UIColor lightGrayColor];
-        
-        self.onButton = [[UIButton alloc] init];
-        self.onButton.layer.borderWidth = 3.0;
-        self.onButton.layer.borderColor = [[UIColor whiteColor] CGColor];
-        [self.onButton addTarget:self action:@selector(toggleButton) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:self.onButton];
-        self.groupNameLabel = [[UILabel alloc] init];
-        self.groupNameLabel.textColor = [UIColor whiteColor];
-        self.groupNameLabel.textAlignment = NSTextAlignmentCenter;
-        [self addSubview:self.groupNameLabel];
-        self.typeLabel = [[UILabel alloc] init];
-        self.typeLabel.textColor = [UIColor whiteColor];
-        self.typeLabel.textAlignment = NSTextAlignmentCenter;
-        [self addSubview:self.typeLabel];
-        
-        [self prepareForReuse];
     }
     return self;
 }
 
 - (void)setUp {
     self.onButton = [[UIButton alloc] init];
-    self.onButton.layer.borderWidth = 3.0;
+    self.onButton.layer.borderWidth = 1.0;
     self.onButton.layer.borderColor = [[UIColor whiteColor] CGColor];
+    self.onButton.titleLabel.textColor = [UIColor whiteColor];
+    self.onButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     [self.onButton addTarget:self action:@selector(toggleButton:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.onButton];
     self.groupNameLabel = [[UILabel alloc] init];
     self.groupNameLabel.textColor = [UIColor whiteColor];
     self.groupNameLabel.textAlignment = NSTextAlignmentCenter;
+    self.groupNameLabel.adjustsFontSizeToFitWidth = YES;
     [self addSubview:self.groupNameLabel];
     self.typeLabel = [[UILabel alloc] init];
     self.typeLabel.textColor = [UIColor whiteColor];
     self.typeLabel.textAlignment = NSTextAlignmentCenter;
+    self.typeLabel.adjustsFontSizeToFitWidth = YES;
     [self addSubview:self.typeLabel];
 }
 
+- (void)clearData {
+    if (self.onButton) {
+        [self.onButton removeFromSuperview];
+    }
+    if (self.typeLabel) {
+        [self.typeLabel removeFromSuperview];
+    }
+    if (self.groupNameLabel) {
+        [self.groupNameLabel removeFromSuperview];
+    }
+}
+
 - (void)setUpCellWithData:(NSDictionary *)dict {
+    self.currentDict = dict;
+    [self clearData];
     [self setUp];
     [self drawRect:self.frame];
     self.groupNameLabel.text = dict[@"groupName"];
@@ -76,34 +79,28 @@
             break;
     }
     self.settingType = [dict[@"type"] integerValue];
+    [self.onButton setNeedsDisplay];
     if ([dict[@"state"] boolValue] == YES) {
-        self.onButton.titleLabel.text = @"Turn Off";
-        self.onButton.alpha = 1.0;
+        [self.onButton setTitle:@"Turn Off" forState:UIControlStateNormal];
     } else {
-        self.onButton.titleLabel.text = @"Turn On";
-        self.onButton.alpha = 0.7;
+        [self.onButton setTitle:@"Turn On" forState:UIControlStateNormal];
     }
 }
 
 - (void)toggleButton:(UIButton *)sender {
     BOOL state;
-    if (self.onButton.alpha == 0.7) {
-        self.onButton.titleLabel.text = @"Turn Off";
-        self.onButton.alpha = 1.0;
-        state = YES;
-    } else {
-        self.onButton.titleLabel.text = @"Turn Off";
-        self.onButton.alpha = 0.7;
+    if ([self.currentDict[@"state"] boolValue] == YES) {
         state = NO;
+    } else {
+        state = YES;
     }
-    [[WidgesSettingManager sharedSettingManager] editActiveSettingWith:self.settingType andState:state];
+    [[WidgesSettingManager sharedSettingManager] editActiveSettingWith:self.currentDict andState:state];
 }
 
 - (void)prepareForReuse {
     self.groupNameLabel.text = @"";
     self.typeLabel.text = @"";
-    self.onButton.titleLabel.text = @"Turn On";
-    self.onButton.alpha = 0.7;
+    self.onButton.titleLabel.text = @"";
     self.backgroundColor = [UIColor grayColor];
 }
 

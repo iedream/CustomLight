@@ -21,10 +21,11 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 @property (nonatomic, strong) NSMutableArray *shakeArray;
 @property (nonatomic, strong) NSMutableArray *proximityArray;
 + (SettingManager*)sharedSettingManager;
-- (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType;
-- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType;
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
+- (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting;
+- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting;
+- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType includeInActive:(BOOL)includeInactive;
 - (void)writeBridgeSetupToPlistSetting;
 - (BOOL)readBridgeSetupFromPlistSetting;
+- (NSMutableArray *)getAllSettingData;
 
 @end
