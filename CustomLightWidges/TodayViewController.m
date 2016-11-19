@@ -77,7 +77,7 @@
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // Adjust cell size for orientation
-    return CGSizeMake(80, self.view.bounds.size.height * 0.75);
+    return CGSizeMake(80, 80);
 }
 
 
@@ -91,8 +91,7 @@
     
     // If an error is encountered, use NCUpdateResultFailed
     // If there's no update required, use NCUpdateResultNoData
-    // If there's an update, use NCUpdateResultNewData
-
+    // If there's an update, use NCUpdateResultNewData 
     completionHandler(NCUpdateResultNewData);
 }
 
