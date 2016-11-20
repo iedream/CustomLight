@@ -10,8 +10,7 @@
 #import "SettingManager.h"
 
 @interface CustomLightSettingTableViewCell : UITableViewCell
-- (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict andSettingType:(SETTINGTYPE)settingType;
-- (NSDictionary *)currentDict;
-@property (nonatomic, strong) NSDictionary *currentDict;
-@property (nonatomic) SETTINGTYPE lightSettingType;
+- (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict;
+- (SETTINGTYPE)currentSettingType;
+- (NSDictionary *)getCurrentDict;
 @end

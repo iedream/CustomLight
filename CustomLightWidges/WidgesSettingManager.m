@@ -20,22 +20,19 @@
     return self.data;
 }
 
-- (void)sendData {
+- (void)shareWidgets {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
     [sharedDefaults setObject:self.data forKey:@"LightSettingData"];
     [sharedDefaults synchronize];
 }
 
 - (void)editActiveSettingWith:(NSDictionary *)dict andState:(BOOL)state {
+    NSInteger widgetIndex = [self.data indexOfObject:dict];
     [self.data removeObject:dict];
     NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:dict];
     mutableDict[@"state"] = [NSNumber numberWithBool:state];
-    [self.data addObject:mutableDict];
-    
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    [sharedDefaults setObject:self.data forKey:@"LightSettingData"];
-    [sharedDefaults synchronize];
-
+    [self.data insertObject:mutableDict atIndex:widgetIndex];
+    [self shareWidgets];
 }
 
 + (WidgesSettingManager*)sharedSettingManager {

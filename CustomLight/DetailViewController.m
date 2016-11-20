@@ -32,8 +32,11 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *rangeTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *iBeaconLabel;
+@property (weak, nonatomic) IBOutlet UILabel *widgetLabel;
 
+@property (weak, nonatomic) IBOutlet UISwitch *widgetSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *onSwitch;
+
 @property (nonatomic, strong) MultiSelectSegmentedControl *repeatDaySelectionControl;
 @property (nonatomic, strong) ISColorWheel *colorPickerWheel;
 
@@ -100,18 +103,9 @@
         if (lightSettingCell == nil) {
             lightSettingCell = [[CustomLightSettingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LightSettingTableViewCell"];
         }
-        SettingManager *settingManager = [SettingManager sharedSettingManager];
         NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
-        SETTINGTYPE currentSettingType = SETTINGTYPE_NONE;
-        if ([settingManager.brightnessArray containsObject:currentDict]) {
-            currentSettingType = SETTINGTYPE_BRIGHTNESS;
-        } else if ([settingManager.shakeArray containsObject:currentDict]) {
-            currentSettingType = SETTINGTYPE_SHAKE;
-        } else if ([settingManager.proximityArray containsObject:currentDict]) {
-            currentSettingType = SETTINGTYPE_PROXIMITY;
-        }
         
-        [lightSettingCell setCellTextWithCurrentDict:currentDict andSettingType:currentSettingType];
+        [lightSettingCell setCellTextWithCurrentDict:currentDict];
         return lightSettingCell;
         
     } else {
@@ -169,6 +163,8 @@
     
     self.onSwitch.on = [currentDict[@"on"] boolValue];
     
+    self.widgetSwitch.on = [currentDict[@"useWidgets"] boolValue];
+    
     if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
         self.useiBeaconSwitch.userInteractionEnabled = NO;
         self.useiBeaconSwitch.alpha = 0.6;
@@ -199,16 +195,15 @@
     
     if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
         CustomLightSettingTableViewCell *groupCell = [self.lightSettingsTableView cellForRowAtIndexPath:indexPath];
-        NSDictionary *currentDict = groupCell.currentDict;
-        if (groupCell.lightSettingType == SETTINGTYPE_SHAKE) {
+        if ([groupCell currentSettingType] == SETTINGTYPE_SHAKE) {
             self.detailType = DETAILVIEWTYPE_SHAKE;
-        } else if (groupCell.lightSettingType == SETTINGTYPE_BRIGHTNESS) {
+        } else if ([groupCell currentSettingType] == SETTINGTYPE_BRIGHTNESS) {
             self.detailType = DETAILVIEWTYPE_BRIGHTNESS;
-        } else if (groupCell.lightSettingType == SETTINGTYPE_PROXIMITY) {
+        } else if ([groupCell currentSettingType] == SETTINGTYPE_PROXIMITY) {
             self.detailType = DETAILVIEWTYPE_PROXIMITY;
         }
         [self resetViews];
-        [self configureSettingView:currentDict];
+        [self configureSettingView:[groupCell getCurrentDict]];
     } else {
         CustomLightTableViewCell *groupCell = [self.groupTableView cellForRowAtIndexPath:indexPath];
         [groupCell getSelected];
@@ -229,16 +224,7 @@
         if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
             SettingManager *settingManager = [SettingManager sharedSettingManager];
             NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
-            SETTINGTYPE currentSettingType = SETTINGTYPE_NONE;
-            if ([settingManager.brightnessArray containsObject:currentDict]) {
-                currentSettingType = SETTINGTYPE_BRIGHTNESS;
-            } else if ([settingManager.shakeArray containsObject:currentDict]) {
-                currentSettingType = SETTINGTYPE_SHAKE;
-            } else if ([settingManager.proximityArray containsObject:currentDict]) {
-                currentSettingType = SETTINGTYPE_PROXIMITY;
-            }
-            [settingManager removeExistingSetting:currentDict WithSettingType:currentSettingType writeToSetting:YES];
-            [self.settingData removeObjectAtIndex:indexPath.row];
+            [settingManager removeExistingSetting:currentDict];
             [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationFade];
         }
     }
@@ -316,6 +302,9 @@
         self.iBeaconLabel.hidden = YES;
         self.useiBeaconSwitch.hidden = YES;
         
+        self.widgetLabel.hidden = YES;
+        self.widgetSwitch.hidden = YES;
+        
         
         self.lightSettingsTableView.hidden = NO;
     } else {
@@ -335,6 +324,9 @@
         
         self.colorPickerView.hidden = NO;
         self.colorPickerWheel.hidden = NO;
+        
+        self.widgetLabel.hidden = NO;
+        self.widgetSwitch.hidden = NO;
         
         self.lightSettingsTableView.hidden = YES;
         
@@ -411,10 +403,24 @@
         settingType = SETTINGTYPE_PROXIMITY;
     }
     
+    [dict setValue:@(settingType) forKey:@"type"];
+    
+    [dict setValue:[NSNumber numberWithBool:self.widgetSwitch.on] forKey:@"useWidgets"];
+    
+    UIAlertController *alert;
     if (self.currentActiveDict) {
-        [[SettingManager sharedSettingManager] removeExistingSetting:self.currentActiveDict WithSettingType:settingType writeToSetting:NO];
+        dict[@"uniqueKey"] = self.currentActiveDict[@"uniqueKey"];
+        alert = [[SettingManager sharedSettingManager] editSettingOldSetting:self.currentActiveDict andNewSetting:dict];
+    } else {
+        dict[@"uniqueKey"] = @([[SettingManager sharedSettingManager] generateUniqueKey]);
+        alert = [[SettingManager sharedSettingManager] addNewSetting:dict];
     }
-    [[SettingManager sharedSettingManager] addNewSetting:dict WithSettingType:settingType writeToSetting:YES];
+    if (alert) {
+        if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
+            self.widgetSwitch.on = NO;
+        }
+        [self presentViewController:alert animated:YES completion:nil];
+    }
 }
 
 - (IBAction)save:(id)sender {

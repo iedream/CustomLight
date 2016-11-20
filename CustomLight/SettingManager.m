@@ -11,6 +11,8 @@
 
 @interface SettingManager()
 @property (nonatomic, strong) NSURL *fileURL;
+@property (nonatomic, strong) NSMutableArray *settingsArray;
+@property (nonatomic, strong) NSMutableArray *widgetsArray;
 @end
 
 @implementation SettingManager
@@ -30,41 +32,36 @@
     return self;
 }
 
-- (NSDictionary *)getActionBrightness {
-    return [self getActiveSettingWith:SETTINGTYPE_BRIGHTNESS includeInActive:NO];
+- (int)generateUniqueKey {
+    int uniqueKey;
+    BOOL isUnique = YES;
+    do {
+        uniqueKey = arc4random();
+        for (NSDictionary *dict in self.settingsArray) {
+            if ([dict[@"uniqueKey"] intValue] == uniqueKey) {
+                isUnique = NO;
+            }
+        }
+    } while (!isUnique);
+    return uniqueKey;
 }
 
-- (NSDictionary *)getActionProximity {
-    return [self getActiveSettingWith:SETTINGTYPE_PROXIMITY includeInActive:NO];
-}
-
-- (NSDictionary *)getActionShake {
-    return [self getActiveSettingWith:SETTINGTYPE_SHAKE includeInActive:NO];
-}
-
-- (void)editActiveSettingWith:(SETTINGTYPE)settingType andState:(BOOL)state writeToSetting:(BOOL)writeToSetting {
-    NSDictionary *currentActiveSetting = [self getActiveSettingWith:settingType includeInActive:NO];
-    NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:currentActiveSetting];
-    mutableDict[@"on"] = [NSNumber numberWithBool:state];
-    [self removeExistingSetting:currentActiveSetting WithSettingType:settingType writeToSetting:NO];
-    [self addNewSetting:mutableDict WithSettingType:settingType writeToSetting:NO];
-    if (writeToSetting) {
-        [self writeToPlistSetting];
-        [self shareToWidges];
+- (NSDictionary *)getActiveDictWithUniqueKey:(int)uniqueKey {
+    for (NSDictionary *dict in self.settingsArray) {
+        if ([dict[@"uniqueKey"] intValue] == uniqueKey) {
+            return dict;
+        }
     }
+    return @{};
 }
 
 - (void)configureSettingWithWidgesData:(NSNotification *)notif {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    if (!sharedDefaults) {
-        return;
-    }
     NSArray *data = [sharedDefaults arrayForKey:@"LightSettingData"];
+    
     for (NSDictionary *dict in data) {
-        NSDictionary *currentActiveDict = [self getActiveSettingWith:[dict[@"type"] integerValue] includeInActive:YES];
-        if (!currentActiveDict) {
-            break;
-        }
+        int uniqueKey = [dict[@"uniqueKey"] intValue];
+        NSDictionary *currentActiveDict = [self getActiveDictWithUniqueKey:uniqueKey];
         NSMutableDictionary *mutableCopy;
         NSMutableArray *groupNamesArr = [[NSMutableArray alloc] initWithArray:currentActiveDict[@"groupNames"]];
         if ([dict[@"state"] boolValue] && ![groupNamesArr containsObject:dict[@"groupName"]]) {
@@ -82,43 +79,78 @@
             mutableCopy[@"on"] = [NSNumber numberWithBool:YES];
         }
         if (mutableCopy) {
-            [self removeExistingSetting:currentActiveDict WithSettingType:[dict[@"type"] integerValue] writeToSetting:NO];
-            [self addNewSetting:[mutableCopy copy] WithSettingType:[dict[@"type"] integerValue] writeToSetting:NO];
+            [self.settingsArray removeObject:currentActiveDict];
+            [self.settingsArray addObject:[mutableCopy copy]];
+            [self writeToPlistSetting];
         }
-        [self writeToPlistSetting];
     }
 
 }
 
-- (void)shareToWidges {
-    NSMutableArray *data = [[NSMutableArray alloc] init];
-    NSDictionary *brightnessDict = [self getActiveSettingWith:SETTINGTYPE_BRIGHTNESS includeInActive:YES];
-    NSDictionary *proximityDict = [self getActiveSettingWith:SETTINGTYPE_PROXIMITY includeInActive:YES];
-    NSDictionary *shakeDict = [self getActiveSettingWith:SETTINGTYPE_SHAKE includeInActive:YES];
-    for (NSString *groupName in brightnessDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_BRIGHTNESS), @"state": brightnessDict[@"on"]}];
+- (BOOL)widgetTypeExitAlready:(NSDictionary *)dict {
+    SETTINGTYPE settingType = [dict[@"type"] integerValue];
+    NSArray *groupNames = dict[@"groupNames"];
+    for (NSDictionary *widgetDict in self.widgetsArray) {
+        if ([widgetDict[@"type"] integerValue] == settingType && [groupNames containsObject:widgetDict[@"groupName"]]) {
+            return YES;
+        }
     }
-    for (NSString *groupName in proximityDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_PROXIMITY), @"state": proximityDict[@"on"]}];
+    return NO;
+}
+
+- (BOOL)widgetLimitReached {
+    if (self.widgetsArray.count >=4 ) {
+        return YES;
+    } else {
+        return NO;
     }
-    for (NSString *groupName in shakeDict[@"groupNames"]) {
-        [data addObject:@{@"groupName": groupName, @"type": @(SETTINGTYPE_SHAKE), @"state": shakeDict[@"on"]}];
-    }
-    
+}
+
+- (void)shareWidgets {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    [sharedDefaults setObject:data forKey:@"LightSettingData"];
+    [sharedDefaults setObject:self.widgetsArray forKey:@"LightSettingData"];
     [sharedDefaults synchronize];
 }
 
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType includeInActive:(BOOL)includeInactive {
-    NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
-    for (NSDictionary *currentDict in currentArray) {
-        if (!includeInactive) {
-            if ( [currentDict[@"on"] boolValue] == NO) {
-                break;
-            }
+- (UIAlertController*)addWidgets:(NSDictionary *)dict {
+     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    if ([self widgetLimitReached]) {
+        UIAlertController *widgetError = [UIAlertController alertControllerWithTitle:@"Failed To Add Widget" message:@"Max Limit(4) of Widgets Reached" preferredStyle:UIAlertControllerStyleAlert];
+        [widgetError addAction:cancelAction];
+        return widgetError;
+    } else if ([self widgetTypeExitAlready:dict]) {
+        UIAlertController *widgetError = [UIAlertController alertControllerWithTitle:@"Failed To Add Widget" message:@"Widget of Current Action Type For Current Room Already Exit" preferredStyle:UIAlertControllerStyleAlert];
+        [widgetError addAction:cancelAction];
+        return widgetError;
+    }
+    
+    for (NSString *groupName in dict[@"groupNames"]) {
+        NSDictionary *data = @{@"groupName": groupName, @"type": dict[@"type"], @"state": dict[@"on"], @"uniqueKey": dict[@"uniqueKey"], @"uicolor": dict[@"uicolor"]};
+        [self.widgetsArray addObject:data];
+    }
+    [self shareWidgets];
+    return nil;
+}
+
+- (void)removeWidgets:(int)uniqueKey {
+    for (NSDictionary *widgetDict in [self.widgetsArray copy]) {
+        if ([widgetDict[@"uniqueKey"] intValue] == uniqueKey) {
+            [self.widgetsArray removeObject:widgetDict];
+        }
+    }
+    [self shareWidgets];
+}
+
+- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
+    for (NSDictionary *currentDict in self.settingsArray) {
+        if ([currentDict[@"type"] integerValue] != settingType) {
+            break;
         }
     
+        if ([currentDict[@"on"] boolValue] == NO) {
+            break;
+        }
+        
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
         [outputFormatter setDateFormat:@"HH:mm"];
         outputFormatter.timeZone = [NSTimeZone systemTimeZone];
@@ -149,52 +181,62 @@
     return nil;
 }
 
-- (NSMutableArray *)getArrayDataWithSettingType:(SETTINGTYPE)settingType {
-    switch (settingType) {
-        case SETTINGTYPE_SHAKE:
-            return _shakeArray;
-        case SETTINGTYPE_PROXIMITY:
-            return _proximityArray;
-        case SETTINGTYPE_BRIGHTNESS:
-            return _brightnessArray;
-        default:
-            return [[NSMutableArray alloc] init];
-    }
-}
-
 - (NSMutableArray *)getAllSettingData {
-    NSMutableArray *allData = [[NSMutableArray alloc] initWithArray:[_shakeArray copy]];
-    [allData addObjectsFromArray:[_brightnessArray copy]];
-    [allData addObjectsFromArray:[_proximityArray copy]];
-    return allData;
+    return self.settingsArray;
 }
 
-- (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting {
-    NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
-    [currentArray addObject:newSettingDic];
-    if (writeToSetting) {
-        [self writeToPlistSetting];
-        [self shareToWidges];
+- (UIAlertController *)addNewSetting:(NSDictionary *)newSettingDic {
+    UIAlertController *alert;
+    if ([newSettingDic[@"useWidgets"] boolValue] == YES) {
+        alert = [self addWidgets:newSettingDic];
     }
+    if (alert) {
+        NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:newSettingDic];
+        [mutableDict setValue:[NSNumber numberWithBool:NO] forKey:@"useWidgets"];
+        newSettingDic = [mutableDict copy];
+    }
+    [self.settingsArray addObject:newSettingDic];
+    [self writeToPlistSetting];
+    return alert;
 }
 
-- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting {
-    NSMutableArray *currentArray = [self getArrayDataWithSettingType:settingType];
-    [currentArray removeObject:existingSettingDic];
-    if (writeToSetting) {
-        [self writeToPlistSetting];
-        [self shareToWidges];
+- (void)removeExistingSetting:(NSDictionary *)existingSettingDic {
+    [self.settingsArray removeObject:existingSettingDic];
+    [self removeWidgets:[existingSettingDic[@"uniqueKey"] intValue]];
+    [self writeToPlistSetting];
+}
+
+- (UIAlertController *)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting {
+    UIAlertController *alert;
+    if ([oldSetting[@"useWidgets"] boolValue] && [newSetting[@"useWidgets"] boolValue]) {
+        [self removeWidgets:[newSetting[@"uniqueKey"] intValue]];
+        alert = [self addWidgets:newSetting];
+    } else if ([oldSetting[@"useWidgets"] boolValue] && ![newSetting[@"useWidgets"] boolValue]) {
+        [self removeWidgets:[newSetting[@"uniqueKey"] intValue]];
+    } else if (![oldSetting[@"useWidgets"] boolValue] && [newSetting[@"useWidgets"] boolValue]) {
+        alert = [self addWidgets:newSetting];
     }
+    
+    if (alert) {
+        NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:newSetting];
+        [mutableDict setValue:[NSNumber numberWithBool:NO] forKey:@"useWidgets"];
+        newSetting = [mutableDict copy];
+    }
+    [self.settingsArray removeObject:oldSetting];
+    [self.settingsArray addObject:newSetting];
+    
+    [self writeToPlistSetting];
+    return alert;
 }
 
 - (void)writeToPlistSetting {
     NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-    NSDictionary *dict = @{@"brightness": [_brightnessArray copy], @"proximity": [_proximityArray copy],  @"shake": [_shakeArray copy], @"authenticated": originaldict[@"authenticated"]};
+    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": originaldict[@"authenticated"], @"widgets": [self.widgetsArray copy]};
     [dict writeToURL:self.fileURL atomically:YES];
 }
 
 - (void)writeBridgeSetupToPlistSetting {
-    NSDictionary *dict = @{@"authenticated": [NSNumber numberWithBool:YES]};
+    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": [NSNumber numberWithBool:YES], @"widgets": [self.widgetsArray copy]};
     [dict writeToURL:self.fileURL atomically:YES];
 }
 
@@ -212,14 +254,12 @@
 - (void)readFromPlistSetting {
     NSFileManager *fileManage = [NSFileManager defaultManager];
     if(![fileManage fileExistsAtPath:self.fileURL.path]){
-        _brightnessArray = [[NSMutableArray alloc]init];
-        _shakeArray = [[NSMutableArray alloc]init];
-        _proximityArray = [[NSMutableArray alloc]init];;
+        self.settingsArray = [[NSMutableArray alloc] init];
+        self.widgetsArray = [[NSMutableArray alloc] init];
     } else {
         NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-        _brightnessArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"brightness"]];
-        _shakeArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"shake"]];
-        _proximityArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"proximity"]];
+        self.settingsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"settings"]];
+        self.widgetsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"widgets"]];
     }
 }
 

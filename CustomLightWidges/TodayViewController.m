@@ -33,16 +33,20 @@
 
 - (void)viewDidLoad {
     //NSLog(@"reload widges");
+    
     [super viewDidLoad];
     self.data = [[WidgesSettingManager sharedSettingManager] setUpData];
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.sectionInset = UIEdgeInsetsMake(20, 0, 0, 0);
+    flowLayout.minimumInteritemSpacing = 1.0f;
+    flowLayout.minimumLineSpacing = 0;
     self.collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
     [self.collectionView registerClass:[CustomLightWidgetCollectionViewCell class] forCellWithReuseIdentifier:@"WidgesCollectionViewCell"];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     [self.view addSubview:self.collectionView];
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = self.view.backgroundColor;
     [self.collectionView reloadData];
     
     // Do any additional setup after loading the view from its nib.
@@ -51,6 +55,20 @@
 - (void)userDefaultsDidChange:(NSNotification *)notification {
     self.data = [[WidgesSettingManager sharedSettingManager] setUpData];
     [self.collectionView reloadData];
+}
+
+
+- (UIEdgeInsets)collectionView:(UICollectionView*)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(20.0, 0, 0, 0); // top, left, bottom, right
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    
+    return 1.0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 0.0;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -68,7 +86,6 @@
     }
     NSDictionary *dict = [self.data objectAtIndex:indexPath.row];
     [collectionViewCell setUpCellWithData:dict];
-    collectionViewCell.backgroundColor = [UIColor darkGrayColor];
     return collectionViewCell;
 }
 
@@ -77,7 +94,7 @@
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // Adjust cell size for orientation
-    return CGSizeMake(80, 80);
+    return CGSizeMake(74, 64);
 }
 
 

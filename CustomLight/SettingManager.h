@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, SETTINGTYPE)
 {
@@ -17,15 +18,18 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 };
 
 @interface SettingManager : NSObject
-@property (nonatomic, strong) NSMutableArray *brightnessArray;
-@property (nonatomic, strong) NSMutableArray *shakeArray;
-@property (nonatomic, strong) NSMutableArray *proximityArray;
+
 + (SettingManager*)sharedSettingManager;
-- (void)addNewSetting:(NSDictionary *)newSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting;
-- (void)removeExistingSetting:(NSDictionary *)existingSettingDic WithSettingType:(SETTINGTYPE)settingType writeToSetting:(BOOL)writeToSetting;
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType includeInActive:(BOOL)includeInactive;
-- (void)writeBridgeSetupToPlistSetting;
-- (BOOL)readBridgeSetupFromPlistSetting;
+
+- (UIAlertController *)addNewSetting:(NSDictionary *)newSettingDic;
+- (UIAlertController *)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting;
+- (void)removeExistingSetting:(NSDictionary *)existingSettingDic;
+
+- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
 - (NSMutableArray *)getAllSettingData;
 
+- (void)writeBridgeSetupToPlistSetting;
+- (BOOL)readBridgeSetupFromPlistSetting;
+
+- (int)generateUniqueKey;
 @end

@@ -10,7 +10,7 @@
 #import "WidgesSettingManager.h"
 
 @interface  CustomLightWidgetCollectionViewCell()
-@property (nonatomic, strong) UIButton *onButton;
+@property (nonatomic, strong) UILabel *onLabel;
 @property (nonatomic, strong) UILabel *groupNameLabel;
 @property (nonatomic, strong) UILabel *typeLabel;
 @property (nonatomic) SETTINGTYPE settingType;
@@ -28,28 +28,26 @@
 }
 
 - (void)setUp {
-    self.onButton = [[UIButton alloc] init];
-    self.onButton.layer.borderWidth = 1.0;
-    self.onButton.layer.borderColor = [[UIColor whiteColor] CGColor];
-    self.onButton.titleLabel.textColor = [UIColor whiteColor];
-    self.onButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    [self.onButton addTarget:self action:@selector(toggleButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:self.onButton];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleButton:)];
+    [self addGestureRecognizer:tapGesture];
+    
+    self.onLabel = [[UILabel alloc] init];
+    self.onLabel.textAlignment = NSTextAlignmentCenter;
+    self.onLabel.adjustsFontSizeToFitWidth = YES;
+    [self addSubview:self.onLabel];
     self.groupNameLabel = [[UILabel alloc] init];
-    self.groupNameLabel.textColor = [UIColor whiteColor];
     self.groupNameLabel.textAlignment = NSTextAlignmentCenter;
     self.groupNameLabel.adjustsFontSizeToFitWidth = YES;
     [self addSubview:self.groupNameLabel];
     self.typeLabel = [[UILabel alloc] init];
-    self.typeLabel.textColor = [UIColor whiteColor];
     self.typeLabel.textAlignment = NSTextAlignmentCenter;
     self.typeLabel.adjustsFontSizeToFitWidth = YES;
     [self addSubview:self.typeLabel];
 }
 
 - (void)clearData {
-    if (self.onButton) {
-        [self.onButton removeFromSuperview];
+    if (self.onLabel) {
+        [self.onLabel removeFromSuperview];
     }
     if (self.typeLabel) {
         [self.typeLabel removeFromSuperview];
@@ -79,11 +77,14 @@
             break;
     }
     self.settingType = [dict[@"type"] integerValue];
-    [self.onButton setNeedsDisplay];
     if ([dict[@"state"] boolValue] == YES) {
-        [self.onButton setTitle:@"Turn Off" forState:UIControlStateNormal];
+        self.onLabel.text = @"ON";
     } else {
-        [self.onButton setTitle:@"Turn On" forState:UIControlStateNormal];
+        self.onLabel.text = @"OFF";
+    }
+    UIColor *color = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:[dict objectForKey:@"uicolor"]];
+    if (color) {
+        self.backgroundColor = color;
     }
 }
 
@@ -100,26 +101,26 @@
 - (void)prepareForReuse {
     self.groupNameLabel.text = @"";
     self.typeLabel.text = @"";
-    self.onButton.titleLabel.text = @"";
-    self.backgroundColor = [UIColor grayColor];
+    self.onLabel.text = @"";
+    self.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     CGRect frame = self.bounds;
-    CGFloat padding = 5.0;
+    CGFloat padding = 2.0;
     CGFloat elementHeight = (frame.size.height - 4.0 * padding) / 3.0;
     
     frame.origin.x = padding;
-    frame.origin.y = padding;
+    frame.origin.y = 0;
     frame.size.width -= padding * 2.0;
     frame.size.height = elementHeight;
     self.typeLabel.frame = frame;
     
-    frame.origin.y = frame.origin.y + frame.size.height + padding;
+    frame.origin.y = frame.origin.y + frame.size.height;
     self.groupNameLabel.frame = frame;
     
-    frame.origin.y = frame.origin.y + frame.size.height + padding;
-    self.onButton.frame = frame;
+    frame.origin.y = frame.origin.y + frame.size.height;
+    self.onLabel.frame = frame;
 }
 @end
