@@ -52,7 +52,7 @@
             return dict;
         }
     }
-    return @{};
+    return nil;
 }
 
 - (void)configureSettingWithWidgesData:(NSNotification *)notif {
@@ -62,6 +62,9 @@
     for (NSDictionary *dict in data) {
         int uniqueKey = [dict[@"uniqueKey"] intValue];
         NSDictionary *currentActiveDict = [self getActiveDictWithUniqueKey:uniqueKey];
+        if (!currentActiveDict) {
+            continue;
+        }
         NSMutableDictionary *mutableCopy;
         NSMutableArray *groupNamesArr = [[NSMutableArray alloc] initWithArray:currentActiveDict[@"groupNames"]];
         if ([dict[@"state"] boolValue] && ![groupNamesArr containsObject:dict[@"groupName"]]) {
@@ -144,11 +147,11 @@
 - (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
     for (NSDictionary *currentDict in self.settingsArray) {
         if ([currentDict[@"type"] integerValue] != settingType) {
-            break;
+            continue;
         }
     
         if ([currentDict[@"on"] boolValue] == NO) {
-            break;
+            continue;
         }
         
         NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
