@@ -236,9 +236,9 @@ const NSString *SHAKE = @"Shake";
 // MARK: - Hue Light Action Helper Methods -
 
 - (NSNumber *)getLightStateWithBrightness:(CGFloat)brightness andLightState:(PHLightState*)lightState{
-    if (brightness < 1 && lightState.on == [NSNumber numberWithBool:NO]) {
+    if (brightness < 0.3 && lightState.on == [NSNumber numberWithBool:NO]) {
         return [NSNumber numberWithBool:YES];
-    } else if (brightness > 3 && lightState.on == [NSNumber numberWithBool:YES]){
+    } else if (brightness > 0.5 && lightState.on == [NSNumber numberWithBool:YES]){
         return [NSNumber numberWithBool:NO];
     }
     return @(-1);
@@ -254,6 +254,11 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
+    lightState.xIncrement = 0;
+    lightState.yIncrement = 0;
+    lightState.alert = ALERT_NONE;
+    lightState.effect = EFFECT_NONE;
+    lightState.transitionTime = 0;
     [self.sendAPI updateLightStateForId:lightId withLightState:lightState completionHandler:^(NSArray *errors) {
         _actionInProgress = NO;
         if (!errors) {

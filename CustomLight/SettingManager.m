@@ -169,13 +169,13 @@
         NSString *currentDay = [day stringFromDate:currentTime];
         currentTime = [outputFormatter dateFromString:[outputFormatter stringFromDate:currentTime]];
         
-        if ([endTime compare:startTime] == NSOrderedAscending) {
-            endTime = [endTime dateByAddingTimeInterval:60*60*24];
-        }
-        
         for (NSString *selectedDay in selectedDays) {
             if ([currentDay containsString:selectedDay]) {
                 if ([startTime compare:currentTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
+                    return currentDict;
+                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
+                    return currentDict;
+                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedDescending && [currentTime compare:endTime] == NSOrderedDescending) {
                     return currentDict;
                 }
             }

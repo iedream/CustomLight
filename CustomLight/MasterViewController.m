@@ -253,7 +253,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     double accelerationThreshold  = 0.3;
     if (fabs(userAcceleration.x) > accelerationThreshold || fabs(userAcceleration.y) > accelerationThreshold || fabs(userAcceleration.z) > accelerationThreshold)
     {
-        float sensitivity = 0.7;
+        float sensitivity = 1;
         float x1 = 0, x2 = 0, y1 = 0, y2 = 0, z1 = 0, z2 = 0;
         
         double totalAccelerationInXY = sqrt(userAcceleration.x * userAcceleration.x +
