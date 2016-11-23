@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 @property (nonatomic, strong) UIVisualEffectView *visualEffectView;
 
 + (HueLight*)sharedHueLight;
+- (void)refreshCache;
 - (void)toggleLightOnOffWithActiveDict:(NSDictionary *)activeDict;
 - (void)configureLightWithActiveDict:(NSDictionary *)activeDict andLightSwitch:(BOOL)lightSwitch;
 - (void)detectSurrondingBrightness:(CGFloat)brightness andActiveDict:(NSDictionary *)activeDict;

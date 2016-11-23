@@ -54,6 +54,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.pausesLocationUpdatesAutomatically = NO;
     [self.locationManager requestAlwaysAuthorization];
     if ([CLLocationManager locationServicesEnabled]) {
         [self.locationManager requestLocation];
@@ -115,6 +116,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     //[self createRectangle];
+    [[HueLight sharedHueLight] refreshCache];
+    
     NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
     if (activeDict) {
         BOOL shakeDetected = [self detectShakeMotion:self.motionManager.deviceMotion];

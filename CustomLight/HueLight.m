@@ -82,6 +82,19 @@ const NSString *SHAKE = @"Shake";
 
 // MARK: - Hue Light Setup -
 
+- (void)refreshCache {
+    if (_actionInProgress || !_initSetUpDone || self.cache) {
+        return;
+    }
+    
+    if (![PHBridgeResourcesReader readBridgeResourcesCache]) {
+        self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
+    } else {
+        _initSetUpDone = NO;
+        [self setUpConnection];
+    }
+}
+
 - (void)authenticate {
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
