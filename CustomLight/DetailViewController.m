@@ -415,6 +415,7 @@
         dict[@"uniqueKey"] = @([[SettingManager sharedSettingManager] generateUniqueKey]);
         alert = [[SettingManager sharedSettingManager] addNewSetting:dict];
     }
+    self.currentActiveDict = dict;
     if (alert) {
         if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
             self.widgetSwitch.on = NO;

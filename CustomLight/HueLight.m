@@ -172,7 +172,9 @@ const NSString *SHAKE = @"Shake";
         [self.visualEffectView removeFromSuperview];
         [self stopLoading];
     }
-    self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
+    if ([PHBridgeResourcesReader readBridgeResourcesCache]) {
+        self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
+    }
 }
 
 // MARK: - Hue Light Action Methods -
@@ -251,7 +253,7 @@ const NSString *SHAKE = @"Shake";
 - (NSNumber *)getLightStateWithBrightness:(CGFloat)brightness andLightState:(PHLightState*)lightState{
     if (brightness < 0.3 && lightState.on == [NSNumber numberWithBool:NO]) {
         return [NSNumber numberWithBool:YES];
-    } else if (brightness > 0.5 && lightState.on == [NSNumber numberWithBool:YES]){
+    } else if (brightness > 0.42 && lightState.on == [NSNumber numberWithBool:YES]){
         return [NSNumber numberWithBool:NO];
     }
     return @(-1);
