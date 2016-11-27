@@ -36,6 +36,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
 @property (nonatomic, strong) CMMotionManager *motionManager;
 
 @property (nonatomic, strong) NSTimer *iBeaconProximityTimer;
+@property (nonatomic, strong) NSTimer *shakeTimer;
+
 @end
 
 @implementation MasterViewController
@@ -53,7 +55,14 @@ const NSString *SETTING_PAGE = @"Setting Page";
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    NSString *distance = @"0.001m";
+    MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
+    mdf.units = MKDistanceFormatterUnitsMetric;
+    CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
+    self.locationManager.distanceFilter = preferedDistance;
+    self.locationManager.headingFilter = 1.0;
+    
     self.locationManager.pausesLocationUpdatesAutomatically = NO;
     [self.locationManager requestAlwaysAuthorization];
     if ([CLLocationManager locationServicesEnabled]) {
@@ -61,6 +70,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
         self.locationManager.allowsBackgroundLocationUpdates = YES;
     }
     [self.locationManager startUpdatingLocation];
+    [self.locationManager startUpdatingHeading];
     
 //    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:@"8492E75F-4FD6-469D-B132-043FE94921D8"];
 //    self.geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:@"beaconRegion"];
@@ -114,8 +124,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    //[self createRectangle];
+- (void)checkState:(CLLocation *)location {
     [[HueLight sharedHueLight] refreshCache];
     
     NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
@@ -147,7 +156,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.lowestLatitude && !self.lowestLongitude && !self.highestLatitude && !self.highestLongitude) {
             [self createRectangleWithRangeDict:rangeDict];
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue]) {
-            BOOL isWithinRange = [self withinRange:locations.firstObject.coordinate];
+            BOOL isWithinRange = [self withinRange:location.coordinate];
             if (isWithinRange) {
                 [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:YES];
             } else {
@@ -157,6 +166,14 @@ const NSString *SETTING_PAGE = @"Setting Page";
     } else {
         [self clearRectangle];
     }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [self checkState:self.locationManager.location];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    [self checkState:locations.firstObject];
 }
 
 - (BOOL)withinRange:(CLLocationCoordinate2D )currentPoint {
@@ -251,12 +268,20 @@ const NSString *SETTING_PAGE = @"Setting Page";
     }
 }
 
+- (void)shakeTimerExpire:(NSTimeInterval *)timer {
+    self.shakeTimer = nil;
+}
+
 - (BOOL)detectShakeMotion:(CMDeviceMotion *)deviceMotion {
+    if (self.shakeTimer) {
+        return false;
+    }
+
     CMAcceleration userAcceleration = deviceMotion.userAcceleration;
-    double accelerationThreshold  = 0.3;
+    double accelerationThreshold  = 1.0;
     if (fabs(userAcceleration.x) > accelerationThreshold || fabs(userAcceleration.y) > accelerationThreshold || fabs(userAcceleration.z) > accelerationThreshold)
     {
-        float sensitivity = 0.85;
+        float sensitivity = 1.0;
         float x1 = 0, x2 = 0, y1 = 0, y2 = 0, z1 = 0, z2 = 0;
         
         double totalAccelerationInXY = sqrt(userAcceleration.x * userAcceleration.x +
@@ -269,6 +294,9 @@ const NSString *SETTING_PAGE = @"Setting Page";
             
             float change = fabs(x1-x2+y1-y2+z1-z2);
             if (sensitivity < change) {
+                NSLog(@"detect shake");
+                self.shakeTimer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(shakeTimerExpire:) userInfo:nil repeats:NO];
+                [[NSRunLoop currentRunLoop] addTimer: self.shakeTimer forMode: NSDefaultRunLoopMode];
                 return  YES;
             }
         }

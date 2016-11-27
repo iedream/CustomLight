@@ -196,7 +196,6 @@ const NSString *SHAKE = @"Shake";
                 }
                 light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                 [self setLightStateColorForLight:light andActiveDict:activeDict];
-                 _actionInProgress = YES;
                 [self setLightState:light.lightState andLightId:light.identifier];
             }
         }
@@ -218,7 +217,6 @@ const NSString *SHAKE = @"Shake";
                     light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                     [self setLightStateColorForLight:light andActiveDict:activeDict];
                     light.lightState.on = lightStateValue;
-                     _actionInProgress = YES;
                     [self setLightState:light.lightState andLightId:light.identifier];
                 }
             }
@@ -240,7 +238,6 @@ const NSString *SHAKE = @"Shake";
                     light.lightState.on = [NSNumber numberWithBool:lightSwitch];
                     light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                     [self setLightStateColorForLight:light andActiveDict:activeDict];
-                     _actionInProgress = YES;
                     [self setLightState:light.lightState andLightId:light.identifier];
                 }
             }
@@ -269,6 +266,11 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
+    if (_actionInProgress || !_initSetUpDone) {
+        return;
+    }
+    
+    _actionInProgress = YES;
     lightState.xIncrement = 0;
     lightState.yIncrement = 0;
     lightState.alert = ALERT_NONE;
