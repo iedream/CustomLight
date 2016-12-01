@@ -37,6 +37,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 @property (nonatomic, strong) NSTimer *iBeaconProximityTimer;
 @property (nonatomic, strong) NSTimer *shakeTimer;
+@property (nonatomic, strong) NSTimer *checkStateTimer;
 
 @end
 
@@ -56,41 +57,13 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     
-    NSString *distance = @"0.001m";
-    MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
-    mdf.units = MKDistanceFormatterUnitsMetric;
-    CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
-    self.locationManager.distanceFilter = preferedDistance;
-    self.locationManager.headingFilter = 1.0;
-    
-    self.locationManager.pausesLocationUpdatesAutomatically = NO;
     [self.locationManager requestAlwaysAuthorization];
+    self.locationManager.pausesLocationUpdatesAutomatically = NO;
     if ([CLLocationManager locationServicesEnabled]) {
-        [self.locationManager requestLocation];
         self.locationManager.allowsBackgroundLocationUpdates = YES;
+        [self.locationManager startMonitoringSignificantLocationChanges];
     }
-    [self.locationManager startUpdatingLocation];
-    [self.locationManager startUpdatingHeading];
-    
-//    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:@"8492E75F-4FD6-469D-B132-043FE94921D8"];
-//    self.geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:@"beaconRegion"];
-//    self.geoRegion.notifyOnEntry=YES;
-//    self.geoRegion.notifyOnExit=YES;
-//    [self.locationManager startMonitoringForRegion:self.geoRegion];
-    
-//    AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
-//    captureSession.sessionPreset = AVCaptureSessionPresetMedium;
-//    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-//    NSError *err;
-//    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&err];
-//    [captureSession addInput:input];
-//    AVCaptureVideoDataOutput *output = [[AVCaptureVideoDataOutput alloc] init];
-//    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:  kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
-//    dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
-//    [output setSampleBufferDelegate:self queue:queue];
-//    [captureSession addOutput:output];
-//    self.captureSession = captureSession;
-//    [self.captureSession startRunning];
+
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurEffectView.frame = self.view.bounds;
@@ -103,14 +76,22 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [self.view addSubview:spinnerView];
     [HueLight sharedHueLight].spinnerView = spinnerView;
     [[HueLight sharedHueLight] startLoading];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUpConnectionDone:) name:@"startObserveStateChange" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConnection:) name:@"stopObserveStateChange" object:nil];
 }
 
-- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    CFDictionaryRef metadataDict = CMCopyDictionaryOfAttachments(NULL, sampleBuffer, kCMAttachmentMode_ShouldPropagate);
-    NSDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:(__bridge NSDictionary*)metadataDict];
-    NSDictionary *exifMetadata = [[metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary] mutableCopy];
-    float brightnessValue = [[exifMetadata objectForKey:(NSString *)kCGImagePropertyExifBrightnessValue] floatValue];
-    //[[HueLight sharedHueLight] detectSurrondingBrightness:brightnessValue];
+- (void)setUpConnectionDone:(NSNotification *)notif {
+    [self checkLocation:NO];
+    [self.locationManager startUpdatingLocation];
+    self.locationManager.headingFilter = 45.0;
+    [self.locationManager startUpdatingHeading];
+}
+
+- (void)closeConnection: (NSNotification *)notif {
+    [self.locationManager stopUpdatingLocation];
+    [self.locationManager stopUpdatingHeading];
 }
 
 - (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
@@ -155,6 +136,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
             }
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.lowestLatitude && !self.lowestLongitude && !self.highestLatitude && !self.highestLongitude) {
             [self createRectangleWithRangeDict:rangeDict];
+            [self checkLocation:YES];
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue]) {
             BOOL isWithinRange = [self withinRange:location.coordinate];
             if (isWithinRange) {
@@ -164,11 +146,39 @@ const NSString *SETTING_PAGE = @"Setting Page";
             }
         }
     } else {
+        [self checkLocation:NO];
         [self clearRectangle];
     }
 }
 
+- (void)checkStateFinished:(NSTimer *)timer {
+    self.locationManager.headingFilter = 45.0;
+    [self.locationManager startUpdatingHeading];
+    [self.checkStateTimer invalidate];
+}
+
+- (void)checkLocation:(BOOL)checkLocation {
+    if (!checkLocation && self.locationManager.desiredAccuracy != kCLLocationAccuracyThreeKilometers) {
+        self.locationManager.distanceFilter = kCLLocationAccuracyThreeKilometers;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+    } else if (checkLocation && self.locationManager.desiredAccuracy != kCLLocationAccuracyBest){
+        NSString *distance = @"0.5m";
+        MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
+        mdf.units = MKDistanceFormatterUnitsMetric;
+        CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
+        self.locationManager.distanceFilter = preferedDistance;
+        self.locationManager.desiredAccuracy = preferedDistance;
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    if (self.checkStateTimer && !self.checkStateTimer.valid) {
+        self.checkStateTimer = nil;
+    } else if (!self.checkStateTimer) {
+        [self.locationManager stopUpdatingHeading];
+        self.checkStateTimer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(checkStateFinished:) userInfo:nil repeats:NO];
+        [[NSRunLoop currentRunLoop] addTimer: self.checkStateTimer forMode: NSDefaultRunLoopMode];
+    }
     [self checkState:self.locationManager.location];
 }
 
@@ -278,7 +288,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     }
 
     CMAcceleration userAcceleration = deviceMotion.userAcceleration;
-    double accelerationThreshold  = 1.0;
+    double accelerationThreshold  = 0.7;
     if (fabs(userAcceleration.x) > accelerationThreshold || fabs(userAcceleration.y) > accelerationThreshold || fabs(userAcceleration.z) > accelerationThreshold)
     {
         float sensitivity = 1.0;

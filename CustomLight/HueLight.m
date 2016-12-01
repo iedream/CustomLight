@@ -24,6 +24,7 @@ const NSString *SHAKE = @"Shake";
 
 @property (nonatomic) BOOL actionInProgress;
 @property (nonatomic) BOOL initSetUpDone;
+@property (nonatomic) BOOL inProgressOfSetUp;
 @property (nonatomic, strong) NSTimer *setupTimer;
 
 @property (nonatomic, strong) NSMutableDictionary *settings;
@@ -46,10 +47,16 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)searchForBridge {
+    if (_inProgressOfSetUp) {
+        return;
+    }
+    _initSetUpDone = NO;
+    _inProgressOfSetUp = YES;
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
         if (bridgesFound.count < 1) {
             UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
             UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                _inProgressOfSetUp = NO;
                 [self searchForBridge];
             }];
             UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
@@ -61,6 +68,7 @@ const NSString *SHAKE = @"Shake";
             self.ipAddress = bridgesFound.allValues.firstObject;
             self.hueNotificationManager = [PHNotificationManager defaultManager];
             self.sendAPI = [[PHBridgeSendAPI alloc] init];
+            _inProgressOfSetUp = NO;
             if ([[SettingManager sharedSettingManager] readBridgeSetupFromPlistSetting]) {
                 [self setUpConnection];
             } else {
@@ -83,11 +91,16 @@ const NSString *SHAKE = @"Shake";
 // MARK: - Hue Light Setup -
 
 - (void)refreshCache {
-    if (_actionInProgress || !_initSetUpDone || self.cache) {
+    if (!self.hueSDK.localConnected && !_inProgressOfSetUp) {
+        [self searchForBridge];
         return;
     }
     
-    if (![PHBridgeResourcesReader readBridgeResourcesCache]) {
+    if (_actionInProgress || !_initSetUpDone || self.cache || _inProgressOfSetUp) {
+        return;
+    }
+    
+    if ([PHBridgeResourcesReader readBridgeResourcesCache]) {
         self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
     } else {
         _initSetUpDone = NO;
@@ -96,6 +109,12 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)authenticate {
+    if (_inProgressOfSetUp) {
+        return;
+    }
+    _inProgressOfSetUp = YES;
+    _initSetUpDone = NO;
+    
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
     [authenticateAlert addAction:okAction];
@@ -115,6 +134,11 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)setUpConnection {
+    if (_inProgressOfSetUp) {
+        return;
+    }
+    _inProgressOfSetUp = YES;
+    _initSetUpDone = NO;
     self.setupTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 target:self selector:@selector(clearSetupTimer) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer: self.setupTimer forMode: NSDefaultRunLoopMode];
     
@@ -129,12 +153,13 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)clearSetupTimer {
+    _inProgressOfSetUp = NO;
     [self authenticate];
 }
 
 - (void)authenticationSuccess:(NSNotification *)notif {
     [[SettingManager sharedSettingManager] writeBridgeSetupToPlistSetting];
-    _actionInProgress = NO;
+    _inProgressOfSetUp = NO;
     self.hueNotificationManager = [PHNotificationManager defaultManager];
     self.sendAPI = [[PHBridgeSendAPI alloc] init];
     
@@ -142,6 +167,7 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)authenticationFailure:(NSNotification *)notif {
+    _inProgressOfSetUp = NO;
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authentication Failed" message:@"Authentication progress failed" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self authenticate];
@@ -154,23 +180,45 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)noLocalConnection:(NSNotification *)notif {
-    UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Set Up Connection Failed" message:@"Setting Up Connection progress failed" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self setUpConnection];
+    _inProgressOfSetUp = NO;
+    [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
+        if (bridgesFound.count < 1) {
+            [self.hueSDK disableLocalConnection];
+            [self.hueSDK disableCacheUpdateLocalHeartbeat:YES];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"stopObserveStateChange" object:nil];
+            _initSetUpDone = NO;
+            
+            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [self searchForBridge];
+            }];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+            [authenticateAlert addAction:okAction];
+            [authenticateAlert addAction:tryAgainAction];
+            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+            [vc presentViewController:authenticateAlert animated:true completion:nil];
+        } else {
+            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Set Up Connection Failed" message:@"Setting Up Connection progress failed" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [self setUpConnection];
+            }];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+            [authenticateAlert addAction:okAction];
+            [authenticateAlert addAction:tryAgainAction];
+            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+            [vc presentViewController:authenticateAlert animated:true completion:nil];
+        }
     }];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-    [authenticateAlert addAction:okAction];
-    [authenticateAlert addAction:tryAgainAction];
-    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [vc presentViewController:authenticateAlert animated:true completion:nil];
 }
 
 - (void)localConnection:(NSNotification *)notif {
     if (!_initSetUpDone) {
         _initSetUpDone = YES;
+        _inProgressOfSetUp = NO;
         [self.setupTimer invalidate];
         [self.visualEffectView removeFromSuperview];
         [self stopLoading];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"startObserveStateChange" object:nil];
     }
     if ([PHBridgeResourcesReader readBridgeResourcesCache]) {
         self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
