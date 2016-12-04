@@ -181,8 +181,9 @@ const NSString *SHAKE = @"Shake";
 
 - (void)noLocalConnection:(NSNotification *)notif {
     _inProgressOfSetUp = NO;
+    
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-        if (bridgesFound.count < 1) {
+        if (bridgesFound.count < 1 && !self.hueSDK.localConnected) {
             [self.hueSDK disableLocalConnection];
             [self.hueSDK disableCacheUpdateLocalHeartbeat:YES];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"stopObserveStateChange" object:nil];

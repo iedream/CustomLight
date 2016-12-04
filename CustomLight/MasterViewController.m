@@ -38,6 +38,9 @@ const NSString *SETTING_PAGE = @"Setting Page";
 @property (nonatomic, strong) NSTimer *iBeaconProximityTimer;
 @property (nonatomic, strong) NSTimer *shakeTimer;
 @property (nonatomic, strong) NSTimer *checkStateTimer;
+@property (nonatomic, strong) NSTimer *activeSettingTimer;
+
+@property (nonatomic, strong) NSOperationQueue *backgroundQueue;
 
 @end
 
@@ -51,17 +54,21 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
 
-    self.motionManager = [[CMMotionManager alloc] init];
-    [self.motionManager startDeviceMotionUpdates];
+    self.backgroundQueue = [[NSOperationQueue alloc] init];
     
+    self.motionManager = [[CMMotionManager alloc] init];
+
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     
     [self.locationManager requestAlwaysAuthorization];
     self.locationManager.pausesLocationUpdatesAutomatically = NO;
+    self.locationManager.distanceFilter = kCLLocationAccuracyHundredMeters;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     if ([CLLocationManager locationServicesEnabled]) {
         self.locationManager.allowsBackgroundLocationUpdates = YES;
-        [self.locationManager startMonitoringSignificantLocationChanges];
+        //[self.locationManager startMonitoringSignificantLocationChanges];
+        [self.locationManager startUpdatingLocation];
     }
 
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
@@ -77,21 +84,37 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [HueLight sharedHueLight].spinnerView = spinnerView;
     [[HueLight sharedHueLight] startLoading];
     
+    self.activeSettingTimer = [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(checkForData) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer: self.activeSettingTimer forMode: NSDefaultRunLoopMode];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUpConnectionDone:) name:@"startObserveStateChange" object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConnection:) name:@"stopObserveStateChange" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
+}
+
+- (void)checkForData {
+    if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE]) {
+        self.motionManager.deviceMotionUpdateInterval = 1;
+    } else if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_BRIGHTNESS]){
+        self.motionManager.deviceMotionUpdateInterval = 30;
+    } else {
+        self.motionManager.deviceMotionUpdateInterval = 3600;
+    }
 }
 
 - (void)setUpConnectionDone:(NSNotification *)notif {
     [self checkLocation:NO];
-    [self.locationManager startUpdatingLocation];
-    self.locationManager.headingFilter = 45.0;
-    [self.locationManager startUpdatingHeading];
+    [self.motionManager startDeviceMotionUpdatesToQueue:self.backgroundQueue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
+        [self checkState:self.locationManager.location];
+    }];
+    [self checkForData];
 }
 
 - (void)closeConnection: (NSNotification *)notif {
-    [self.locationManager stopUpdatingLocation];
-    [self.locationManager stopUpdatingHeading];
+    //[self.locationManager stopUpdatingLocation];
+    [self.motionManager stopDeviceMotionUpdates];
 }
 
 - (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
@@ -152,7 +175,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)checkStateFinished:(NSTimer *)timer {
-    self.locationManager.headingFilter = 45.0;
+    self.locationManager.headingFilter = 20.0;
     [self.locationManager startUpdatingHeading];
     [self.checkStateTimer invalidate];
 }
@@ -278,7 +301,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
     }
 }
 
-- (void)shakeTimerExpire:(NSTimeInterval *)timer {
+- (void)shakeTimerExpire {
+    [self.shakeTimer invalidate];
     self.shakeTimer = nil;
 }
 
@@ -305,9 +329,11 @@ const NSString *SETTING_PAGE = @"Setting Page";
             float change = fabs(x1-x2+y1-y2+z1-z2);
             if (sensitivity < change) {
                 NSLog(@"detect shake");
-                self.shakeTimer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(shakeTimerExpire:) userInfo:nil repeats:NO];
-                [[NSRunLoop currentRunLoop] addTimer: self.shakeTimer forMode: NSDefaultRunLoopMode];
-                return  YES;
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    self.shakeTimer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(shakeTimerExpire) userInfo:nil repeats:NO];
+                    [[NSRunLoop currentRunLoop] addTimer: self.shakeTimer forMode: NSDefaultRunLoopMode];
+                }];
+                return YES;
             }
         }
     }

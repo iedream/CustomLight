@@ -226,6 +226,7 @@
             NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
             [settingManager removeExistingSetting:currentDict];
             [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationFade];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
         }
     }
 }
@@ -416,6 +417,7 @@
         alert = [[SettingManager sharedSettingManager] addNewSetting:dict];
     }
     self.currentActiveDict = dict;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
     if (alert) {
         if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
             self.widgetSwitch.on = NO;

@@ -24,7 +24,7 @@
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     
-    HueLight *hueLight = [HueLight sharedHueLight];
+    //HueLight *hueLight = [HueLight sharedHueLight];
     
     return YES;
 }

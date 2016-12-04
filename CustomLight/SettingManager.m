@@ -145,12 +145,20 @@
 }
 
 - (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
-    for (NSDictionary *currentDict in self.settingsArray) {
+    return [self getActiveSettingWith:settingType withinAnHour:NO];
+}
+
+- (NSDictionary *)getFutureActiveSettingWith:(SETTINGTYPE)settingType {
+    return [self getActiveSettingWith:settingType withinAnHour:YES];
+}
+
+- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
+    for (NSDictionary *currentDict in self.settingsArray.copy) {
         if ([currentDict[@"type"] integerValue] != settingType) {
             continue;
         }
     
-        if ([currentDict[@"on"] boolValue] == NO) {
+        if (!withinAnHour && [currentDict[@"on"] boolValue] == NO) {
             continue;
         }
         
@@ -168,6 +176,11 @@
         NSDate *currentTime = [NSDate date];
         NSString *currentDay = [day stringFromDate:currentTime];
         currentTime = [outputFormatter dateFromString:[outputFormatter stringFromDate:currentTime]];
+        
+        if (withinAnHour) {
+            currentTime = [currentTime dateByAddingTimeInterval:3600];
+        }
+        
         
         for (NSString *selectedDay in selectedDays) {
             if ([currentDay containsString:selectedDay]) {
