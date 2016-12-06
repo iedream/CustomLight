@@ -25,19 +25,14 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 @property NSArray *objects;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) CLBeaconRegion *geoRegion;
+@property (nonatomic, strong) NSMutableArray *beaconRegionArray;
+@property (nonatomic, strong) NSMutableDictionary *geoRegionDict;
+@property (nonatomic, strong) CLCircularRegion *homeRegion;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
-
-@property (nonatomic) CGFloat lowestLatitude;
-@property (nonatomic) CGFloat lowestLongitude;
-@property (nonatomic) CGFloat highestLatitude;
-@property (nonatomic) CGFloat highestLongitude;
 
 @property (nonatomic, strong) CMMotionManager *motionManager;
 
 @property (nonatomic, strong) NSTimer *iBeaconProximityTimer;
-@property (nonatomic, strong) NSTimer *shakeTimer;
-@property (nonatomic, strong) NSTimer *checkStateTimer;
 @property (nonatomic, strong) NSTimer *activeSettingTimer;
 
 @property (nonatomic, strong) NSOperationQueue *backgroundQueue;
@@ -50,6 +45,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [super viewDidLoad];
     
     [SettingManager sharedSettingManager];
+    
+    self.beaconRegionArray = [[NSMutableArray alloc] init];
 
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
@@ -63,14 +60,18 @@ const NSString *SETTING_PAGE = @"Setting Page";
     
     [self.locationManager requestAlwaysAuthorization];
     self.locationManager.pausesLocationUpdatesAutomatically = NO;
-    self.locationManager.distanceFilter = kCLLocationAccuracyHundredMeters;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationManager.distanceFilter = kCLLocationAccuracyThreeKilometers;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
     if ([CLLocationManager locationServicesEnabled]) {
         self.locationManager.allowsBackgroundLocationUpdates = YES;
-        //[self.locationManager startMonitoringSignificantLocationChanges];
-        [self.locationManager startUpdatingLocation];
+        [self.locationManager startMonitoringSignificantLocationChanges];
     }
 
+    self.homeRegion = [[CLCircularRegion alloc] initWithCenter:self.locationManager.location.coordinate radius:2.0 identifier:@"home"];
+    self.homeRegion.notifyOnExit = YES;
+    self.homeRegion.notifyOnEntry = YES;
+    [self.locationManager startMonitoringForRegion:self.homeRegion];
+    
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurEffectView.frame = self.view.bounds;
@@ -87,24 +88,25 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.activeSettingTimer = [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(checkForData) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer: self.activeSettingTimer forMode: NSDefaultRunLoopMode];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUpConnectionDone:) name:@"startObserveStateChange" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUpConnectionDone:) name:@"startObserveStateChange" object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConnection:) name:@"stopObserveStateChange" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConnection:) name:@"stopObserveStateChange" object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
 }
 
 - (void)checkForData {
-    if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE]) {
+    if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE].count > 0) {
         self.motionManager.deviceMotionUpdateInterval = 1;
-    } else if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_BRIGHTNESS]){
+    } else if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_BRIGHTNESS].count > 0){
         self.motionManager.deviceMotionUpdateInterval = 30;
     } else {
         self.motionManager.deviceMotionUpdateInterval = 3600;
     }
 }
 
-- (void)setUpConnectionDone:(NSNotification *)notif {
+- (void)setUpConnection {
+    [self.locationManager startUpdatingLocation];
     [self checkLocation:NO];
     [self.motionManager startDeviceMotionUpdatesToQueue:self.backgroundQueue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
         [self checkState:self.locationManager.location];
@@ -112,15 +114,19 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [self checkForData];
 }
 
-- (void)closeConnection: (NSNotification *)notif {
-    //[self.locationManager stopUpdatingLocation];
+- (void)closeConnection {
+    [[HueLight sharedHueLight] startLoading];
+    [self.locationManager startMonitoringForRegion:self.homeRegion];
+    [self.locationManager stopUpdatingLocation];
     [self.motionManager stopDeviceMotionUpdates];
 }
 
 - (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
 {
-    if (self.geoRegion) {
-        [self.locationManager requestStateForRegion:self.geoRegion];
+    if ([region.identifier isEqualToString:@"home"]) {
+        [self.locationManager requestStateForRegion:self.homeRegion];
+    } else {
+        [self.locationManager requestStateForRegion:region];
     }
 }
 
@@ -131,53 +137,58 @@ const NSString *SETTING_PAGE = @"Setting Page";
 - (void)checkState:(CLLocation *)location {
     [[HueLight sharedHueLight] refreshCache];
     
-    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
-    if (activeDict) {
+    NSArray *activeDictArr = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SHAKE];
+    for (NSDictionary *dict in activeDictArr) {
         BOOL shakeDetected = [self detectShakeMotion:self.motionManager.deviceMotion];
         if (shakeDetected) {
-            [[HueLight sharedHueLight] toggleLightOnOffWithActiveDict:activeDict];
+            [[HueLight sharedHueLight] toggleLightOnOffWithActiveDict:dict];
         }
     }
     
-    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS];
-    if (activeDict) {
+    activeDictArr = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_BRIGHTNESS];
+    for (NSDictionary *dict in activeDictArr) {
         float brightness = [UIScreen mainScreen].brightness;
-        [[HueLight sharedHueLight] detectSurrondingBrightness:brightness andActiveDict:activeDict];
+        [[HueLight sharedHueLight] detectSurrondingBrightness:brightness andActiveDict:dict];
     }
     
-    activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
-    if (activeDict) {
-        NSDictionary *rangeDict = [activeDict objectForKey:@"range"];
-        if ([[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.geoRegion) {
-            [self clearRectangle];
+    activeDictArr = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
+    NSMutableArray *currentBeaconRange = [[NSMutableArray alloc] init];
+    NSMutableArray *currentGeoRange = [[NSMutableArray alloc] init];;
+    for (NSDictionary *dict in activeDictArr) {
+        NSDictionary *rangeDict = [dict objectForKey:@"range"];
+        NSString *uniqueKey = [dict[@"uniqueKey"] stringValue];
+        if ([[rangeDict objectForKey:@"useiBeacon"] boolValue]) {
+            [currentBeaconRange addObject:uniqueKey];
+        } else {
+            [currentGeoRange addObject:uniqueKey];
+        }
+        
+        if ([[rangeDict objectForKey:@"useiBeacon"] boolValue] && ![self.beaconRegionArray containsObject:uniqueKey]) {
             NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:rangeDict[@"iBeaconUUID"]];
-            self.geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:@"beaconRegion"];
-            self.geoRegion.notifyOnEntry=YES;
-            self.geoRegion.notifyOnExit=YES;
-            if (self.geoRegion) {
-                [self.locationManager startMonitoringForRegion:self.geoRegion];
-            }
-        } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue] && !self.lowestLatitude && !self.lowestLongitude && !self.highestLatitude && !self.highestLongitude) {
-            [self createRectangleWithRangeDict:rangeDict];
+            CLBeaconRegion *geoRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:uniqueKey];
+            geoRegion.notifyOnEntry=YES;
+            geoRegion.notifyOnExit=YES;
+            [self.beaconRegionArray addObject:uniqueKey];
+            [self.locationManager startMonitoringForRegion:geoRegion];
+        } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue] && ![self.geoRegionDict objectForKey:uniqueKey]) {
+            NSDictionary *geoDict = [self createRectangleWithRangeDict:rangeDict];
+            [self.geoRegionDict setObject:geoDict forKey:uniqueKey];
             [self checkLocation:YES];
         } else if (![[rangeDict objectForKey:@"useiBeacon"] boolValue]) {
-            BOOL isWithinRange = [self withinRange:location.coordinate];
+            BOOL isWithinRange = [self withinRange:location.coordinate geoDict:[self.geoRegionDict objectForKey:uniqueKey]];
             if (isWithinRange) {
-                [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:YES];
+                [[HueLight sharedHueLight] configureLightWithActiveDict:dict andLightSwitch:YES];
             } else {
-                [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:NO];
+                [[HueLight sharedHueLight] configureLightWithActiveDict:dict andLightSwitch:NO];
             }
         }
-    } else {
-        [self checkLocation:NO];
-        [self clearRectangle];
     }
+    [self resetProximityRelatedSetting:currentBeaconRange currentRangeRegion:currentGeoRange];
 }
 
-- (void)checkStateFinished:(NSTimer *)timer {
-    self.locationManager.headingFilter = 20.0;
-    [self.locationManager startUpdatingHeading];
-    [self.checkStateTimer invalidate];
+- (void)resetProximityRelatedSetting:(NSArray *)currentBeaconRegion currentRangeRegion:(NSArray *)currentRangeRegion {
+    [self clearBeaconRegion:currentBeaconRegion];
+    [self clearGeoRegion:currentRangeRegion];
 }
 
 - (void)checkLocation:(BOOL)checkLocation {
@@ -194,24 +205,17 @@ const NSString *SETTING_PAGE = @"Setting Page";
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-    if (self.checkStateTimer && !self.checkStateTimer.valid) {
-        self.checkStateTimer = nil;
-    } else if (!self.checkStateTimer) {
-        [self.locationManager stopUpdatingHeading];
-        self.checkStateTimer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(checkStateFinished:) userInfo:nil repeats:NO];
-        [[NSRunLoop currentRunLoop] addTimer: self.checkStateTimer forMode: NSDefaultRunLoopMode];
-    }
-    [self checkState:self.locationManager.location];
-}
-
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     [self checkState:locations.firstObject];
 }
 
-- (BOOL)withinRange:(CLLocationCoordinate2D )currentPoint {
-    if (currentPoint.latitude < self.highestLatitude && currentPoint.latitude > self.lowestLatitude) {
-        if (currentPoint.longitude < self.highestLongitude && currentPoint.longitude > self.lowestLongitude) {
+- (BOOL)withinRange:(CLLocationCoordinate2D )currentPoint geoDict:(NSDictionary *)geoDict{
+    CGFloat highestLatitude = [geoDict[@"highestLatitude"] floatValue];
+    CGFloat highestLongitude = [geoDict[@"highestLongitude"] floatValue];
+    CGFloat lowestLatitude = [geoDict[@"lowestLatitude"] floatValue];
+    CGFloat lowestLongitude = [geoDict[@"lowestLongitude"] floatValue];
+    if (currentPoint.latitude < highestLatitude && currentPoint.latitude > lowestLatitude) {
+        if (currentPoint.longitude < highestLongitude && currentPoint.longitude > lowestLongitude) {
             return YES;
         }
         return NO;
@@ -219,27 +223,48 @@ const NSString *SETTING_PAGE = @"Setting Page";
     return NO;
 }
 
-- (void)clearRectangle {
-    self.highestLongitude = 0;
-    self.lowestLongitude = 0;
-    self.highestLatitude = 0;
-    self.lowestLatitude = 0;
+- (void)clearBeaconRegion:(NSArray *)beaconRegionToKeep {
+    if (self.beaconRegionArray.count < 1) {
+        return;
+    }
+    
+    for (CLRegion *region in self.locationManager.monitoredRegions.copy) {
+        if (![beaconRegionToKeep containsObject:region.identifier] && [self.beaconRegionArray containsObject: region.identifier] ) {
+            [self.locationManager stopMonitoringForRegion:region];
+            [self.beaconRegionArray removeObject:region.identifier];
+        }
+    }
 }
 
-- (void)createRectangleWithRangeDict:(NSDictionary *)rangeDict {
-    
+- (void)clearGeoRegion:(NSArray *)geoRegionToKeep {
+    if (self.geoRegionDict.count < 1) {
+        return;
+    }
+    if (geoRegionToKeep.count < 1) {
+        [self checkLocation:NO];
+    }
+    for (NSString *key in self.geoRegionDict.allKeys.copy) {
+        if (![geoRegionToKeep containsObject:key]) {
+            [self.geoRegionDict removeObjectForKey:key];
+        }
+    }
+}
+
+- (NSDictionary *)createRectangleWithRangeDict:(NSDictionary *)rangeDict {
     float rangeValue = [rangeDict[@"rangeValue"] floatValue] / 100000;
-    self.highestLatitude = [rangeDict[@"highestLatitude"] floatValue] + rangeValue;
-    self.lowestLatitude = [rangeDict[@"lowestLatitude"] floatValue] - rangeValue;
-    self.highestLongitude = [rangeDict[@"highestLongitude"] floatValue] + rangeValue;
-    self.lowestLongitude = [rangeDict[@"lowestLongitude"] floatValue] - rangeValue;
+    CGFloat highestLatitude = [rangeDict[@"highestLatitude"] floatValue] + rangeValue;
+    CGFloat lowestLatitude = [rangeDict[@"lowestLatitude"] floatValue] - rangeValue;
+    CGFloat highestLongitude = [rangeDict[@"highestLongitude"] floatValue] + rangeValue;
+    CGFloat lowestLongitude = [rangeDict[@"lowestLongitude"] floatValue] - rangeValue;
+    NSDictionary *dict = @{@"highestLatitude": @(highestLatitude), @"lowestLatitude": @(lowestLatitude), @"highestLongitude": @(highestLongitude), @"lowestLongitude": @(lowestLongitude)};
+    return dict;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray<CLBeacon *> *)beacons inRegion:(CLBeaconRegion *)region {
-    NSDictionary *activeDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
-    if (activeDict) {
+    NSArray *activeDictArr = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_PROXIMITY];
+    for (NSDictionary *dict in activeDictArr) {
         CLBeacon *beacon = beacons.firstObject;
-        NSDictionary *rangeDict = [activeDict objectForKey:@"range"];
+        NSDictionary *rangeDict = [dict objectForKey:@"range"];
         BOOL isWithinRange;
         if ([rangeDict[@"rangeValue"] isEqualToString:@"Far"]) {
             isWithinRange = YES;
@@ -261,10 +286,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
         
         if (isWithinRange) {
             [self.iBeaconProximityTimer invalidate];
-            [[HueLight sharedHueLight] configureLightWithActiveDict:activeDict andLightSwitch:YES];
+            [[HueLight sharedHueLight] configureLightWithActiveDict:dict andLightSwitch:YES];
         } else {
             if (!self.iBeaconProximityTimer.valid) {
-                self.iBeaconProximityTimer = [NSTimer timerWithTimeInterval:60 target:self selector:@selector(iBeaconProximityTimerExpire:) userInfo:activeDict repeats:NO];
+                self.iBeaconProximityTimer = [NSTimer timerWithTimeInterval:60 target:self selector:@selector(iBeaconProximityTimerExpire:) userInfo:dict repeats:NO];
                 [[NSRunLoop currentRunLoop] addTimer: self.iBeaconProximityTimer forMode: NSDefaultRunLoopMode];
             }
         }
@@ -277,40 +302,41 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     //Start Ranging
-    self.geoRegion = region;
-    [manager startRangingBeaconsInRegion:self.geoRegion];
+    if ([region.identifier isEqualToString:@"home"]) {
+        [self setUpConnection];
+    } else {
+        CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
+        [manager startRangingBeaconsInRegion:beaconRegion];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    if (self.geoRegion) {
-        [manager stopRangingBeaconsInRegion:self.geoRegion];
-        self.geoRegion = nil;
+    if ([region.identifier isEqualToString:@"home"]) {
+        [self closeConnection];
+    } else {
+        CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
+        [manager stopRangingBeaconsInRegion:beaconRegion];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
-    if (state == CLRegionStateInside) {
-        //Start Ranging
-        self.geoRegion = region;
-        [manager startRangingBeaconsInRegion:self.geoRegion];
+    if ([region.identifier isEqualToString:@"home"]) {
+        if (state == CLRegionStateInside) {
+            [self setUpConnection];
+        } else if (state == CLRegionStateOutside){
+            [self closeConnection];
+        }
     } else {
-        if (self.geoRegion) {
-            [manager stopRangingBeaconsInRegion:self.geoRegion];
-            self.geoRegion = nil;
+        CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
+        if (state == CLRegionStateInside) {
+            [manager startRangingBeaconsInRegion:beaconRegion];
+        } else if (state == CLRegionStateOutside){
+            [manager stopRangingBeaconsInRegion:beaconRegion];
         }
     }
 }
 
-- (void)shakeTimerExpire {
-    [self.shakeTimer invalidate];
-    self.shakeTimer = nil;
-}
-
 - (BOOL)detectShakeMotion:(CMDeviceMotion *)deviceMotion {
-    if (self.shakeTimer) {
-        return false;
-    }
-
     CMAcceleration userAcceleration = deviceMotion.userAcceleration;
     double accelerationThreshold  = 0.7;
     if (fabs(userAcceleration.x) > accelerationThreshold || fabs(userAcceleration.y) > accelerationThreshold || fabs(userAcceleration.z) > accelerationThreshold)
@@ -328,11 +354,6 @@ const NSString *SETTING_PAGE = @"Setting Page";
             
             float change = fabs(x1-x2+y1-y2+z1-z2);
             if (sensitivity < change) {
-                NSLog(@"detect shake");
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    self.shakeTimer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(shakeTimerExpire) userInfo:nil repeats:NO];
-                    [[NSRunLoop currentRunLoop] addTimer: self.shakeTimer forMode: NSDefaultRunLoopMode];
-                }];
                 return YES;
             }
         }

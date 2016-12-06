@@ -25,8 +25,8 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 - (UIAlertController *)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting;
 - (void)removeExistingSetting:(NSDictionary *)existingSettingDic;
 
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType;
-- (NSDictionary *)getFutureActiveSettingWith:(SETTINGTYPE)settingType;
+- (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType;
+- (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType;
 - (NSMutableArray *)getAllSettingData;
 
 - (void)writeBridgeSetupToPlistSetting;

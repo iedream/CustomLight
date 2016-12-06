@@ -144,15 +144,16 @@
     [self shareWidgets];
 }
 
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType {
+- (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType {
     return [self getActiveSettingWith:settingType withinAnHour:NO];
 }
 
-- (NSDictionary *)getFutureActiveSettingWith:(SETTINGTYPE)settingType {
+- (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType {
     return [self getActiveSettingWith:settingType withinAnHour:YES];
 }
 
-- (NSDictionary *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
+- (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
+    NSMutableArray *allActiveSetting = [[NSMutableArray alloc] init];
     for (NSDictionary *currentDict in self.settingsArray.copy) {
         if ([currentDict[@"type"] integerValue] != settingType) {
             continue;
@@ -185,16 +186,16 @@
         for (NSString *selectedDay in selectedDays) {
             if ([currentDay containsString:selectedDay]) {
                 if ([startTime compare:currentTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
-                    return currentDict;
+                    [allActiveSetting addObject:currentDict];
                 } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
-                    return currentDict;
+                    [allActiveSetting addObject:currentDict];
                 } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedDescending && [currentTime compare:endTime] == NSOrderedDescending) {
-                    return currentDict;
+                    [allActiveSetting addObject:currentDict];
                 }
             }
         }
     }
-    return nil;
+    return allActiveSetting.copy;
 }
 
 - (NSMutableArray *)getAllSettingData {
