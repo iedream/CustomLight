@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "DetailViewController.h"
 #import "HueLight.h"
+#import "MasterViewController.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -24,7 +25,10 @@
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     
-    //HueLight *hueLight = [HueLight sharedHueLight];
+    if ([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"]) {
+        MasterViewController *masterViewController = navigationController.viewControllers.firstObject;
+        [masterViewController initAllSettings];
+    }
     
     return YES;
 }

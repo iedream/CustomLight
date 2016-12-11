@@ -23,8 +23,9 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 @interface MasterViewController ()
 
-@property NSArray *objects;
 @property (nonatomic, strong) CLLocationManager *locationManager;
+
+@property NSArray *objects;
 @property (nonatomic, strong) NSMutableArray *beaconRegionArray;
 @property (nonatomic, strong) NSMutableDictionary *geoRegionDict;
 @property (nonatomic, strong) CLCircularRegion *homeRegion;
@@ -44,17 +45,21 @@ const NSString *SETTING_PAGE = @"Setting Page";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self initAllSettings];
+}
+
+- (void)initAllSettings {
     [SettingManager sharedSettingManager];
     
     self.beaconRegionArray = [[NSMutableArray alloc] init];
-
+    
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
-
+    
     self.backgroundQueue = [[NSOperationQueue alloc] init];
     
     self.motionManager = [[CMMotionManager alloc] init];
-
+    
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     
@@ -66,8 +71,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
         self.locationManager.allowsBackgroundLocationUpdates = YES;
         [self.locationManager startMonitoringSignificantLocationChanges];
     }
-
-    self.homeRegion = [[CLCircularRegion alloc] initWithCenter:self.locationManager.location.coordinate radius:2.0 identifier:@"home"];
+    
+    self.homeRegion = [[CLCircularRegion alloc] initWithCenter:self.locationManager.location.coordinate radius:0.5 identifier:@"home"];
     self.homeRegion.notifyOnExit = YES;
     self.homeRegion.notifyOnEntry = YES;
     [self.locationManager startMonitoringForRegion:self.homeRegion];
@@ -87,10 +92,6 @@ const NSString *SETTING_PAGE = @"Setting Page";
     
     self.activeSettingTimer = [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(checkForData) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer: self.activeSettingTimer forMode: NSDefaultRunLoopMode];
-
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUpConnectionDone:) name:@"startObserveStateChange" object:nil];
-    
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeConnection:) name:@"stopObserveStateChange" object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
 }
@@ -106,12 +107,13 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)setUpConnection {
+    [[HueLight sharedHueLight] stopLoading];
     [self.locationManager startUpdatingLocation];
     [self checkLocation:NO];
+    self.motionManager.deviceMotionUpdateInterval = 5;
     [self.motionManager startDeviceMotionUpdatesToQueue:self.backgroundQueue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
         [self checkState:self.locationManager.location];
     }];
-    [self checkForData];
 }
 
 - (void)closeConnection {
@@ -303,6 +305,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     //Start Ranging
     if ([region.identifier isEqualToString:@"home"]) {
+        self.tableView.backgroundColor = [UIColor blueColor];
         [self setUpConnection];
     } else {
         CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;

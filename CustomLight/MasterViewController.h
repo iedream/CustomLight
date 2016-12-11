@@ -16,7 +16,7 @@
 @interface MasterViewController : UITableViewController <CLLocationManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, DetailViewControllerDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
-
+- (void)initAllSettings;
 
 @end
 

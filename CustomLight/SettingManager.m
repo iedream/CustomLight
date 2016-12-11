@@ -178,18 +178,20 @@
         NSString *currentDay = [day stringFromDate:currentTime];
         currentTime = [outputFormatter dateFromString:[outputFormatter stringFromDate:currentTime]];
         
+        NSDate *originalCurrentTime = currentTime;
         if (withinAnHour) {
             currentTime = [currentTime dateByAddingTimeInterval:3600];
         }
         
         
+        
         for (NSString *selectedDay in selectedDays) {
             if ([currentDay containsString:selectedDay]) {
-                if ([startTime compare:currentTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
+                if ([startTime compare:currentTime] == NSOrderedAscending && [originalCurrentTime compare:endTime] == NSOrderedAscending) {
                     [allActiveSetting addObject:currentDict];
-                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedAscending && [currentTime compare:endTime] == NSOrderedAscending) {
+                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedAscending && [originalCurrentTime compare:endTime] == NSOrderedAscending) {
                     [allActiveSetting addObject:currentDict];
-                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedDescending && [currentTime compare:endTime] == NSOrderedDescending) {
+                } else if ([endTime compare:startTime] == NSOrderedAscending && [currentTime compare:startTime] == NSOrderedDescending && [originalCurrentTime compare:endTime] == NSOrderedDescending) {
                     [allActiveSetting addObject:currentDict];
                 }
             }

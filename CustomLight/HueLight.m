@@ -54,9 +54,9 @@ const NSString *SHAKE = @"Shake";
     _inProgressOfSetUp = YES;
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
         if (bridgesFound.count < 1) {
+            _inProgressOfSetUp = NO;
             UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                _inProgressOfSetUp = NO;
+            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {;
                 [self searchForBridge];
             }];
             UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
@@ -81,10 +81,12 @@ const NSString *SHAKE = @"Shake";
 // MARK: - Spinner Related View -
 
 - (void)startLoading {
+    self.visualEffectView.hidden = NO;
     [self.spinnerView startAnimating];
 }
 
 - (void)stopLoading {
+    self.visualEffectView.hidden = YES;
     [self.spinnerView stopAnimating];
 }
 
@@ -139,7 +141,7 @@ const NSString *SHAKE = @"Shake";
     }
     _inProgressOfSetUp = YES;
     _initSetUpDone = NO;
-    self.setupTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 target:self selector:@selector(clearSetupTimer) userInfo:nil repeats:NO];
+    self.setupTimer = [NSTimer scheduledTimerWithTimeInterval:180.0 target:self selector:@selector(clearSetupTimer) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer: self.setupTimer forMode: NSDefaultRunLoopMode];
     
     [self.hueNotificationManager registerObject:self withSelector:@selector(localConnection:) forNotification:LOCAL_CONNECTION_NOTIFICATION];
@@ -154,6 +156,7 @@ const NSString *SHAKE = @"Shake";
 
 - (void)clearSetupTimer {
     _inProgressOfSetUp = NO;
+    [self.setupTimer invalidate];
     [self authenticate];
 }
 
@@ -217,9 +220,8 @@ const NSString *SHAKE = @"Shake";
         _initSetUpDone = YES;
         _inProgressOfSetUp = NO;
         [self.setupTimer invalidate];
-        [self.visualEffectView removeFromSuperview];
         [self stopLoading];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"startObserveStateChange" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
     }
     if ([PHBridgeResourcesReader readBridgeResourcesCache]) {
         self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
