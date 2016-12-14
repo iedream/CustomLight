@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 
 typedef NS_ENUM(NSInteger, SETTINGTYPE)
 {
@@ -18,6 +19,8 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 };
 
 @interface SettingManager : NSObject
+
+@property (nonatomic) CLLocationCoordinate2D homeCoord;
 
 + (SettingManager*)sharedSettingManager;
 

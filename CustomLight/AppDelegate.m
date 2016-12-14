@@ -27,7 +27,7 @@
     
     if ([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"]) {
         MasterViewController *masterViewController = navigationController.viewControllers.firstObject;
-        [masterViewController initAllSettings];
+        [masterViewController setUpConnection];
     }
     
     return YES;

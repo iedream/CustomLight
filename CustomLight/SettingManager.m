@@ -248,9 +248,16 @@
     return alert;
 }
 
+- (void)setHomeCoord:(CLLocationCoordinate2D)homeCoord {
+    _homeCoord = homeCoord;
+    [self writeToPlistSetting];
+}
+
 - (void)writeToPlistSetting {
+    NSDictionary *homeCoordDict = @{@"longitude": @(self.homeCoord.longitude), @"latitude": @(self.homeCoord.latitude)};
+    
     NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": originaldict[@"authenticated"], @"widgets": [self.widgetsArray copy]};
+    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": originaldict[@"authenticated"], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict};
     [dict writeToURL:self.fileURL atomically:YES];
 }
 
@@ -275,10 +282,13 @@
     if(![fileManage fileExistsAtPath:self.fileURL.path]){
         self.settingsArray = [[NSMutableArray alloc] init];
         self.widgetsArray = [[NSMutableArray alloc] init];
+        self.homeCoord = CLLocationCoordinate2DMake(0.0, 0.0);
     } else {
         NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
         self.settingsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"settings"]];
         self.widgetsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"widgets"]];
+        NSDictionary *homeDict = dict[@"homeCoord"];
+        self.homeCoord = CLLocationCoordinate2DMake([homeDict[@"latitude"] floatValue], [homeDict[@"longitude"] floatValue]);
     }
 }
 

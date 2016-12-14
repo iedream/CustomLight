@@ -52,6 +52,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [SettingManager sharedSettingManager];
     
     self.beaconRegionArray = [[NSMutableArray alloc] init];
+    self.geoRegionDict = [[NSMutableDictionary alloc] init];
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
@@ -69,13 +70,18 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
     if ([CLLocationManager locationServicesEnabled]) {
         self.locationManager.allowsBackgroundLocationUpdates = YES;
-        [self.locationManager startMonitoringSignificantLocationChanges];
     }
     
-    self.homeRegion = [[CLCircularRegion alloc] initWithCenter:self.locationManager.location.coordinate radius:0.5 identifier:@"home"];
-    self.homeRegion.notifyOnExit = YES;
-    self.homeRegion.notifyOnEntry = YES;
-    [self.locationManager startMonitoringForRegion:self.homeRegion];
+    UIBarButtonItem *currentLocationButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(setCurrentLocation)];
+    
+    self.navigationItem.rightBarButtonItem = currentLocationButton;
+    
+    if ([SettingManager sharedSettingManager].homeCoord.latitude != 0 || [SettingManager sharedSettingManager].homeCoord.longitude != 0) {
+        self.homeRegion = [[CLCircularRegion alloc] initWithCenter:[SettingManager sharedSettingManager].homeCoord radius:10 identifier:@"home"];
+        self.homeRegion.notifyOnExit = YES;
+        self.homeRegion.notifyOnEntry = YES;
+        [self.locationManager startMonitoringForRegion:self.homeRegion];
+    }
     
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -96,6 +102,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
 }
 
+- (void)setCurrentLocation {
+    [SettingManager sharedSettingManager].homeCoord = self.locationManager.location.coordinate;
+}
+
 - (void)checkForData {
     if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE].count > 0) {
         self.motionManager.deviceMotionUpdateInterval = 1;
@@ -104,12 +114,17 @@ const NSString *SETTING_PAGE = @"Setting Page";
     } else {
         self.motionManager.deviceMotionUpdateInterval = 3600;
     }
+    
+     [self clearGeoRegion:@[]];
 }
 
 - (void)setUpConnection {
-    [[HueLight sharedHueLight] stopLoading];
-    [self.locationManager startUpdatingLocation];
+    if (!self.locationManager || !self.motionManager || !self.backgroundQueue) {
+        [self initAllSettings];
+    }
     [self checkLocation:NO];
+    [self.locationManager startUpdatingLocation];
+    [[HueLight sharedHueLight] hasEnterRange];
     self.motionManager.deviceMotionUpdateInterval = 5;
     [self.motionManager startDeviceMotionUpdatesToQueue:self.backgroundQueue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
         [self checkState:self.locationManager.location];
@@ -253,7 +268,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (NSDictionary *)createRectangleWithRangeDict:(NSDictionary *)rangeDict {
-    float rangeValue = [rangeDict[@"rangeValue"] floatValue] / 100000;
+    float rangeValue = [rangeDict[@"rangeValue"] floatValue] / 10000;
     CGFloat highestLatitude = [rangeDict[@"highestLatitude"] floatValue] + rangeValue;
     CGFloat lowestLatitude = [rangeDict[@"lowestLatitude"] floatValue] - rangeValue;
     CGFloat highestLongitude = [rangeDict[@"highestLongitude"] floatValue] + rangeValue;
@@ -305,7 +320,6 @@ const NSString *SETTING_PAGE = @"Setting Page";
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     //Start Ranging
     if ([region.identifier isEqualToString:@"home"]) {
-        self.tableView.backgroundColor = [UIColor blueColor];
         [self setUpConnection];
     } else {
         CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;

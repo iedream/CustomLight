@@ -90,6 +90,11 @@ const NSString *SHAKE = @"Shake";
     [self.spinnerView stopAnimating];
 }
 
+- (void)hasEnterRange {
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    self.visualEffectView.effect = blurEffect;
+}
+
 // MARK: - Hue Light Setup -
 
 - (void)refreshCache {
@@ -285,7 +290,7 @@ const NSString *SHAKE = @"Shake";
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
-                if (![light.lightState.on boolValue] == lightSwitch) {
+                if ([light.lightState.on boolValue] != lightSwitch) {
                     light.lightState.on = [NSNumber numberWithBool:lightSwitch];
                     light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                     [self setLightStateColorForLight:light andActiveDict:activeDict];
