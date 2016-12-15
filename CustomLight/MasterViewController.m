@@ -49,6 +49,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)initAllSettings {
+    if (self.locationManager) {
+        return;
+    }
+    
     [SettingManager sharedSettingManager];
     
     self.beaconRegionArray = [[NSMutableArray alloc] init];
@@ -119,12 +123,12 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)setUpConnection {
-    if (!self.locationManager || !self.motionManager || !self.backgroundQueue) {
+    if (!self.locationManager) {
         [self initAllSettings];
+        [[HueLight sharedHueLight] hasEnterRange];
     }
     [self checkLocation:NO];
     [self.locationManager startUpdatingLocation];
-    [[HueLight sharedHueLight] hasEnterRange];
     self.motionManager.deviceMotionUpdateInterval = 5;
     [self.motionManager startDeviceMotionUpdatesToQueue:self.backgroundQueue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
         [self checkState:self.locationManager.location];

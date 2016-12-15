@@ -257,7 +257,10 @@
     NSDictionary *homeCoordDict = @{@"longitude": @(self.homeCoord.longitude), @"latitude": @(self.homeCoord.latitude)};
     
     NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": originaldict[@"authenticated"], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict};
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithDictionary: @{@"settings": [self.settingsArray copy], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict}];
+    if (originaldict[@"authenticated"]) {
+        [dict setValue:originaldict[@"authenticated"] forKey:@"authenticated"];
+    }
     [dict writeToURL:self.fileURL atomically:YES];
 }
 
