@@ -361,6 +361,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)setDetailType:(DETAILVIEWTYPE)detailType {
+    if (self.detailType != DETAILVIEWTYPE_PROXIMITY && self.detailType != DETAILVIEWTYPE_SETTINGS && detailType == DETAILVIEWTYPE_PROXIMITY) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"AboutToSetProximityCoordinate" object:nil];
+    }
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY && detailType != DETAILVIEWTYPE_PROXIMITY) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DoneSettingProximityCoordinate" object:nil];
+    }
+    _detailType = detailType;
+}
+
 - (void)finishedSavingWithRangeDict:(NSDictionary *)rangeDict {
     NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
     [outputFormatter setDateFormat:@"HH:mm"];
@@ -472,5 +482,11 @@
     NSDictionary *rangeDict = [cornerCoordinateView getRectangularDict];
     [self finishedSavingWithRangeDict:rangeDict];
     [self.visualEffectView removeFromSuperview];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DoneSettingProximityCoordinate" object:nil];
+    }
 }
 @end

@@ -104,6 +104,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
     [[NSRunLoop currentRunLoop] addTimer: self.activeSettingTimer forMode: NSDefaultRunLoopMode];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setProximityCoord) name:@"AboutToSetProximityCoordinate" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetGeoRegion) name:@"DoneSettingProximityCoordinate" object:nil];
 }
 
 - (void)setCurrentLocation {
@@ -213,17 +215,24 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)checkLocation:(BOOL)checkLocation {
+    NSString *distance = @"0.5m";
+    MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
+    mdf.units = MKDistanceFormatterUnitsMetric;
+    CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
+
+    
     if (!checkLocation && self.locationManager.desiredAccuracy != kCLLocationAccuracyThreeKilometers) {
         self.locationManager.distanceFilter = kCLLocationAccuracyThreeKilometers;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-    } else if (checkLocation && self.locationManager.desiredAccuracy != kCLLocationAccuracyBest){
-        NSString *distance = @"0.5m";
-        MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
-        mdf.units = MKDistanceFormatterUnitsMetric;
-        CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
+    } else if (checkLocation && self.locationManager.desiredAccuracy != preferedDistance){
         self.locationManager.distanceFilter = preferedDistance;
         self.locationManager.desiredAccuracy = preferedDistance;
     }
+}
+
+- (void)setProximityCoord {
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.distanceFilter = kCLLocationAccuracyBest;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
@@ -257,6 +266,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
     }
 }
 
+- (void)resetGeoRegion {
+    [self.geoRegionDict removeAllObjects];
+}
+
 - (void)clearGeoRegion:(NSArray *)geoRegionToKeep {
     if (self.geoRegionDict.count < 1) {
         return;
@@ -272,7 +285,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (NSDictionary *)createRectangleWithRangeDict:(NSDictionary *)rangeDict {
-    float rangeValue = [rangeDict[@"rangeValue"] floatValue] / 10000;
+    float rangeValue = [rangeDict[@"rangeValue"] floatValue] / 100000;
     CGFloat highestLatitude = [rangeDict[@"highestLatitude"] floatValue] + rangeValue;
     CGFloat lowestLatitude = [rangeDict[@"lowestLatitude"] floatValue] - rangeValue;
     CGFloat highestLongitude = [rangeDict[@"highestLongitude"] floatValue] + rangeValue;
