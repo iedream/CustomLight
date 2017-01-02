@@ -265,7 +265,9 @@
 }
 
 - (void)writeBridgeSetupToPlistSetting {
-    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": [NSNumber numberWithBool:YES], @"widgets": [self.widgetsArray copy]};
+    NSDictionary *homeCoordDict = @{@"longitude": @(self.homeCoord.longitude), @"latitude": @(self.homeCoord.latitude)};
+
+    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": [NSNumber numberWithBool:YES], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict};
     [dict writeToURL:self.fileURL atomically:YES];
 }
 

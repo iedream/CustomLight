@@ -46,6 +46,18 @@ const NSString *SHAKE = @"Shake";
     return self;
 }
 
+- (void)displayMessage:(UIAlertController *)alertView {
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+        return;
+    }
+    
+    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+
+    if(vc.presentedViewController == nil){
+        [vc presentViewController:alertView animated:true completion:nil];
+    }
+}
+
 - (void)searchForBridge {
     if (_inProgressOfSetUp) {
         return;
@@ -53,7 +65,7 @@ const NSString *SHAKE = @"Shake";
     _initSetUpDone = NO;
     _inProgressOfSetUp = YES;
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-        if (bridgesFound.count < 1) {
+        if (bridgesFound.count < 1 && ![PHBridgeResourcesReader readBridgeResourcesCache]) {
             _inProgressOfSetUp = NO;
             UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
             UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {;
@@ -62,8 +74,7 @@ const NSString *SHAKE = @"Shake";
             UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
             [authenticateAlert addAction:okAction];
             [authenticateAlert addAction:tryAgainAction];
-            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [vc presentViewController:authenticateAlert animated:true completion:nil];
+            [self displayMessage:authenticateAlert];
         } else {
             self.ipAddress = bridgesFound.allValues.firstObject;
             self.hueNotificationManager = [PHNotificationManager defaultManager];
@@ -125,8 +136,7 @@ const NSString *SHAKE = @"Shake";
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
     [authenticateAlert addAction:okAction];
-    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [vc presentViewController:authenticateAlert animated:true completion:nil];
+    [self displayMessage:authenticateAlert];
     
     self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:self.ipAddress];
     [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
@@ -183,41 +193,40 @@ const NSString *SHAKE = @"Shake";
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
     [authenticateAlert addAction:okAction];
     [authenticateAlert addAction:tryAgainAction];
-    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [vc presentViewController:authenticateAlert animated:true completion:nil];
+    [self displayMessage:authenticateAlert];
 }
 
 - (void)noLocalConnection:(NSNotification *)notif {
     _inProgressOfSetUp = NO;
-    
-    [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-        if (bridgesFound.count < 1 && !self.hueSDK.localConnected) {
-            [self.hueSDK disableLocalConnection];
-            [self.hueSDK disableCacheUpdateLocalHeartbeat:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"stopObserveStateChange" object:nil];
-            _initSetUpDone = NO;
-            
-            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                [self searchForBridge];
-            }];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-            [authenticateAlert addAction:okAction];
-            [authenticateAlert addAction:tryAgainAction];
-            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [vc presentViewController:authenticateAlert animated:true completion:nil];
-        } else {
-            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Set Up Connection Failed" message:@"Setting Up Connection progress failed" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                [self setUpConnection];
-            }];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-            [authenticateAlert addAction:okAction];
-            [authenticateAlert addAction:tryAgainAction];
-            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [vc presentViewController:authenticateAlert animated:true completion:nil];
-        }
-    }];
+//    
+//    [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
+//        if (bridgesFound.count < 1 && !self.hueSDK.localConnected) {
+//            [self.hueSDK disableLocalConnection];
+//            [self.hueSDK disableCacheUpdateLocalHeartbeat:YES];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:@"stopObserveStateChange" object:nil];
+//            _initSetUpDone = NO;
+//            
+//            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
+//            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//                [self searchForBridge];
+//            }];
+//            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+//            [authenticateAlert addAction:okAction];
+//            [authenticateAlert addAction:tryAgainAction];
+//            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+//            [vc presentViewController:authenticateAlert animated:true completion:nil];
+//        } else {
+//            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Set Up Connection Failed" message:@"Setting Up Connection progress failed" preferredStyle:UIAlertControllerStyleAlert];
+//            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//                [self setUpConnection];
+//            }];
+//            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+//            [authenticateAlert addAction:okAction];
+//            [authenticateAlert addAction:tryAgainAction];
+//            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+//            [vc presentViewController:authenticateAlert animated:true completion:nil];
+//        }
+//    }];
 }
 
 - (void)localConnection:(NSNotification *)notif {
