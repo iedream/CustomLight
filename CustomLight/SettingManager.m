@@ -91,63 +91,20 @@
 
 }
 
-- (BOOL)widgetTypeExitAlready:(NSDictionary *)dict {
-    SETTINGTYPE settingType = [dict[@"type"] integerValue];
-    NSArray *groupNames = dict[@"groupNames"];
-    for (NSDictionary *widgetDict in self.widgetsArray) {
-        if ([widgetDict[@"type"] integerValue] == settingType && [groupNames containsObject:widgetDict[@"groupName"]]) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (BOOL)widgetLimitReached {
-    if (self.widgetsArray.count >=4 ) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-- (void)shareWidgets {
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    [sharedDefaults setObject:self.widgetsArray forKey:@"LightSettingData"];
-    [sharedDefaults synchronize];
-}
-
-- (UIAlertController*)refreshWidget {
+- (void)refreshWidget {
     NSArray *allDicts = [self getAllSettingData];
     [self.widgetsArray removeAllObjects];
     for (NSDictionary *dict in allDicts) {
         if ([dict[@"useWidgets"] boolValue]) {
-            UIAlertController *failure = [self addWidgets:dict];
-            if (failure) {
-                return failure;
+            for (NSString *groupName in dict[@"groupNames"]) {
+                NSDictionary *data = @{@"groupName": groupName, @"type": dict[@"type"], @"state": dict[@"on"], @"uniqueKey": dict[@"uniqueKey"], @"uicolor": dict[@"uicolor"]};
+                [self.widgetsArray addObject:data];
             }
         }
     }
-    return nil;
-}
-
-- (UIAlertController*)addWidgets:(NSDictionary *)dict {
-     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-    if ([self widgetLimitReached]) {
-        UIAlertController *widgetError = [UIAlertController alertControllerWithTitle:@"Failed To Add Widget" message:@"Max Limit(4) of Widgets Reached" preferredStyle:UIAlertControllerStyleAlert];
-        [widgetError addAction:cancelAction];
-        return widgetError;
-    } else if ([self widgetTypeExitAlready:dict]) {
-        UIAlertController *widgetError = [UIAlertController alertControllerWithTitle:@"Failed To Add Widget" message:@"Widget of Current Action Type For Current Room Already Exit" preferredStyle:UIAlertControllerStyleAlert];
-        [widgetError addAction:cancelAction];
-        return widgetError;
-    }
-    
-    for (NSString *groupName in dict[@"groupNames"]) {
-        NSDictionary *data = @{@"groupName": groupName, @"type": dict[@"type"], @"state": dict[@"on"], @"uniqueKey": dict[@"uniqueKey"], @"uicolor": dict[@"uicolor"]};
-        [self.widgetsArray addObject:data];
-    }
-    [self shareWidgets];
-    return nil;
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
+    [sharedDefaults setObject:self.widgetsArray forKey:@"LightSettingData"];
+    [sharedDefaults synchronize];
 }
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType {

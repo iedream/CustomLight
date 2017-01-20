@@ -483,14 +483,7 @@
 }
 
 - (void)refreshWidgets:(id)sender {
-    UIAlertController *alert = [[SettingManager sharedSettingManager] refreshWidget];
-    if (alert) {
-        if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
-            self.widgetSwitch.on = NO;
-        }
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-
+    [[SettingManager sharedSettingManager] refreshWidget];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
