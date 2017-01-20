@@ -308,6 +308,9 @@
         
         
         self.lightSettingsTableView.hidden = NO;
+        
+        UIBarButtonItem *currentLocationButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh Widgets" style:UIBarButtonItemStylePlain target:self action:@selector(refreshWidgets:)];
+        self.navigationItem.rightBarButtonItem = currentLocationButton;
     } else {
         self.startTimeLabel.hidden = NO;
         self.startTime.hidden = NO;
@@ -345,6 +348,7 @@
             self.iBeaconLabel.hidden = NO;
             [self rangeSliderValueChanged:self.rangeSlider];
         }
+        self.navigationItem.rightBarButtonItem = nil;
     }
 }
 
@@ -421,19 +425,13 @@
     UIAlertController *alert;
     if (self.currentActiveDict) {
         dict[@"uniqueKey"] = self.currentActiveDict[@"uniqueKey"];
-        alert = [[SettingManager sharedSettingManager] editSettingOldSetting:self.currentActiveDict andNewSetting:dict];
+        [[SettingManager sharedSettingManager] editSettingOldSetting:self.currentActiveDict andNewSetting:dict];
     } else {
         dict[@"uniqueKey"] = @([[SettingManager sharedSettingManager] generateUniqueKey]);
-        alert = [[SettingManager sharedSettingManager] addNewSetting:dict];
+        [[SettingManager sharedSettingManager] addNewSetting:dict];
     }
     self.currentActiveDict = dict;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
-    if (alert) {
-        if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
-            self.widgetSwitch.on = NO;
-        }
-        [self presentViewController:alert animated:YES completion:nil];
-    }
 }
 
 - (IBAction)save:(id)sender {
@@ -482,6 +480,17 @@
     NSDictionary *rangeDict = [cornerCoordinateView getRectangularDict];
     [self finishedSavingWithRangeDict:rangeDict];
     [self.visualEffectView removeFromSuperview];
+}
+
+- (void)refreshWidgets:(id)sender {
+    UIAlertController *alert = [[SettingManager sharedSettingManager] refreshWidget];
+    if (alert) {
+        if (!self.currentActiveDict || ![self.currentActiveDict[@"useWidgets"] boolValue]) {
+            self.widgetSwitch.on = NO;
+        }
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

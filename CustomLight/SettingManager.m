@@ -85,6 +85,7 @@
             [self.settingsArray removeObject:currentActiveDict];
             [self.settingsArray addObject:[mutableCopy copy]];
             [self writeToPlistSetting];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
         }
     }
 
@@ -115,6 +116,20 @@
     [sharedDefaults synchronize];
 }
 
+- (UIAlertController*)refreshWidget {
+    NSArray *allDicts = [self getAllSettingData];
+    [self.widgetsArray removeAllObjects];
+    for (NSDictionary *dict in allDicts) {
+        if ([dict[@"useWidgets"] boolValue]) {
+            UIAlertController *failure = [self addWidgets:dict];
+            if (failure) {
+                return failure;
+            }
+        }
+    }
+    return nil;
+}
+
 - (UIAlertController*)addWidgets:(NSDictionary *)dict {
      UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
     if ([self widgetLimitReached]) {
@@ -135,15 +150,6 @@
     return nil;
 }
 
-- (void)removeWidgets:(int)uniqueKey {
-    for (NSDictionary *widgetDict in [self.widgetsArray copy]) {
-        if ([widgetDict[@"uniqueKey"] intValue] == uniqueKey) {
-            [self.widgetsArray removeObject:widgetDict];
-        }
-    }
-    [self shareWidgets];
-}
-
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType {
     return [self getActiveSettingWith:settingType withinAnHour:NO];
 }
@@ -159,7 +165,7 @@
             continue;
         }
     
-        if (!withinAnHour && [currentDict[@"on"] boolValue] == NO) {
+        if ([currentDict[@"on"] boolValue] == NO) {
             continue;
         }
         
@@ -204,48 +210,21 @@
     return self.settingsArray;
 }
 
-- (UIAlertController *)addNewSetting:(NSDictionary *)newSettingDic {
-    UIAlertController *alert;
-    if ([newSettingDic[@"useWidgets"] boolValue] == YES) {
-        alert = [self addWidgets:newSettingDic];
-    }
-    if (alert) {
-        NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:newSettingDic];
-        [mutableDict setValue:[NSNumber numberWithBool:NO] forKey:@"useWidgets"];
-        newSettingDic = [mutableDict copy];
-    }
+- (void)addNewSetting:(NSDictionary *)newSettingDic {
     [self.settingsArray addObject:newSettingDic];
     [self writeToPlistSetting];
-    return alert;
 }
 
 - (void)removeExistingSetting:(NSDictionary *)existingSettingDic {
     [self.settingsArray removeObject:existingSettingDic];
-    [self removeWidgets:[existingSettingDic[@"uniqueKey"] intValue]];
     [self writeToPlistSetting];
 }
 
-- (UIAlertController *)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting {
-    UIAlertController *alert;
-    if ([oldSetting[@"useWidgets"] boolValue] && [newSetting[@"useWidgets"] boolValue]) {
-        [self removeWidgets:[newSetting[@"uniqueKey"] intValue]];
-        alert = [self addWidgets:newSetting];
-    } else if ([oldSetting[@"useWidgets"] boolValue] && ![newSetting[@"useWidgets"] boolValue]) {
-        [self removeWidgets:[newSetting[@"uniqueKey"] intValue]];
-    } else if (![oldSetting[@"useWidgets"] boolValue] && [newSetting[@"useWidgets"] boolValue]) {
-        alert = [self addWidgets:newSetting];
-    }
-    
-    if (alert) {
-        NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:newSetting];
-        [mutableDict setValue:[NSNumber numberWithBool:NO] forKey:@"useWidgets"];
-        newSetting = [mutableDict copy];
-    }
+- (void)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting {
     [self.settingsArray removeObject:oldSetting];
     [self.settingsArray addObject:newSetting];
     
     [self writeToPlistSetting];
-    return alert;
 }
 
 - (void)setHomeCoord:(CLLocationCoordinate2D)homeCoord {

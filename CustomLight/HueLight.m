@@ -134,20 +134,20 @@ const NSString *SHAKE = @"Shake";
     _initSetUpDone = NO;
     
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:self.ipAddress];
+        [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
+            [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.lastObject ipAddress:bridgesFound.allValues.lastObject];
+            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
+            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
+            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
+            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
+            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
+            [self.hueSDK startPushlinkAuthentication];
+        }];
+    }];
     [authenticateAlert addAction:okAction];
     [self displayMessage:authenticateAlert];
-    
-    self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:self.ipAddress];
-    [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-        [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.firstObject ipAddress:bridgesFound.allValues.firstObject];
-        [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
-        [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
-        [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
-        [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
-        [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
-        [self.hueSDK startPushlinkAuthentication];
-    }];
 }
 
 - (void)setUpConnection {
@@ -163,8 +163,8 @@ const NSString *SHAKE = @"Shake";
     [self.hueNotificationManager registerObject:self withSelector:@selector(noLocalConnection:) forNotification:NO_LOCAL_CONNECTION_NOTIFICATION];
     [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:NO_LOCAL_AUTHENTICATION_NOTIFICATION];
     
-    [self.hueSDK setLocalHeartbeatInterval:2.0f forResourceType:RESOURCES_LIGHTS];
-    [self.hueSDK setLocalHeartbeatInterval:5.0f forResourceType:RESOURCES_GROUPS];
+    [self.hueSDK setLocalHeartbeatInterval:5.0f forResourceType:RESOURCES_LIGHTS];
+    [self.hueSDK setLocalHeartbeatInterval:300.0f forResourceType:RESOURCES_GROUPS];
     
     [self.hueSDK enableLocalConnection];
 }
@@ -185,9 +185,12 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)authenticationFailure:(NSNotification *)notif {
-    _inProgressOfSetUp = NO;
+    if (notif.userInfo[@"progressPercentage"]) {
+        return;
+    }
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authentication Failed" message:@"Authentication progress failed" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        _inProgressOfSetUp = NO;
         [self authenticate];
     }];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];

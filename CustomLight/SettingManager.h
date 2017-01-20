@@ -24,9 +24,11 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 
 + (SettingManager*)sharedSettingManager;
 
-- (UIAlertController *)addNewSetting:(NSDictionary *)newSettingDic;
-- (UIAlertController *)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting;
+- (void)addNewSetting:(NSDictionary *)newSettingDic;
+- (void)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting;
 - (void)removeExistingSetting:(NSDictionary *)existingSettingDic;
+
+- (UIAlertController*)refreshWidget;
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType;
 - (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType;

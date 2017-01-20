@@ -10,6 +10,7 @@
 		466B98628AD1BFFBD1690522 /* libPods-CustomLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5247765D7CDAFF1635617AA4 /* libPods-CustomLight.a */; };
 		4F00361D1DD4213B00991B02 /* SettingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F00361C1DD4213B00991B02 /* SettingManager.m */; };
 		4F1896321DD7D43B00B07558 /* CornerCoordinateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */; };
+		4F2E32DE1E31B0C60084ADBB /* checkMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F2E32DD1E31B0C60084ADBB /* checkMark.png */; };
 		4F909FA31DCDA4BF00593FDF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA21DCDA4BF00593FDF /* main.m */; };
 		4F909FA61DCDA4BF00593FDF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA51DCDA4BF00593FDF /* AppDelegate.m */; };
 		4F909FA91DCDA4BF00593FDF /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F909FA81DCDA4BF00593FDF /* MasterViewController.m */; };
@@ -28,7 +29,6 @@
 		4FDCF8701DD010390083F3CE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF86F1DD010390083F3CE /* AVFoundation.framework */; };
 		4FDCF8721DD0103F0083F3CE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */; };
 		4FDCF8781DD02B180083F3CE /* CustomLightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */; };
-		4FDCF87A1DD02C680083F3CE /* checkMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 4FDCF8791DD02C680083F3CE /* checkMark.png */; };
 		4FF5FF871DD56FC700523C8A /* CustomLightSettingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */; };
 		4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */; };
 		4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */; };
@@ -87,6 +87,7 @@
 		4F00361C1DD4213B00991B02 /* SettingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingManager.m; sourceTree = "<group>"; };
 		4F1896301DD7D43B00B07558 /* CornerCoordinateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CornerCoordinateView.h; sourceTree = "<group>"; };
 		4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CornerCoordinateView.m; sourceTree = "<group>"; };
+		4F2E32DD1E31B0C60084ADBB /* checkMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkMark.png; sourceTree = "<group>"; };
 		4F909F9E1DCDA4BF00593FDF /* CustomLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F909FA21DCDA4BF00593FDF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F909FA41DCDA4BF00593FDF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -121,7 +122,6 @@
 		4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4FDCF8761DD02B180083F3CE /* CustomLightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLightTableViewCell.h; sourceTree = "<group>"; };
 		4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLightTableViewCell.m; sourceTree = "<group>"; };
-		4FDCF8791DD02C680083F3CE /* checkMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkMark.png; path = ../../../Downloads/checkMark.png; sourceTree = "<group>"; };
 		4FF5FF851DD56FC700523C8A /* CustomLightSettingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLightSettingTableViewCell.h; sourceTree = "<group>"; };
 		4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLightSettingTableViewCell.m; sourceTree = "<group>"; };
 		4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HueSDK_iOS.framework; sourceTree = "<group>"; };
@@ -220,7 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				4FB02ACB1DDEBFCC00433D44 /* CustomLight.entitlements */,
-				4FDCF8791DD02C680083F3CE /* checkMark.png */,
+				4F2E32DD1E31B0C60084ADBB /* checkMark.png */,
 				4F909FA41DCDA4BF00593FDF /* AppDelegate.h */,
 				4F909FA51DCDA4BF00593FDF /* AppDelegate.m */,
 				4F909FA71DCDA4BF00593FDF /* MasterViewController.h */,
@@ -500,7 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F909FB41DCDA4BF00593FDF /* LaunchScreen.storyboard in Resources */,
-				4FDCF87A1DD02C680083F3CE /* checkMark.png in Resources */,
+				4F2E32DE1E31B0C60084ADBB /* checkMark.png in Resources */,
 				4F909FB11DCDA4BF00593FDF /* Assets.xcassets in Resources */,
 				4F909FAF1DCDA4BF00593FDF /* Main.storyboard in Resources */,
 			);

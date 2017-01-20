@@ -116,12 +116,13 @@ const NSString *SETTING_PAGE = @"Setting Page";
     if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE].count > 0) {
         self.motionManager.deviceMotionUpdateInterval = 1;
     } else if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_BRIGHTNESS].count > 0){
-        self.motionManager.deviceMotionUpdateInterval = 30;
+        self.motionManager.deviceMotionUpdateInterval = 60;
     } else {
         self.motionManager.deviceMotionUpdateInterval = 3600;
     }
     
      [self clearGeoRegion:@[]];
+    [self checkState:self.locationManager.location];
 }
 
 - (void)setUpConnection {
@@ -215,7 +216,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 }
 
 - (void)checkLocation:(BOOL)checkLocation {
-    NSString *distance = @"0.5m";
+    NSString *distance = @"1m";
     MKDistanceFormatter *mdf = [[MKDistanceFormatter alloc] init];
     mdf.units = MKDistanceFormatterUnitsMetric;
     CLLocationDistance preferedDistance = [mdf distanceFromString:distance];
@@ -260,6 +261,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     
     for (CLRegion *region in self.locationManager.monitoredRegions.copy) {
         if (![beaconRegionToKeep containsObject:region.identifier] && [self.beaconRegionArray containsObject: region.identifier] ) {
+            [self.locationManager stopRangingBeaconsInRegion:(CLBeaconRegion *)region];
             [self.locationManager stopMonitoringForRegion:region];
             [self.beaconRegionArray removeObject:region.identifier];
         }
