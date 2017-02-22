@@ -114,7 +114,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
 
 - (void)checkForData {
     if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_SHAKE].count > 0) {
-        self.motionManager.deviceMotionUpdateInterval = 1;
+        self.motionManager.deviceMotionUpdateInterval = 0.5;
     } else if ([[SettingManager sharedSettingManager] getFutureActiveSettingWith:SETTINGTYPE_BRIGHTNESS].count > 0){
         self.motionManager.deviceMotionUpdateInterval = 60;
     } else {

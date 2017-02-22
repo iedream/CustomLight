@@ -213,8 +213,11 @@
         return NO;
     } else {
         NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-        BOOL bridgeSetup = [[dict objectForKey:@"authenticated"] boolValue];
-        return bridgeSetup;
+        if (dict) {
+            BOOL bridgeSetup = [[dict objectForKey:@"authenticated"] boolValue];
+            return bridgeSetup;
+        }
+        return NO;
     }
 }
 
@@ -223,13 +226,25 @@
     if(![fileManage fileExistsAtPath:self.fileURL.path]){
         self.settingsArray = [[NSMutableArray alloc] init];
         self.widgetsArray = [[NSMutableArray alloc] init];
-        self.homeCoord = CLLocationCoordinate2DMake(0.0, 0.0);
+        _homeCoord = CLLocationCoordinate2DMake(0.0, 0.0);
     } else {
         NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-        self.settingsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"settings"]];
-        self.widgetsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"widgets"]];
-        NSDictionary *homeDict = dict[@"homeCoord"];
-        self.homeCoord = CLLocationCoordinate2DMake([homeDict[@"latitude"] floatValue], [homeDict[@"longitude"] floatValue]);
+        if (dict && [dict objectForKey:@"settings"]) {
+            self.settingsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"settings"]];
+        } else {
+            self.settingsArray = [[NSMutableArray alloc] init];
+        }
+        if (dict && [dict objectForKey:@"widgets"]) {
+            self.widgetsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"widgets"]];
+        } else {
+            self.widgetsArray = [[NSMutableArray alloc] init];
+        }
+        if (dict && dict[@"homeCoord"]) {
+            NSDictionary *homeDict = dict[@"homeCoord"];
+            _homeCoord = CLLocationCoordinate2DMake([homeDict[@"latitude"] floatValue], [homeDict[@"longitude"] floatValue]);
+        } else {
+            _homeCoord = CLLocationCoordinate2DMake(0.0, 0.0);
+        }
     }
 }
 
