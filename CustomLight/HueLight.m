@@ -51,15 +51,33 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)displayMessage:(UIAlertController *)alertView {
-    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         return;
     }
-    
-    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
 
-    if(vc.presentedViewController == nil){
-        [vc presentViewController:alertView animated:true completion:nil];
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        while ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+            
+        }
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+            if(vc.presentedViewController == nil){
+                [vc presentViewController:alertView animated:true completion:nil];
+            }
+        });
+    });
+}
+
+- (void)selectHueBridge:(NSArray *)hueBridges completion:(void (^)(NSUInteger index))completion
+{
+    UIAlertController *bridgeSelection = [UIAlertController alertControllerWithTitle:@"Select Philip Hue Bridge" message:@"Please select your hue bridge" preferredStyle:UIAlertControllerStyleAlert];
+    for (NSString *hueBridge in hueBridges) {
+        UIAlertAction *currentAction = [UIAlertAction actionWithTitle:hueBridge style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            completion([hueBridges indexOfObject:hueBridge]);
+        }];
+        [bridgeSelection addAction:currentAction];
     }
+    [self displayMessage:bridgeSelection];
 }
 
 // MARK: - Spinner Related View -
@@ -112,19 +130,28 @@ const NSString *SHAKE = @"Shake";
                 [authenticateAlert addAction:tryAgainAction];
                 [self displayMessage:authenticateAlert];
             } else {
-                [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.lastObject ipAddress:bridgesFound.allValues.lastObject];
-                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
-                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
-                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
-                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
-                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
-                [self.hueSDK startPushlinkAuthentication];
-
+                if (bridgesFound.allKeys.count > 1) {
+                    [self selectHueBridge:bridgesFound.allKeys completion:^(NSUInteger index) {
+                        [self authentication:bridgesFound.allKeys[index] ipAddress:bridgesFound.allValues[index]];
+                    }];
+                } else {
+                    [self authentication:bridgesFound.allKeys.firstObject ipAddress:bridgesFound.allValues.firstObject];
+                }
             }
         }];
     }];
     [authenticateAlert addAction:okAction];
     [self displayMessage:authenticateAlert];
+}
+
+- (void)authentication:(NSString *)bridgeId ipAddress:(NSString *)ipAddress {
+    [self.hueSDK setBridgeToUseWithId:bridgeId ipAddress:ipAddress];
+    [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
+    [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
+    [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
+    [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
+    [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
+    [self.hueSDK startPushlinkAuthentication];
 }
 
 - (void)setUpConnection {
