@@ -17,5 +17,5 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 };
 
 @interface CustomLightWidgetCollectionViewCell : UICollectionViewCell
-- (void)setUpCellWithData:(NSDictionary *)dict;
+- (void)setUpCellWithData:(NSString *)uniqueKey;
 @end

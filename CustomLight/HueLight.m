@@ -38,8 +38,14 @@ const NSString *SHAKE = @"Shake";
         [self.hueSDK enableLogging:NO];
         [self.hueSDK startUpSDK];
         
-        self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:YES];
-        [self searchForBridge];
+        
+        self.hueNotificationManager = [PHNotificationManager defaultManager];
+        self.sendAPI = [[PHBridgeSendAPI alloc] init];
+        if ([[SettingManager sharedSettingManager] readBridgeSetupFromPlistSetting]) {
+            [self setUpConnection];
+        } else {
+            [self authenticate];
+        }
     }
     return self;
 }
@@ -54,36 +60,6 @@ const NSString *SHAKE = @"Shake";
     if(vc.presentedViewController == nil){
         [vc presentViewController:alertView animated:true completion:nil];
     }
-}
-
-- (void)searchForBridge {
-    if (_actionInProgress) {
-        return;
-    }
-    _actionInProgress = YES;
-    [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-        if (bridgesFound.count < 1) {
-            UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {;
-                _actionInProgress = NO;
-                [self searchForBridge];
-            }];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-            [authenticateAlert addAction:okAction];
-            [authenticateAlert addAction:tryAgainAction];
-            [self displayMessage:authenticateAlert];
-        } else {
-            self.ipAddress = bridgesFound.allValues.lastObject;
-            self.hueNotificationManager = [PHNotificationManager defaultManager];
-            self.sendAPI = [[PHBridgeSendAPI alloc] init];
-            _actionInProgress = NO;
-            if ([[SettingManager sharedSettingManager] readBridgeSetupFromPlistSetting]) {
-                [self setUpConnection];
-            } else {
-                [self authenticate];
-            }
-        }
-    }];
 }
 
 // MARK: - Spinner Related View -
@@ -111,7 +87,7 @@ const NSString *SHAKE = @"Shake";
     }
     
     if (![PHBridgeResourcesReader readBridgeResourcesCache]) {
-        [self searchForBridge];
+        [self setUpConnection];
     }
 }
 
@@ -123,15 +99,28 @@ const NSString *SHAKE = @"Shake";
     
     UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"Authenticate Bridge" message:@"Press big button on bridge" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:self.ipAddress];
+        self.bridgeSearching = [[PHBridgeSearching alloc]initWithUpnpSearch:YES andPortalSearch:YES andIpAddressSearch:YES];
         [self.bridgeSearching startSearchWithCompletionHandler:^(NSDictionary *bridgesFound) {
-            [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.lastObject ipAddress:bridgesFound.allValues.lastObject];
-            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
-            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
-            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
-            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
-            [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
-            [self.hueSDK startPushlinkAuthentication];
+            if (bridgesFound.count < 1) {
+                UIAlertController *authenticateAlert = [UIAlertController alertControllerWithTitle:@"No Bridge Found" message:@"Cannot found bridge on current wifi network" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *tryAgainAction = [UIAlertAction actionWithTitle:@"Try Again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {;
+                    _actionInProgress = NO;
+                    [self authenticate];
+                }];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+                [authenticateAlert addAction:okAction];
+                [authenticateAlert addAction:tryAgainAction];
+                [self displayMessage:authenticateAlert];
+            } else {
+                [self.hueSDK setBridgeToUseWithId:bridgesFound.allKeys.lastObject ipAddress:bridgesFound.allValues.lastObject];
+                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationSuccess:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_SUCCESS_NOTIFICATION];
+                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_LOCAL_AUTHENTICATION_FAILED_NOTIFICATION];
+                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_CONNECTION_NOTIFICATION];
+                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_NO_LOCAL_BRIDGE_KNOWN_NOTIFICATION];
+                [self.hueNotificationManager registerObject:self withSelector:@selector(authenticationFailure:) forNotification:PUSHLINK_BUTTON_NOT_PRESSED_NOTIFICATION];
+                [self.hueSDK startPushlinkAuthentication];
+
+            }
         }];
     }];
     [authenticateAlert addAction:okAction];

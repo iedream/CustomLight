@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface WidgesSettingManager : NSObject
-- (NSMutableArray *)setUpData;
+- (NSArray *)setUpData;
 + (WidgesSettingManager*)sharedSettingManager;
-- (void)editActiveSettingWith:(NSDictionary *)dict andState:(BOOL)state;
+- (void)editActiveSettingWith:(NSString *)uniqueKey;
+- (NSDictionary *)dataForUniqueKey:(NSString *)uniqueKey;
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "CustomLightTableViewCell.h"
+#import "SettingManager.h"
 
 @interface CustomLightTableViewCell()
 @property (nonatomic, strong) UILabel *textView;
@@ -38,7 +39,8 @@
     self.textView.text = title;
 }
 
-- (void)applyCurrentSetting:(NSDictionary *)currentActiveDict {
+- (void)applyCurrentSetting:(NSString *)currentActiveKey {
+    NSDictionary *currentActiveDict = [[SettingManager sharedSettingManager] getDataForUniqueKey:currentActiveKey];
     NSArray *groupNames = currentActiveDict[@"groupNames"];
     for (NSString *groupName in groupNames) {
         if ([groupName isEqualToString:self.textView.text]) {

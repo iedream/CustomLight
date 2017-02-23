@@ -41,12 +41,12 @@
 @property (nonatomic, strong) ISColorWheel *colorPickerWheel;
 
 @property (nonatomic, strong) NSArray *groupData;
-@property (nonatomic, strong) NSMutableArray *settingData;
+@property (nonatomic, strong) NSArray *settingData;
 @property (nonatomic, strong) NSMutableArray *selectedRooms;
 
 @property (nonatomic, strong) UITableView *lightSettingsTableView;
 
-@property (nonatomic, strong) NSDictionary *currentActiveDict;
+@property (nonatomic, strong) NSString *currentActiveKey;
 
 @property (nonatomic, strong) UIVisualEffectView *visualEffectView;
 
@@ -55,7 +55,7 @@
 @implementation DetailViewController
 
 - (void)configureView {
-    self.currentActiveDict = nil;
+    self.currentActiveKey = nil;
     
     // Update the user interface for the detail item.
     
@@ -103,9 +103,8 @@
         if (lightSettingCell == nil) {
             lightSettingCell = [[CustomLightSettingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LightSettingTableViewCell"];
         }
-        NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
-        
-        [lightSettingCell setCellTextWithCurrentDict:currentDict];
+        NSString *currentUniqueKey = [self.settingData objectAtIndex:indexPath.row];
+        [lightSettingCell setCellTextWithCurrentUniqueKey:currentUniqueKey];
         return lightSettingCell;
         
     } else {
@@ -114,12 +113,14 @@
             groupCell = [[CustomLightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GroupTableViewCell"];
         }
         [groupCell setTitle:[self.groupData objectAtIndex:indexPath.row]];
-        [groupCell applyCurrentSetting:self.currentActiveDict];
+        [groupCell applyCurrentSetting:self.currentActiveKey];
         return groupCell;
     }
 }
 
-- (void)configureSettingView:(NSDictionary *)currentDict {
+- (void)configureSettingView:(NSString *)currentActiveKey {
+    NSDictionary *currentDict = [[SettingManager sharedSettingManager] getDataForUniqueKey:currentActiveKey];
+    
     NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
     [outputFormatter setDateFormat:@"HH:mm"];
     outputFormatter.timeZone = [NSTimeZone systemTimeZone];
@@ -185,10 +186,13 @@
             [self.rangeSlider setValue:rangeValue animated:YES];
         }
     }
-    self.currentActiveDict = currentDict;
+    self.currentActiveKey = currentActiveKey;
     
     [self.selectedRooms addObjectsFromArray:[currentDict objectForKey:@"groupNames"]];
     [self.groupTableView reloadData];
+    
+    UIBarButtonItem *currentLocationButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh Widgets" style:UIBarButtonItemStylePlain target:self action:@selector(refreshWidgets:)];
+    self.navigationItem.rightBarButtonItem = currentLocationButton;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -203,7 +207,7 @@
             self.detailType = DETAILVIEWTYPE_PROXIMITY;
         }
         [self resetViews];
-        [self configureSettingView:[groupCell getCurrentDict]];
+        [self configureSettingView:[groupCell getCurrentUniqueKey]];
     } else {
         CustomLightTableViewCell *groupCell = [self.groupTableView cellForRowAtIndexPath:indexPath];
         [groupCell getSelected];
@@ -223,9 +227,10 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         if (self.detailType == DETAILVIEWTYPE_SETTINGS) {
             SettingManager *settingManager = [SettingManager sharedSettingManager];
-            NSDictionary *currentDict = [self.settingData objectAtIndex:indexPath.row];
-            [settingManager removeExistingSetting:currentDict];
-            [self.lightSettingsTableView deleteRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationFade];
+            NSString *currentUniqueKey = [self.settingData objectAtIndex:indexPath.row];
+            [settingManager removeSettingWithUniqueKey:currentUniqueKey];
+            self.settingData = [[SettingManager sharedSettingManager] getAllSettingData];
+            [self.lightSettingsTableView reloadData];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
         }
     }
@@ -308,9 +313,7 @@
         
         
         self.lightSettingsTableView.hidden = NO;
-        
-        UIBarButtonItem *currentLocationButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh Widgets" style:UIBarButtonItemStylePlain target:self action:@selector(refreshWidgets:)];
-        self.navigationItem.rightBarButtonItem = currentLocationButton;
+        self.navigationItem.rightBarButtonItem = nil;
     } else {
         self.startTimeLabel.hidden = NO;
         self.startTime.hidden = NO;
@@ -398,8 +401,8 @@
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms, @"on":[NSNumber numberWithBool:self.onSwitch.on]}];
     
-    if (self.currentActiveDict) {
-        rangeDict = self.currentActiveDict[@"range"];
+    if (self.currentActiveKey) {
+        rangeDict = [[[SettingManager sharedSettingManager] getDataForUniqueKey:self.currentActiveKey] objectForKey:@"range"];
     }
     
     if (rangeDict) {
@@ -422,20 +425,12 @@
     
     [dict setValue:[NSNumber numberWithBool:self.widgetSwitch.on] forKey:@"useWidgets"];
     
-    UIAlertController *alert;
-    if (self.currentActiveDict) {
-        dict[@"uniqueKey"] = self.currentActiveDict[@"uniqueKey"];
-        [[SettingManager sharedSettingManager] editSettingOldSetting:self.currentActiveDict andNewSetting:dict];
-    } else {
-        dict[@"uniqueKey"] = @([[SettingManager sharedSettingManager] generateUniqueKey]);
-        [[SettingManager sharedSettingManager] addNewSetting:dict];
-    }
-    self.currentActiveDict = dict;
+    self.currentActiveKey = [[SettingManager sharedSettingManager] addSetting:dict uniqueKey:self.currentActiveKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
 }
 
 - (IBAction)save:(id)sender {
-    if (self.detailType == DETAILVIEWTYPE_PROXIMITY && !self.currentActiveDict) {
+    if (self.detailType == DETAILVIEWTYPE_PROXIMITY && !self.currentActiveKey) {
         if (self.useiBeaconSwitch.on) {
             UIAlertController *useiBeacon = [UIAlertController alertControllerWithTitle:@"Create iBeacon Range" message:@"Create iBeacon Boundry" preferredStyle:UIAlertControllerStyleAlert];
             [useiBeacon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
@@ -483,7 +478,8 @@
 }
 
 - (void)refreshWidgets:(id)sender {
-    [[SettingManager sharedSettingManager] refreshWidget];
+    [self save:nil];
+    [[SettingManager sharedSettingManager] refreshWidgetForUniqueKey:self.currentActiveKey];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -24,18 +24,17 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 
 + (SettingManager*)sharedSettingManager;
 
-- (void)addNewSetting:(NSDictionary *)newSettingDic;
-- (void)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting;
-- (void)removeExistingSetting:(NSDictionary *)existingSettingDic;
+- (NSString *)addSetting:(NSDictionary *)newSettingDic uniqueKey:(NSString *)uniqueKey;
+- (void)removeSettingWithUniqueKey:(NSString *)uniqueKey;
 
-- (void)refreshWidget;
+- (void)refreshWidgetForUniqueKey:(NSString *)uniqueKey;
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType;
 - (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType;
-- (NSMutableArray *)getAllSettingData;
+- (NSArray *)getAllSettingData;
+- (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey;
 
 - (void)writeBridgeSetupToPlistSetting;
 - (BOOL)readBridgeSetupFromPlistSetting;
 
-- (int)generateUniqueKey;
 @end

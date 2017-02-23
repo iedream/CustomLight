@@ -9,15 +9,19 @@
 #import "WidgesSettingManager.h"
 
 @interface  WidgesSettingManager()
-@property (nonatomic, strong) NSMutableArray *data;
+@property (nonatomic, strong) NSMutableDictionary *data;
 @end
 @implementation WidgesSettingManager
 
-- (NSMutableArray *)setUpData {
+- (NSArray *)setUpData {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    NSArray *array = [defaults arrayForKey:@"LightSettingData"];
-    self.data = [[NSMutableArray alloc] initWithArray:array];
-    return self.data;
+    NSDictionary *dict = [defaults dictionaryForKey:@"LightSettingData"];
+    self.data = [[NSMutableDictionary alloc] initWithDictionary:dict];
+    return self.data.allKeys;
+}
+
+- (NSDictionary *)dataForUniqueKey:(NSString *)uniqueKey {
+    return self.data[uniqueKey];
 }
 
 - (void)shareWidgets {
@@ -26,12 +30,16 @@
     [sharedDefaults synchronize];
 }
 
-- (void)editActiveSettingWith:(NSDictionary *)dict andState:(BOOL)state {
-    NSInteger widgetIndex = [self.data indexOfObject:dict];
-    [self.data removeObject:dict];
-    NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:dict];
+- (void)editActiveSettingWith:(NSString *)uniqueKey {
+    NSMutableDictionary *mutableDict = [[NSMutableDictionary alloc] initWithDictionary:self.data[uniqueKey]];
+    BOOL state;
+    if ([mutableDict[@"state"] boolValue] == YES) {
+        state = NO;
+    } else {
+        state = YES;
+    }
     mutableDict[@"state"] = [NSNumber numberWithBool:state];
-    [self.data insertObject:mutableDict atIndex:widgetIndex];
+    self.data[uniqueKey] = mutableDict.copy;
     [self shareWidgets];
 }
 

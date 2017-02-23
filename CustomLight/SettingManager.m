@@ -11,8 +11,8 @@
 
 @interface SettingManager()
 @property (nonatomic, strong) NSURL *fileURL;
-@property (nonatomic, strong) NSMutableArray *settingsArray;
-@property (nonatomic, strong) NSMutableArray *widgetsArray;
+@property (nonatomic, strong) NSMutableDictionary *settingsDict;
+@property (nonatomic, strong) NSMutableDictionary *widgetsDict;
 @end
 
 @implementation SettingManager
@@ -37,42 +37,33 @@
     BOOL isUnique = YES;
     do {
         uniqueKey = arc4random();
-        for (NSDictionary *dict in self.settingsArray) {
-            if ([dict[@"uniqueKey"] intValue] == uniqueKey) {
-                isUnique = NO;
-            }
+        if ([self.settingsDict objectForKey:@(uniqueKey)]) {
+            isUnique = NO;
         }
     } while (!isUnique);
     return uniqueKey;
 }
 
-- (NSDictionary *)getActiveDictWithUniqueKey:(int)uniqueKey {
-    for (NSDictionary *dict in self.settingsArray) {
-        if ([dict[@"uniqueKey"] intValue] == uniqueKey) {
-            return dict;
-        }
-    }
-    return nil;
-}
-
 - (void)configureSettingWithWidgesData:(NSNotification *)notif {
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    NSArray *data = [sharedDefaults arrayForKey:@"LightSettingData"];
+    NSDictionary *data = [sharedDefaults dictionaryForKey:@"LightSettingData"];
+    self.widgetsDict = [[NSMutableDictionary alloc] initWithDictionary:data];
     
-    for (NSDictionary *dict in data) {
-        int uniqueKey = [dict[@"uniqueKey"] intValue];
-        NSDictionary *currentActiveDict = [self getActiveDictWithUniqueKey:uniqueKey];
+    for (NSString *uniqueKeyInit in data.allKeys) {
+        NSString *uniqueKey = [[uniqueKeyInit componentsSeparatedByString:@"/"] firstObject];
+        NSDictionary *currentActiveDict = [self.settingsDict objectForKey:uniqueKey];
+        NSDictionary *currentWidgetsDict = [data objectForKey:uniqueKeyInit];
         if (!currentActiveDict) {
             continue;
         }
         NSMutableDictionary *mutableCopy;
         NSMutableArray *groupNamesArr = [[NSMutableArray alloc] initWithArray:currentActiveDict[@"groupNames"]];
-        if ([dict[@"state"] boolValue] && ![groupNamesArr containsObject:dict[@"groupName"]]) {
-                [groupNamesArr addObject:dict[@"groupName"]];
+        if ([currentWidgetsDict[@"state"] boolValue] && ![groupNamesArr containsObject:currentWidgetsDict[@"groupName"]]) {
+                [groupNamesArr addObject:currentWidgetsDict[@"groupName"]];
                 mutableCopy = [[NSMutableDictionary alloc] initWithDictionary:currentActiveDict];
                 mutableCopy[@"groupNames"] = [groupNamesArr copy];
-        } else if (![dict[@"state"] boolValue] && [groupNamesArr containsObject:dict[@"groupName"]]) {
-                [groupNamesArr removeObject:dict[@"groupName"]];
+        } else if (![currentWidgetsDict[@"state"] boolValue] && [groupNamesArr containsObject:currentWidgetsDict[@"groupName"]]) {
+                [groupNamesArr removeObject:currentWidgetsDict[@"groupName"]];
                 mutableCopy = [[NSMutableDictionary alloc] initWithDictionary:currentActiveDict];
                 mutableCopy[@"groupNames"] = [groupNamesArr copy];
         }
@@ -82,8 +73,7 @@
             mutableCopy[@"on"] = [NSNumber numberWithBool:YES];
         }
         if (mutableCopy) {
-            [self.settingsArray removeObject:currentActiveDict];
-            [self.settingsArray addObject:[mutableCopy copy]];
+            self.settingsDict[uniqueKey] = [mutableCopy copy];
             [self writeToPlistSetting];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
         }
@@ -91,19 +81,28 @@
 
 }
 
-- (void)refreshWidget {
-    NSArray *allDicts = [self getAllSettingData];
-    [self.widgetsArray removeAllObjects];
-    for (NSDictionary *dict in allDicts) {
-        if ([dict[@"useWidgets"] boolValue]) {
-            for (NSString *groupName in dict[@"groupNames"]) {
-                NSDictionary *data = @{@"groupName": groupName, @"type": dict[@"type"], @"state": dict[@"on"], @"uniqueKey": dict[@"uniqueKey"], @"uicolor": dict[@"uicolor"]};
-                [self.widgetsArray addObject:data];
-            }
+- (void)refreshWidgetForUniqueKey:(NSString *)uniqueKey{
+    if (!uniqueKey) {
+        return;
+    }
+    
+    for (NSString *uniqueKeyInit in self.widgetsDict.allKeys) {
+        if ([[[uniqueKeyInit componentsSeparatedByString:@"/"] firstObject] isEqualToString:uniqueKey]) {
+            [self.widgetsDict removeObjectForKey:uniqueKeyInit];
+        }
+    }
+    
+    NSDictionary *dict = self.settingsDict[uniqueKey];
+    if ([dict[@"useWidgets"] boolValue] ) {
+        NSArray *groupNames = dict[@"groupNames"];
+        for (NSString *groupName in groupNames) {
+            NSDictionary *data = @{@"groupName": groupName, @"type": dict[@"type"], @"state": dict[@"on"], @"uicolor": dict[@"uicolor"]};
+            NSString *uniqueKeyFinal = [NSString stringWithFormat:@"%@/%lu", uniqueKey, (unsigned long)[groupNames indexOfObject:groupName]];
+            self.widgetsDict[uniqueKeyFinal] = data;
         }
     }
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.smarterlight"];
-    [sharedDefaults setObject:self.widgetsArray forKey:@"LightSettingData"];
+    [sharedDefaults setObject:self.widgetsDict forKey:@"LightSettingData"];
     [sharedDefaults synchronize];
 }
 
@@ -117,7 +116,7 @@
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
     NSMutableArray *allActiveSetting = [[NSMutableArray alloc] init];
-    for (NSDictionary *currentDict in self.settingsArray.copy) {
+    for (NSDictionary *currentDict in self.settingsDict.allValues) {
         if ([currentDict[@"type"] integerValue] != settingType) {
             continue;
         }
@@ -163,24 +162,26 @@
     return allActiveSetting.copy;
 }
 
-- (NSMutableArray *)getAllSettingData {
-    return self.settingsArray;
+- (NSArray *)getAllSettingData {
+    return self.settingsDict.allKeys;
 }
 
-- (void)addNewSetting:(NSDictionary *)newSettingDic {
-    [self.settingsArray addObject:newSettingDic];
+- (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey {
+    return self.settingsDict[uniqueKey];
+}
+
+- (NSString *)addSetting:(NSDictionary *)newSettingDic uniqueKey:(NSString *)uniqueKey {
+    if (!uniqueKey) {
+        uniqueKey = [NSString stringWithFormat: @"%i", [self generateUniqueKey]];
+    }
+    self.settingsDict[uniqueKey] = newSettingDic;
     [self writeToPlistSetting];
+    return uniqueKey;
 }
 
-- (void)removeExistingSetting:(NSDictionary *)existingSettingDic {
-    [self.settingsArray removeObject:existingSettingDic];
-    [self writeToPlistSetting];
-}
-
-- (void)editSettingOldSetting:(NSDictionary *)oldSetting andNewSetting:(NSDictionary *)newSetting {
-    [self.settingsArray removeObject:oldSetting];
-    [self.settingsArray addObject:newSetting];
-    
+- (void)removeSettingWithUniqueKey:(NSString *)uniqueKey {
+    [self.settingsDict removeObjectForKey:uniqueKey];
+    [self refreshWidgetForUniqueKey:uniqueKey];
     [self writeToPlistSetting];
 }
 
@@ -193,21 +194,22 @@
     NSDictionary *homeCoordDict = @{@"longitude": @(self.homeCoord.longitude), @"latitude": @(self.homeCoord.latitude)};
     
     NSDictionary *originaldict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithDictionary: @{@"settings": [self.settingsArray copy], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict}];
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithDictionary: @{@"settings": self.settingsDict, @"widgets": self.widgetsDict, @"homeCoord": homeCoordDict}];
     if (originaldict[@"authenticated"]) {
         [dict setValue:originaldict[@"authenticated"] forKey:@"authenticated"];
     }
-    [dict writeToURL:self.fileURL atomically:YES];
+    Boolean succ = [dict writeToURL:self.fileURL atomically:YES];
 }
 
 - (void)writeBridgeSetupToPlistSetting {
     NSDictionary *homeCoordDict = @{@"longitude": @(self.homeCoord.longitude), @"latitude": @(self.homeCoord.latitude)};
 
-    NSDictionary *dict = @{@"settings": [self.settingsArray copy], @"authenticated": [NSNumber numberWithBool:YES], @"widgets": [self.widgetsArray copy], @"homeCoord": homeCoordDict};
-    [dict writeToURL:self.fileURL atomically:YES];
+    NSDictionary *dict = @{@"settings": [self.settingsDict copy], @"authenticated": [NSNumber numberWithBool:YES], @"widgets": [self.widgetsDict copy], @"homeCoord": homeCoordDict};
+    Boolean succ = [dict writeToURL:self.fileURL atomically:YES];
 }
 
 - (BOOL)readBridgeSetupFromPlistSetting {
+    [self writeBridgeSetupToPlistSetting];
     NSFileManager *fileManage = [NSFileManager defaultManager];
     if(![fileManage fileExistsAtPath:self.fileURL.path]){
         return NO;
@@ -224,20 +226,20 @@
 - (void)readFromPlistSetting {
     NSFileManager *fileManage = [NSFileManager defaultManager];
     if(![fileManage fileExistsAtPath:self.fileURL.path]){
-        self.settingsArray = [[NSMutableArray alloc] init];
-        self.widgetsArray = [[NSMutableArray alloc] init];
+        self.settingsDict = [[NSMutableDictionary alloc] init];
+        self.widgetsDict = [[NSMutableDictionary alloc] init];
         _homeCoord = CLLocationCoordinate2DMake(0.0, 0.0);
     } else {
         NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:self.fileURL.path];
         if (dict && [dict objectForKey:@"settings"]) {
-            self.settingsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"settings"]];
+            self.settingsDict = [[NSMutableDictionary alloc] initWithDictionary:[dict objectForKey:@"settings"]];
         } else {
-            self.settingsArray = [[NSMutableArray alloc] init];
+            self.settingsDict = [[NSMutableDictionary alloc] init];
         }
         if (dict && [dict objectForKey:@"widgets"]) {
-            self.widgetsArray = [[NSMutableArray alloc] initWithArray:[dict objectForKey:@"widgets"]];
+            self.widgetsDict = [[NSMutableDictionary alloc] initWithDictionary:[dict objectForKey:@"widgets"]];
         } else {
-            self.widgetsArray = [[NSMutableArray alloc] init];
+            self.widgetsDict = [[NSMutableDictionary alloc] init];
         }
         if (dict && dict[@"homeCoord"]) {
             NSDictionary *homeDict = dict[@"homeCoord"];

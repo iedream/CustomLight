@@ -15,7 +15,7 @@
 @property (nonatomic, strong) UILabel *typeLabel;
 @property (nonatomic) SETTINGTYPE settingType;
 
-@property (nonatomic, strong) NSDictionary *currentDict;
+@property (nonatomic, strong) NSString *currentUniqueKey;
 @end
 
 @implementation CustomLightWidgetCollectionViewCell
@@ -57,8 +57,9 @@
     }
 }
 
-- (void)setUpCellWithData:(NSDictionary *)dict {
-    self.currentDict = dict;
+- (void)setUpCellWithData:(NSString *)uniqueKey {
+    self.currentUniqueKey = uniqueKey;
+    NSDictionary *dict = [[WidgesSettingManager sharedSettingManager] dataForUniqueKey:uniqueKey];
     [self clearData];
     [self setUp];
     [self drawRect:self.frame];
@@ -89,13 +90,7 @@
 }
 
 - (void)toggleButton:(UIButton *)sender {
-    BOOL state;
-    if ([self.currentDict[@"state"] boolValue] == YES) {
-        state = NO;
-    } else {
-        state = YES;
-    }
-    [[WidgesSettingManager sharedSettingManager] editActiveSettingWith:self.currentDict andState:state];
+    [[WidgesSettingManager sharedSettingManager] editActiveSettingWith:self.currentUniqueKey];
 }
 
 - (void)prepareForReuse {

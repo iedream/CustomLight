@@ -13,9 +13,10 @@
 #import "WidgesSettingManager.h"
 
 @interface TodayViewController () <NCWidgetProviding>
-@property (nonatomic, strong) NSMutableArray *data;
+@property (nonatomic, strong) NSArray *data;
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSDictionary *settingData;
+@property (nonatomic) CGSize originalSize;
 @end
 
 @implementation TodayViewController
@@ -35,16 +36,22 @@
     //NSLog(@"reload widges");
     
     [super viewDidLoad];
+    self.originalSize = self.view.frame.size;
+    [self.extensionContext setWidgetLargestAvailableDisplayMode:NCWidgetDisplayModeExpanded];
     self.data = [[WidgesSettingManager sharedSettingManager] setUpData];
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.sectionInset = UIEdgeInsetsMake(20, 0, 0, 0);
     flowLayout.minimumInteritemSpacing = 1.0f;
-    flowLayout.minimumLineSpacing = 0;
-    self.collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+    flowLayout.minimumLineSpacing = 1.0f;
+    CGRect collectionFrame = self.view.bounds;
+    collectionFrame.size.width -= 20.0f;
+    self.collectionView = [[UICollectionView alloc] initWithFrame:collectionFrame collectionViewLayout:flowLayout];
     [self.collectionView registerClass:[CustomLightWidgetCollectionViewCell class] forCellWithReuseIdentifier:@"WidgesCollectionViewCell"];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
+    [self.collectionView setScrollEnabled:YES];
+    self.collectionView.showsVerticalScrollIndicator = YES;
     [self.view addSubview:self.collectionView];
     self.collectionView.backgroundColor = self.view.backgroundColor;
     [self.collectionView reloadData];
@@ -68,7 +75,7 @@
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 0.0;
+    return 10.0;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -84,8 +91,8 @@
     if (!collectionViewCell) {
         collectionViewCell = [[CustomLightWidgetCollectionViewCell alloc] init];
     }
-    NSDictionary *dict = [self.data objectAtIndex:indexPath.row];
-    [collectionViewCell setUpCellWithData:dict];
+    NSString *uniqueKey = [self.data objectAtIndex:indexPath.row];
+    [collectionViewCell setUpCellWithData:uniqueKey];
     return collectionViewCell;
 }
 
@@ -102,6 +109,21 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (void)widgetActiveDisplayModeDidChange:(NCWidgetDisplayMode)activeDisplayMode withMaximumSize:(CGSize)maxSize {
+    if (activeDisplayMode == NCWidgetDisplayModeCompact){
+        [UIView animateWithDuration:0.25 animations:^{
+            self.preferredContentSize = maxSize;
+            [self.view layoutIfNeeded];
+        }];
+    }else if (activeDisplayMode == NCWidgetDisplayModeExpanded){
+        [UIView animateWithDuration:0.25 animations:^{
+            self.preferredContentSize = self.originalSize;
+            [self.view layoutIfNeeded];
+        }];
+    }
+}
+
 
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
     // Perform any setup necessary in order to update the view.

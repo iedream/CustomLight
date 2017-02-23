@@ -13,7 +13,7 @@
 @property (nonatomic, strong) UILabel *groupLabel;
 @property (nonatomic, strong) UILabel *typeLabel;
 @property (nonatomic, strong) UILabel *repeatDaysLabel;
-@property (nonatomic, strong) NSDictionary *currentDict;
+@property (nonatomic, strong) NSString *currentUniqueKey;
 @end
 
 @implementation CustomLightSettingTableViewCell
@@ -38,15 +38,17 @@
 }
 
 - (SETTINGTYPE)currentSettingType {
-    return [self.currentDict[@"type"] integerValue];
+    NSDictionary *currentDict = [[SettingManager sharedSettingManager] getDataForUniqueKey:self.currentUniqueKey];
+    return [currentDict[@"type"] integerValue];
 }
 
-- (NSDictionary *)getCurrentDict {
-    return self.currentDict;
+- (NSString *)getCurrentUniqueKey {
+    return self.currentUniqueKey;
 }
 
-- (void)setCellTextWithCurrentDict:(NSDictionary *)currentDict {
-    self.currentDict = currentDict;
+- (void)setCellTextWithCurrentUniqueKey:(NSString *)uniqueKey {
+    self.currentUniqueKey = uniqueKey;
+    NSDictionary *currentDict = [[SettingManager sharedSettingManager] getDataForUniqueKey:uniqueKey];
     
     NSString *lightSettingType = [self lightSettingTypeString:[currentDict[@"type"] integerValue]];
     NSString *groupName = [self groupNameString:currentDict];
