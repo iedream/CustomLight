@@ -971,7 +971,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightWidges/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Catherine.smarterlight.CustomLightWidges;
+				PRODUCT_BUNDLE_IDENTIFIER = Catherine.smarterlight.CustomLightWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -984,7 +984,7 @@
 				DEVELOPMENT_TEAM = 2269Y262Z6;
 				INFOPLIST_FILE = CustomLightWidges/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Catherine.smarterlight.CustomLightWidges;
+				PRODUCT_BUNDLE_IDENTIFIER = Catherine.smarterlight.CustomLightWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
