@@ -155,7 +155,7 @@
     [self.repeatDaySelectionControl setSelectedSegmentIndexes:indexSets];
     
     NSDictionary *colorDict = currentDict[@"uicolorDict"];
-    [self.colorPickerWheel setTouchPointWithDict:colorDict];
+    [self.colorPickerWheel setCurrentTouchPoint:colorDict];
     
     double brightness = [currentDict[@"brightness"] doubleValue];
     brightness = brightness / 254.0;
