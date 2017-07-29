@@ -19,6 +19,7 @@
 const NSString *SHAKE_ACTION = @"Detect Shake";
 const NSString *BRIGHTNESS_ACTION = @"Detect Brightness";
 const NSString *PROXIMITY_ACTION = @"Detect Proximity";
+const NSString *SUNRISE_SUNSET_ACTION = @"Detect Sunrise/Sunset";
 const NSString *SETTING_PAGE = @"Setting Page";
 
 @interface MasterViewController ()
@@ -59,7 +60,7 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.geoRegionDict = [[NSMutableDictionary alloc] init];
     
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-    self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SETTING_PAGE];
+    self.objects = @[SHAKE_ACTION, BRIGHTNESS_ACTION, PROXIMITY_ACTION, SUNRISE_SUNSET_ACTION, SETTING_PAGE];
     
     self.backgroundQueue = [[NSOperationQueue alloc] init];
     
@@ -103,6 +104,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
     self.activeSettingTimer = [NSTimer timerWithTimeInterval:3600 target:self selector:@selector(checkForData) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer: self.activeSettingTimer forMode: NSDefaultRunLoopMode];
     
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForSunsetSunrise) name:@"checkForSunriseSunset" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForData) name:@"checkForData" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setProximityCoord) name:@"AboutToSetProximityCoordinate" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetGeoRegion) name:@"DoneSettingProximityCoordinate" object:nil];
@@ -123,6 +126,10 @@ const NSString *SETTING_PAGE = @"Setting Page";
     
      [self clearGeoRegion:@[]];
     [self checkState:self.locationManager.location];
+}
+
+- (void)checkForSunsetSunrise {
+    [[HueLight sharedHueLight] getSunriseSunsetTime:self.locationManager.location.coordinate];
 }
 
 - (void)setUpConnection {
@@ -434,6 +441,8 @@ const NSString *SETTING_PAGE = @"Setting Page";
             controller.detailType = DETAILVIEWTYPE_BRIGHTNESS;
         } else if ([text isEqualToString:PROXIMITY_ACTION]) {
             controller.detailType = DETAILVIEWTYPE_PROXIMITY;
+        } else if ([text isEqualToString:SUNRISE_SUNSET_ACTION]) {
+            controller.detailType = DETAILVIEWTYPE_SUNRISE_SUNSET;
         } else if ([text isEqualToString:SETTING_PAGE]) {
             controller.detailType = DETAILVIEWTYPE_SETTINGS;
         } else {

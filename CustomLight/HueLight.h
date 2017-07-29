@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 
 typedef NS_ENUM(NSInteger, LIGHTNAME)
 {
@@ -25,10 +26,12 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 - (void)refreshCache;
 - (void)toggleLightOnOffWithActiveDict:(NSDictionary *)activeDict;
 - (void)configureLightWithActiveDict:(NSDictionary *)activeDict andLightSwitch:(BOOL)lightSwitch;
+- (void)getSunriseSunsetTime:(CLLocationCoordinate2D)coordinate;
 - (void)detectSurrondingBrightness:(CGFloat)brightness andActiveDict:(NSDictionary *)activeDict;
 - (NSArray*)getGroupData;
 - (void)startLoading;
 - (void)stopLoading;
 - (void)hasEnterRange;
 - (NSDictionary*)convertUIColorToHueColorNumber:(UIColor *)color andGroupName:(NSArray *)groupNames;
+- (void) deleteSunriseSunsetData;
 @end

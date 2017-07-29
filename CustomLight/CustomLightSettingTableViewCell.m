@@ -102,8 +102,10 @@
 - (NSString *)timeString:(NSDictionary *)currentDict {
     NSString *startTime = [currentDict objectForKey:@"startTime"];
     NSString *endTime = [currentDict objectForKey:@"endTime"];
-    NSString *timeString = [NSString stringWithFormat:@"%@ - %@", startTime, endTime];
-    return timeString;
+    if (startTime && endTime) {
+        return [NSString stringWithFormat:@"%@ - %@", startTime, endTime];
+    }
+    return @"";
 }
 
 - (NSString *)groupNameString:(NSDictionary *)currentDict {
@@ -127,6 +129,8 @@
             return @"BRIGHTNESS";
         case SETTINGTYPE_PROXIMITY:
             return @"PROXIMITY";
+        case SETTINGTYPE_SUNRISE_SUNSET:
+            return @"SUNRISE/SUNSET";
         default:
             return @"";
     }

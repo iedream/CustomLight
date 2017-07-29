@@ -124,10 +124,13 @@
     NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
     [outputFormatter setDateFormat:@"HH:mm"];
     outputFormatter.timeZone = [NSTimeZone systemTimeZone];
-    NSDate *startTime = [outputFormatter dateFromString:currentDict[@"startTime"]];
-    NSDate *endTime = [outputFormatter dateFromString:currentDict[@"endTime"]];
-    [self.startTime setDate:startTime animated:YES];
-    [self.endTime setDate:endTime animated:YES];
+    
+    if (currentDict[@"startTime"] && currentDict[@"endTime"]) {
+        NSDate *startTime = [outputFormatter dateFromString:currentDict[@"startTime"]];
+        NSDate *endTime = [outputFormatter dateFromString:currentDict[@"endTime"]];
+        [self.startTime setDate:startTime animated:YES];
+        [self.endTime setDate:endTime animated:YES];
+    }
     
     NSArray *selectedDays = currentDict[@"selectedRepeatDays"];
     NSMutableIndexSet *indexSets = [[NSMutableIndexSet alloc] init];
@@ -205,6 +208,8 @@
             self.detailType = DETAILVIEWTYPE_BRIGHTNESS;
         } else if ([groupCell currentSettingType] == SETTINGTYPE_PROXIMITY) {
             self.detailType = DETAILVIEWTYPE_PROXIMITY;
+        } else if ([groupCell currentSettingType] == SETTINGTYPE_SUNRISE_SUNSET) {
+            self.detailType = DETAILVIEWTYPE_SUNRISE_SUNSET;
         }
         [self resetViews];
         [self configureSettingView:[groupCell getCurrentUniqueKey]];
@@ -231,7 +236,11 @@
             [settingManager removeSettingWithUniqueKey:currentUniqueKey];
             self.settingData = [[SettingManager sharedSettingManager] getAllSettingData];
             [self.lightSettingsTableView reloadData];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
+            if ([currentUniqueKey isEqualToString:@"sunrise_sunset"]) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForSunriseSunset" object:nil];
+            } else {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
+            }
         }
     }
 }
@@ -314,6 +323,34 @@
         
         self.lightSettingsTableView.hidden = NO;
         self.navigationItem.rightBarButtonItem = nil;
+    } else if (self.detailType == DETAILVIEWTYPE_SUNRISE_SUNSET) {
+        self.startTimeLabel.hidden = YES;
+        self.startTime.hidden = YES;
+        self.endTimeLabel.hidden = YES;
+        self.endTime.hidden = YES;
+        
+        self.repeatDaySelectionView.hidden = NO;
+        self.repeatDaySelectionControl.hidden = NO;
+        
+        self.brightnessLabel.hidden = NO;
+        self.brightnessValueLabel.hidden = NO;
+        self.brightnessSlider.hidden = NO;
+        
+        self.groupTableView.hidden = NO;
+        
+        self.colorPickerView.hidden = NO;
+        self.colorPickerWheel.hidden = NO;
+        
+        self.widgetLabel.hidden = NO;
+        self.widgetSwitch.hidden = NO;
+        
+        self.lightSettingsTableView.hidden = YES;
+        
+        [self.rangeSlider setHidden:YES];
+        self.rangeValueLabel.hidden = YES;
+        self.useiBeaconSwitch.hidden = YES;
+        self.rangeTitleLabel.hidden = YES;
+        self.iBeaconLabel.hidden = YES;
     } else {
         self.startTimeLabel.hidden = NO;
         self.startTime.hidden = NO;
@@ -399,7 +436,11 @@
     NSDictionary *colorDict = [[HueLight sharedHueLight] convertUIColorToHueColorNumber:color andGroupName:self.selectedRooms];
     
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms, @"on":[NSNumber numberWithBool:self.onSwitch.on]}];
+    if (self.detailType == SETTINGTYPE_SUNRISE_SUNSET) {
+        [dict addEntriesFromDictionary:@{@"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms, @"on":[NSNumber numberWithBool:self.onSwitch.on]}];
+    } else {
+        [dict addEntriesFromDictionary:@{@"startTime": startTime, @"endTime": endTime, @"selectedRepeatDays": selectedDaysArr, @"brightness": brightnessValue, @"color":colorDict, @"uicolor":colorData, @"uicolorDict": uicolorDict, @"groupNames": self.selectedRooms, @"on":[NSNumber numberWithBool:self.onSwitch.on]}];
+    }
     
     if (self.currentActiveKey) {
         rangeDict = [[[SettingManager sharedSettingManager] getDataForUniqueKey:self.currentActiveKey] objectForKey:@"range"];
@@ -419,14 +460,21 @@
         settingType = SETTINGTYPE_SHAKE;
     } else if (self.detailType == DETAILVIEWTYPE_PROXIMITY) {
         settingType = SETTINGTYPE_PROXIMITY;
+    } else if (self.detailType == DETAILVIEWTYPE_SUNRISE_SUNSET) {
+        settingType = SETTINGTYPE_SUNRISE_SUNSET;
     }
     
     [dict setValue:@(settingType) forKey:@"type"];
     
     [dict setValue:[NSNumber numberWithBool:self.widgetSwitch.on] forKey:@"useWidgets"];
     
-    self.currentActiveKey = [[SettingManager sharedSettingManager] addSetting:dict uniqueKey:self.currentActiveKey];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
+    if (self.detailType == DETAILVIEWTYPE_SUNRISE_SUNSET) {
+        self.currentActiveKey = [[SettingManager sharedSettingManager] addSettingForSunriseSunset:dict];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForSunriseSunset" object:nil];
+    } else {
+        self.currentActiveKey = [[SettingManager sharedSettingManager] addSetting:dict uniqueKey:self.currentActiveKey];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
+    }
 }
 
 - (IBAction)save:(id)sender {

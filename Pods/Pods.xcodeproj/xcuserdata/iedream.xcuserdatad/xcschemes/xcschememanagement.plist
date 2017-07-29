@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>MultiSelectSegmentedControl.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-CustomLight.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-CustomLightTests.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-CustomLightUITests.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>iOS-color-wheel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>1A066829034C51701BCA6587CBC9E95F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7A99F00BC1D44A85FA49F3ED7D473BBE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9819CA677A9C7F1A817F76B6C0BC12F0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9BA38F5A9CCB30E18751F3CBE231B71E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F3F010DDB74FDEFCD806CF654981336A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>

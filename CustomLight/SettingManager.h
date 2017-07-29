@@ -15,7 +15,8 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
     SETTINGTYPE_NONE,
     SETTINGTYPE_BRIGHTNESS,
     SETTINGTYPE_PROXIMITY,
-    SETTINGTYPE_SHAKE
+    SETTINGTYPE_SHAKE,
+    SETTINGTYPE_SUNRISE_SUNSET
 };
 
 @interface SettingManager : NSObject
@@ -33,6 +34,10 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 - (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType;
 - (NSArray *)getAllSettingData;
 - (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey;
+
+- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId;
+
+- (NSString *)addSettingForSunriseSunset:(NSDictionary *)newSettingDic;
 
 - (void)writeBridgeSetupToPlistSetting;
 - (BOOL)readBridgeSetupFromPlistSetting;

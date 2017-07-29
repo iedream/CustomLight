@@ -1,0 +1,15 @@
+PODS:
+  - iOS-color-wheel (0.1)
+  - MultiSelectSegmentedControl (1.1.0)
+
+DEPENDENCIES:
+  - iOS-color-wheel
+  - MultiSelectSegmentedControl
+
+SPEC CHECKSUMS:
+  iOS-color-wheel: 60d441600bd62d58250a915719b84ed89283ce95
+  MultiSelectSegmentedControl: 54fb23c997b971eff621cfcf965ff1613d99c3d2
+
+PODFILE CHECKSUM: d1789c50dd05037eaa6e4b8de4b43bfa4e0b8314
+
+COCOAPODS: 1.2.0

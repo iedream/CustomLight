@@ -29,8 +29,8 @@
 		4FDCF8701DD010390083F3CE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF86F1DD010390083F3CE /* AVFoundation.framework */; };
 		4FDCF8721DD0103F0083F3CE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */; };
 		4FDCF8781DD02B180083F3CE /* CustomLightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */; };
+		4FE9C0791F2AFB4100442675 /* HueSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FE9C0781F2AFB4100442675 /* HueSDK_iOS.framework */; };
 		4FF5FF871DD56FC700523C8A /* CustomLightSettingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */; };
-		4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */; };
 		4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */; };
 		4FF724301DCE7EE300B1AB5E /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724231DCE7EE300B1AB5E /* DDASLLogger.m */; };
 		4FF724311DCE7EE300B1AB5E /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724251DCE7EE300B1AB5E /* DDFileLogger.m */; };
@@ -122,9 +122,9 @@
 		4FDCF8711DD0103F0083F3CE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4FDCF8761DD02B180083F3CE /* CustomLightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLightTableViewCell.h; sourceTree = "<group>"; };
 		4FDCF8771DD02B180083F3CE /* CustomLightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLightTableViewCell.m; sourceTree = "<group>"; };
+		4FE9C0781F2AFB4100442675 /* HueSDK_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HueSDK_iOS.framework; path = Lumberjack/HueSDK_iOS.framework; sourceTree = "<group>"; };
 		4FF5FF851DD56FC700523C8A /* CustomLightSettingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLightSettingTableViewCell.h; sourceTree = "<group>"; };
 		4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLightSettingTableViewCell.m; sourceTree = "<group>"; };
-		4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HueSDK_iOS.framework; sourceTree = "<group>"; };
 		4FF724201DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
 		4FF724211DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
 		4FF724221DCE7EE300B1AB5E /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
@@ -158,7 +158,7 @@
 			files = (
 				4FDCF8721DD0103F0083F3CE /* CoreLocation.framework in Frameworks */,
 				4FDCF8701DD010390083F3CE /* AVFoundation.framework in Frameworks */,
-				4FF7241E1DCE7E5C00B1AB5E /* HueSDK_iOS.framework in Frameworks */,
+				4FE9C0791F2AFB4100442675 /* HueSDK_iOS.framework in Frameworks */,
 				466B98628AD1BFFBD1690522 /* libPods-CustomLight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -193,8 +193,8 @@
 		4F909F951DCDA4BF00593FDF = {
 			isa = PBXGroup;
 			children = (
+				4FE9C0781F2AFB4100442675 /* HueSDK_iOS.framework */,
 				4FF7241F1DCE7EE300B1AB5E /* Lumberjack */,
-				4FF7241D1DCE7E5C00B1AB5E /* HueSDK_iOS.framework */,
 				4F909FA01DCDA4BF00593FDF /* CustomLight */,
 				4F909FBD1DCDA4BF00593FDF /* CustomLightTests */,
 				4F909FC81DCDA4BF00593FDF /* CustomLightUITests */,
@@ -868,6 +868,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Lumberjack",
 				);
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -892,6 +893,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Lumberjack",
 				);
 				INFOPLIST_FILE = CustomLight/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

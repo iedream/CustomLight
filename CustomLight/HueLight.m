@@ -12,6 +12,7 @@
 const NSString *BRIGHTNESS = @"Brightness";
 const NSString *PROXIMITY = @"Proximity";
 const NSString *SHAKE = @"Shake";
+const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
 
 @interface HueLight()
 @property (nonatomic, strong) PHHueSDK *hueSDK;
@@ -207,11 +208,13 @@ const NSString *SHAKE = @"Shake";
 }
 
 - (void)localConnection:(NSNotification *)notif {
-    if (self.setupTimer.valid) {
+    if (self.setupTimer) {
         _actionInProgress = NO;
         [self.setupTimer invalidate];
+        self.setupTimer = nil;
         [self stopLoading];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForSunriseSunset" object:nil];
     }
     if ([PHBridgeResourcesReader readBridgeResourcesCache]) {
         self.cache = [PHBridgeResourcesReader readBridgeResourcesCache];
@@ -323,6 +326,142 @@ const NSString *SHAKE = @"Shake";
             NSLog(@"Success");
         } else {
             NSLog(@"Failure");
+        }
+    }];
+}
+
+-(void)setLightSchedule:(PHLightState *)lightState andDate:(NSDate *)date andLightId:(NSString *)groupId andScheduleId:(NSString *)scheduleId andRecurringMode:(NSArray *)recurringDaysArr {
+    if (_actionInProgress) {
+        return;
+    }
+    
+    _actionInProgress = YES;
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *currentComponents = [calendar components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate dateWithTimeInterval:(24*60*60) sinceDate:[NSDate date]]];
+    NSDateComponents *components = [calendar components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:date];
+    currentComponents.hour = components.hour;
+    currentComponents.minute = components.minute;
+    currentComponents.second = components.second;
+    
+    // Set created time
+    NSDate *newTime = [calendar dateFromComponents:currentComponents];
+    
+    RecurringDay recurringDays;
+    for (NSString *recurringDay in recurringDaysArr) {
+        if ([recurringDay isEqualToString:@"Mon"]) {
+            recurringDays = recurringDays | RecurringMonday;
+        }
+        if ([recurringDay isEqualToString:@"Tue"]) {
+            recurringDays = recurringDays | RecurringTuesday;
+        }
+        if ([recurringDay isEqualToString:@"Wed"]) {
+            recurringDays = recurringDays | RecurringWednesday;
+        }
+        if ([recurringDay isEqualToString:@"Thur"]) {
+            recurringDays = recurringDays | RecurringThursday;
+        }
+        if ([recurringDay isEqualToString:@"Fri"]) {
+            recurringDays = recurringDays | RecurringFriday;
+        }
+        if ([recurringDay isEqualToString:@"Sat"]) {
+            recurringDays = recurringDays | RecurringSaturday;
+        }
+        if ([recurringDay isEqualToString:@"Sun"]) {
+            recurringDays = recurringDays | RecurringSunday;
+        }
+    }
+    
+    
+    PHSchedule *schedule = [self.cache.schedules objectForKey:scheduleId];
+    if (schedule) {
+        schedule.date = newTime;
+        [self.sendAPI updateScheduleWithSchedule:schedule completionHandler:^(NSArray *errors) {
+            _actionInProgress = NO;
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Failure");
+            }
+        }];
+    } else {
+        //schedule = [[PHSchedule alloc] init];
+//        schedule = self.cache.schedules.allValues.firstObject;
+//        schedule.name = @"Sunrise/Sunset";
+//        schedule.localTime = YES;
+//        schedule.date = newTime;
+//        schedule.state = lightState;
+//        schedule.groupIdentifier = groupId;
+//        schedule.recurringDays = recurringDays;
+//        [self.sendAPI createSchedule:schedule completionHandler:^(NSString *scheduleIdentifier, NSArray *errors) {
+//            _actionInProgress = NO;
+//            [[SettingManager sharedSettingManager] setScheduleIdOfSunriseSunsetSetting:scheduleIdentifier];
+//            if (!errors) {
+//                NSLog(@"Success");
+//            } else {
+//                NSLog(@"Failure");
+//            }
+//        }];
+   }
+}
+
+- (void)configureLightScheduleWithLightSwitch:(BOOL)lightSwitch andDate:(NSDate *)date {
+    if (_actionInProgress) {
+        return;
+    }
+    
+    NSDictionary *activeDict =  [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
+    NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
+    for (PHGroup *group in self.cache.groups.allValues) {
+        if ([groupNames containsObject:group.name]) {
+            for (NSString *lightId in group.lightIdentifiers) {
+                PHLight *light = [self.cache.lights objectForKey:lightId];
+                light.lightState.on = [NSNumber numberWithBool:lightSwitch];
+                light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                [self setLightStateColorForLight:light andActiveDict:activeDict];
+                [self setLightSchedule:light.lightState andDate:date andLightId:group.identifier andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"]];
+            }
+        }
+    }
+}
+
+- (void)getSunriseSunsetTime:(CLLocationCoordinate2D)coordinate {
+    NSString *url = [NSString stringWithFormat:@"https://api.sunrise-sunset.org/json?lat=%f&lng=%f",(float)coordinate.latitude, (float)coordinate.longitude];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:40.0];
+    [request setHTTPMethod:@"GET"];
+    
+    NSURLSessionTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(error) {
+            NSLog(@"Error: %@", error);
+        }else {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+            NSError *err;
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
+            
+            if ([httpResponse statusCode] == 200){
+                NSString *sunriseTimeString = json[@"results"][@"sunrise"];
+                sunriseTimeString = [sunriseTimeString substringToIndex:[sunriseTimeString length]-3];
+                NSString *sunsetTimeString = json[@"results"][@"sunset"];
+                sunsetTimeString = [sunsetTimeString substringToIndex:[sunsetTimeString length]-3];
+                NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+                [outputFormatter setDateFormat:@"HH:mm:ss"];
+                outputFormatter.timeZone = [NSTimeZone systemTimeZone];
+                NSDate *sunriseTime = [outputFormatter dateFromString:sunriseTimeString];
+                NSDate *sunsetTime = [outputFormatter dateFromString:sunsetTimeString];
+                [self configureLightScheduleWithLightSwitch:true andDate:sunsetTime];
+                [self configureLightScheduleWithLightSwitch:false andDate:sunriseTime];
+            }
+        }
+    }];
+    [task resume];
+}
+
+- (void) deleteSunriseSunsetData {
+    NSDictionary *sunriseSunsetDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
+    [self.sendAPI removeScheduleWithId:@"5" completionHandler:^(NSArray *errors) {
+        if (!errors) {
+            NSLog(@"Success");
+        } else {
+            NSLog(@"Error: %@", errors);
         }
     }];
 }

@@ -1,0 +1,858 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0BD3DF6CDA0D1F1FD47DD8E04B5C7F0E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */; };
+		1434C9952A7F9AA7FB2D0925D59A372E /* ISColorWheel.h in Headers */ = {isa = PBXBuildFile; fileRef = ADC75F84AAF2EF9526F01EC14F45D570 /* ISColorWheel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		473B270E20495A63E3A2A3AFBCFF22D4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */; };
+		48AB880EFADDF024DA84FC5285C04B9F /* iOS-color-wheel-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F4F6813F8BBF0424CFD82C11A672D6 /* iOS-color-wheel-dummy.m */; };
+		4AE7CD7F2B09C37AEFC4E775F3A51540 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51498E299B7CB17BCC8B54F93C150FAA /* QuartzCore.framework */; };
+		5B0842AC805811F787150223385227EA /* Pods-CustomLightTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1E03BBFE52D5A3F0D948F8FE8B6455 /* Pods-CustomLightTests-dummy.m */; };
+		76A310B354EA3A8D08880183E729C4C8 /* MultiSelectSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 4590B642CFAA4E1C1A627611EDD28E68 /* MultiSelectSegmentedControl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7EE7915E441FF7A296CD9F17CBD6FF28 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC1FD743D031D373EDF29CC526F758E2 /* UIKit.framework */; };
+		81F7BDFF925A87BB30246D8029725BB2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D8EF2301073B01E30612B5B1BD94446 /* CoreGraphics.framework */; };
+		ACCB8D81483C3EDD348F7794199B798E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */; };
+		AFACF38C4AA9B4A132DE7294226A8FD1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */; };
+		C2FBBB68E2C71F411E6AD7375046ABCC /* MultiSelectSegmentedControl-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 393211D6270466BF4D0FAB1A0CFB3282 /* MultiSelectSegmentedControl-dummy.m */; };
+		D503C97CF74287F6A6FF7A4E8C3C8A5C /* Pods-CustomLight-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 65ED5D708B90B3792E1DADCC416A9D99 /* Pods-CustomLight-dummy.m */; };
+		D789F76C12DAC6B6C9D9B0BE3F076E38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */; };
+		DAA0EFDFB58D6BE9DFEF5463475FB36F /* MultiSelectSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 57643B44A513FC6CAD0EC6BFC0EBF1B7 /* MultiSelectSegmentedControl.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		ECF6BE73E718B337D4FF24BE2100C888 /* ISColorWheel.m in Sources */ = {isa = PBXBuildFile; fileRef = D29D9698E85D0C438B0A774D62333F5E /* ISColorWheel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FB532DC4EFB6BC9ECC527C5C81CC81D1 /* Pods-CustomLightUITests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C46E61B849CF79BD19AD2F2F9CF6DE09 /* Pods-CustomLightUITests-dummy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		086C94B1AEDBCB69BDCF4209F79F076A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9819CA677A9C7F1A817F76B6C0BC12F0;
+			remoteInfo = "iOS-color-wheel";
+		};
+		4662E9D634B82D9862EC77743BBEA8BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A066829034C51701BCA6587CBC9E95F;
+			remoteInfo = MultiSelectSegmentedControl;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01A4F8FE03B6E289F5A584718F005C28 /* Pods-CustomLight-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLight-resources.sh"; sourceTree = "<group>"; };
+		061F0484BFBDA84A0A059E80DF57D3B5 /* Pods-CustomLight-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-CustomLight-acknowledgements.markdown"; sourceTree = "<group>"; };
+		0D8EF2301073B01E30612B5B1BD94446 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
+		0F48D4B60E49BAAD03D7E85837CDE472 /* Pods-CustomLightTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-CustomLightTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		1BEE13409482E8EFA0A32368B5B7D669 /* Pods-CustomLightTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-CustomLightTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		209842BEAFE1717528BD556B8DEA7925 /* libPods-CustomLightUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-CustomLightUITests.a"; path = "libPods-CustomLightUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		215F70732AC14DBE1A49BAB2C8517796 /* MultiSelectSegmentedControl-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MultiSelectSegmentedControl-prefix.pch"; sourceTree = "<group>"; };
+		246169AF888C68A8B6825A0D3C6730DD /* Pods-CustomLightTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLightTests.debug.xcconfig"; sourceTree = "<group>"; };
+		25F4F6813F8BBF0424CFD82C11A672D6 /* iOS-color-wheel-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "iOS-color-wheel-dummy.m"; sourceTree = "<group>"; };
+		346519A851ABD95BA2CA4E0DC28FC39F /* Pods-CustomLightUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLightUITests.release.xcconfig"; sourceTree = "<group>"; };
+		393211D6270466BF4D0FAB1A0CFB3282 /* MultiSelectSegmentedControl-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MultiSelectSegmentedControl-dummy.m"; sourceTree = "<group>"; };
+		4590B642CFAA4E1C1A627611EDD28E68 /* MultiSelectSegmentedControl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MultiSelectSegmentedControl.h; sourceTree = "<group>"; };
+		482A2D720A1E2AC82445CEEF304A3E1D /* libPods-CustomLightTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-CustomLightTests.a"; path = "libPods-CustomLightTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4952526DFDE58D5ABAC8A6B338715E8A /* iOS-color-wheel.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "iOS-color-wheel.xcconfig"; sourceTree = "<group>"; };
+		4BF110E3AFA81F316631595BDB4D2134 /* Pods-CustomLightTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLightTests-frameworks.sh"; sourceTree = "<group>"; };
+		51498E299B7CB17BCC8B54F93C150FAA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		57643B44A513FC6CAD0EC6BFC0EBF1B7 /* MultiSelectSegmentedControl.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MultiSelectSegmentedControl.m; sourceTree = "<group>"; };
+		5C953806135841550CC527262FA3B0B9 /* Pods-CustomLight.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLight.release.xcconfig"; sourceTree = "<group>"; };
+		65ED5D708B90B3792E1DADCC416A9D99 /* Pods-CustomLight-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-CustomLight-dummy.m"; sourceTree = "<group>"; };
+		6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		7C18C414828D6F028FD045A410744D20 /* Pods-CustomLightUITests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-CustomLightUITests-acknowledgements.plist"; sourceTree = "<group>"; };
+		8A4C83805FB5F075A5665BBA7E02B6C9 /* libiOS-color-wheel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libiOS-color-wheel.a"; path = "libiOS-color-wheel.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D7C6A2B23DD3A3325C40892862CF865 /* MultiSelectSegmentedControl.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MultiSelectSegmentedControl.xcconfig; sourceTree = "<group>"; };
+		ADC75F84AAF2EF9526F01EC14F45D570 /* ISColorWheel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ISColorWheel.h; path = Source/ISColorWheel.h; sourceTree = "<group>"; };
+		B45FA5B58D1D29C38E46444FD290BE14 /* libMultiSelectSegmentedControl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libMultiSelectSegmentedControl.a; path = libMultiSelectSegmentedControl.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8B9796AB724CAA134DF92559B9A0590 /* Pods-CustomLightUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLightUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		BEE266BE95D3AE6747EC10A60F4A93F4 /* Pods-CustomLight-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLight-frameworks.sh"; sourceTree = "<group>"; };
+		C46E61B849CF79BD19AD2F2F9CF6DE09 /* Pods-CustomLightUITests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-CustomLightUITests-dummy.m"; sourceTree = "<group>"; };
+		C8BA68385AF8590EED244581CDD3C211 /* Pods-CustomLight.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLight.debug.xcconfig"; sourceTree = "<group>"; };
+		C9D9FB5D508BC4C5C831F35F72821980 /* Pods-CustomLightTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CustomLightTests.release.xcconfig"; sourceTree = "<group>"; };
+		CDBFDFC3839364A2389C728FDBE8B2B2 /* Pods-CustomLightTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLightTests-resources.sh"; sourceTree = "<group>"; };
+		D29D9698E85D0C438B0A774D62333F5E /* ISColorWheel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ISColorWheel.m; path = Source/ISColorWheel.m; sourceTree = "<group>"; };
+		D54BBE918A9B64DF8BB145A2734D7B1B /* Pods-CustomLightUITests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLightUITests-frameworks.sh"; sourceTree = "<group>"; };
+		E2D704896AC94721889FA44E870CC46D /* Pods-CustomLightUITests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CustomLightUITests-resources.sh"; sourceTree = "<group>"; };
+		EC1FD743D031D373EDF29CC526F758E2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		EC91BFA71BD265AE996C956816CEDB8E /* iOS-color-wheel-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "iOS-color-wheel-prefix.pch"; sourceTree = "<group>"; };
+		ECE0ABE739DBFBCD2A158D4C840F7090 /* Pods-CustomLightUITests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-CustomLightUITests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		EF1E03BBFE52D5A3F0D948F8FE8B6455 /* Pods-CustomLightTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-CustomLightTests-dummy.m"; sourceTree = "<group>"; };
+		F01F0771171B8C07639277F937FBD4F4 /* libPods-CustomLight.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-CustomLight.a"; path = "libPods-CustomLight.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F390E877FDF0354B69DBBE0EC5FC0A9A /* Pods-CustomLight-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-CustomLight-acknowledgements.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3062D1C8474DBB23E02A82B6B34180B0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AFACF38C4AA9B4A132DE7294226A8FD1 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		698276CC0DA1602CE8B3C9A578736D0A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0BD3DF6CDA0D1F1FD47DD8E04B5C7F0E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A21F24247FAC720FBFF41BF82BB4D8F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACCB8D81483C3EDD348F7794199B798E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A279EE218F5741711ED30B9B7436FEE3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				473B270E20495A63E3A2A3AFBCFF22D4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B92D529B33C53E96B7B1302DEE12EED2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81F7BDFF925A87BB30246D8029725BB2 /* CoreGraphics.framework in Frameworks */,
+				D789F76C12DAC6B6C9D9B0BE3F076E38 /* Foundation.framework in Frameworks */,
+				4AE7CD7F2B09C37AEFC4E775F3A51540 /* QuartzCore.framework in Frameworks */,
+				7EE7915E441FF7A296CD9F17CBD6FF28 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2691F93227E549B2A03FB9E6D0C3C623 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		21F8C57DE5A5C385979E9228893F9F1E /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				4952526DFDE58D5ABAC8A6B338715E8A /* iOS-color-wheel.xcconfig */,
+				25F4F6813F8BBF0424CFD82C11A672D6 /* iOS-color-wheel-dummy.m */,
+				EC91BFA71BD265AE996C956816CEDB8E /* iOS-color-wheel-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/iOS-color-wheel";
+			sourceTree = "<group>";
+		};
+		2691F93227E549B2A03FB9E6D0C3C623 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				0D8EF2301073B01E30612B5B1BD94446 /* CoreGraphics.framework */,
+				6647ACC906E3FCEEFF3813BB32B1FCF6 /* Foundation.framework */,
+				51498E299B7CB17BCC8B54F93C150FAA /* QuartzCore.framework */,
+				EC1FD743D031D373EDF29CC526F758E2 /* UIKit.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		36D2120E85120FF9A1D89C97D6046F0E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A4C83805FB5F075A5665BBA7E02B6C9 /* libiOS-color-wheel.a */,
+				B45FA5B58D1D29C38E46444FD290BE14 /* libMultiSelectSegmentedControl.a */,
+				F01F0771171B8C07639277F937FBD4F4 /* libPods-CustomLight.a */,
+				482A2D720A1E2AC82445CEEF304A3E1D /* libPods-CustomLightTests.a */,
+				209842BEAFE1717528BD556B8DEA7925 /* libPods-CustomLightUITests.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3DD0D0C5A5059442C7502F4A47EB803F /* MultiSelectSegmentedControl */ = {
+			isa = PBXGroup;
+			children = (
+				4590B642CFAA4E1C1A627611EDD28E68 /* MultiSelectSegmentedControl.h */,
+				57643B44A513FC6CAD0EC6BFC0EBF1B7 /* MultiSelectSegmentedControl.m */,
+				C4CD090439E843B9C7FF196AF4AE5F48 /* Support Files */,
+			);
+			name = MultiSelectSegmentedControl;
+			path = MultiSelectSegmentedControl;
+			sourceTree = "<group>";
+		};
+		5F5C4933F62D06C4DED1E58062FBF17D /* Pods-CustomLightUITests */ = {
+			isa = PBXGroup;
+			children = (
+				ECE0ABE739DBFBCD2A158D4C840F7090 /* Pods-CustomLightUITests-acknowledgements.markdown */,
+				7C18C414828D6F028FD045A410744D20 /* Pods-CustomLightUITests-acknowledgements.plist */,
+				C46E61B849CF79BD19AD2F2F9CF6DE09 /* Pods-CustomLightUITests-dummy.m */,
+				D54BBE918A9B64DF8BB145A2734D7B1B /* Pods-CustomLightUITests-frameworks.sh */,
+				E2D704896AC94721889FA44E870CC46D /* Pods-CustomLightUITests-resources.sh */,
+				B8B9796AB724CAA134DF92559B9A0590 /* Pods-CustomLightUITests.debug.xcconfig */,
+				346519A851ABD95BA2CA4E0DC28FC39F /* Pods-CustomLightUITests.release.xcconfig */,
+			);
+			name = "Pods-CustomLightUITests";
+			path = "Target Support Files/Pods-CustomLightUITests";
+			sourceTree = "<group>";
+		};
+		79BC5EFCCF5C1352E61C575902FAED17 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B0D2651EE9DFA0D7F4B28D4896630895 /* Pods-CustomLight */,
+				C4E40E612502D52D2E0BE7F77A957A15 /* Pods-CustomLightTests */,
+				5F5C4933F62D06C4DED1E58062FBF17D /* Pods-CustomLightUITests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */,
+				C95B7A9DC5338F3C33775255EC55134D /* Pods */,
+				36D2120E85120FF9A1D89C97D6046F0E /* Products */,
+				79BC5EFCCF5C1352E61C575902FAED17 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		A8E78A8AE35CA3E9DB7191BA78FB63CD /* iOS-color-wheel */ = {
+			isa = PBXGroup;
+			children = (
+				ADC75F84AAF2EF9526F01EC14F45D570 /* ISColorWheel.h */,
+				D29D9698E85D0C438B0A774D62333F5E /* ISColorWheel.m */,
+				21F8C57DE5A5C385979E9228893F9F1E /* Support Files */,
+			);
+			name = "iOS-color-wheel";
+			path = "iOS-color-wheel";
+			sourceTree = "<group>";
+		};
+		B0D2651EE9DFA0D7F4B28D4896630895 /* Pods-CustomLight */ = {
+			isa = PBXGroup;
+			children = (
+				061F0484BFBDA84A0A059E80DF57D3B5 /* Pods-CustomLight-acknowledgements.markdown */,
+				F390E877FDF0354B69DBBE0EC5FC0A9A /* Pods-CustomLight-acknowledgements.plist */,
+				65ED5D708B90B3792E1DADCC416A9D99 /* Pods-CustomLight-dummy.m */,
+				BEE266BE95D3AE6747EC10A60F4A93F4 /* Pods-CustomLight-frameworks.sh */,
+				01A4F8FE03B6E289F5A584718F005C28 /* Pods-CustomLight-resources.sh */,
+				C8BA68385AF8590EED244581CDD3C211 /* Pods-CustomLight.debug.xcconfig */,
+				5C953806135841550CC527262FA3B0B9 /* Pods-CustomLight.release.xcconfig */,
+			);
+			name = "Pods-CustomLight";
+			path = "Target Support Files/Pods-CustomLight";
+			sourceTree = "<group>";
+		};
+		C4CD090439E843B9C7FF196AF4AE5F48 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9D7C6A2B23DD3A3325C40892862CF865 /* MultiSelectSegmentedControl.xcconfig */,
+				393211D6270466BF4D0FAB1A0CFB3282 /* MultiSelectSegmentedControl-dummy.m */,
+				215F70732AC14DBE1A49BAB2C8517796 /* MultiSelectSegmentedControl-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/MultiSelectSegmentedControl";
+			sourceTree = "<group>";
+		};
+		C4E40E612502D52D2E0BE7F77A957A15 /* Pods-CustomLightTests */ = {
+			isa = PBXGroup;
+			children = (
+				0F48D4B60E49BAAD03D7E85837CDE472 /* Pods-CustomLightTests-acknowledgements.markdown */,
+				1BEE13409482E8EFA0A32368B5B7D669 /* Pods-CustomLightTests-acknowledgements.plist */,
+				EF1E03BBFE52D5A3F0D948F8FE8B6455 /* Pods-CustomLightTests-dummy.m */,
+				4BF110E3AFA81F316631595BDB4D2134 /* Pods-CustomLightTests-frameworks.sh */,
+				CDBFDFC3839364A2389C728FDBE8B2B2 /* Pods-CustomLightTests-resources.sh */,
+				246169AF888C68A8B6825A0D3C6730DD /* Pods-CustomLightTests.debug.xcconfig */,
+				C9D9FB5D508BC4C5C831F35F72821980 /* Pods-CustomLightTests.release.xcconfig */,
+			);
+			name = "Pods-CustomLightTests";
+			path = "Target Support Files/Pods-CustomLightTests";
+			sourceTree = "<group>";
+		};
+		C95B7A9DC5338F3C33775255EC55134D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A8E78A8AE35CA3E9DB7191BA78FB63CD /* iOS-color-wheel */,
+				3DD0D0C5A5059442C7502F4A47EB803F /* MultiSelectSegmentedControl */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		AEC2559501112948395AD10D21FFA688 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1434C9952A7F9AA7FB2D0925D59A372E /* ISColorWheel.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1E57E5169FB54BA74B71B178EEC3342 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76A310B354EA3A8D08880183E729C4C8 /* MultiSelectSegmentedControl.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1A066829034C51701BCA6587CBC9E95F /* MultiSelectSegmentedControl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E83A47C09F3AFC17C7CE04FE3B52B7BC /* Build configuration list for PBXNativeTarget "MultiSelectSegmentedControl" */;
+			buildPhases = (
+				A3772F863BDF1DD5F9336B67C5FBAC2B /* Sources */,
+				3062D1C8474DBB23E02A82B6B34180B0 /* Frameworks */,
+				F1E57E5169FB54BA74B71B178EEC3342 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MultiSelectSegmentedControl;
+			productName = MultiSelectSegmentedControl;
+			productReference = B45FA5B58D1D29C38E46444FD290BE14 /* libMultiSelectSegmentedControl.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		7A99F00BC1D44A85FA49F3ED7D473BBE /* Pods-CustomLightUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AAE2B958498B5912C33B0E3AC8C5C0C4 /* Build configuration list for PBXNativeTarget "Pods-CustomLightUITests" */;
+			buildPhases = (
+				B8DE0B39698ACD71A1C7E75405627614 /* Sources */,
+				A21F24247FAC720FBFF41BF82BB4D8F0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-CustomLightUITests";
+			productName = "Pods-CustomLightUITests";
+			productReference = 209842BEAFE1717528BD556B8DEA7925 /* libPods-CustomLightUITests.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9819CA677A9C7F1A817F76B6C0BC12F0 /* iOS-color-wheel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09ACC4EAC5F89B040E90BF9050BC2C11 /* Build configuration list for PBXNativeTarget "iOS-color-wheel" */;
+			buildPhases = (
+				E63A987D0528346630082440E6FC3347 /* Sources */,
+				B92D529B33C53E96B7B1302DEE12EED2 /* Frameworks */,
+				AEC2559501112948395AD10D21FFA688 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iOS-color-wheel";
+			productName = "iOS-color-wheel";
+			productReference = 8A4C83805FB5F075A5665BBA7E02B6C9 /* libiOS-color-wheel.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9BA38F5A9CCB30E18751F3CBE231B71E /* Pods-CustomLightTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A99193436A868B1048A270495CAEBC93 /* Build configuration list for PBXNativeTarget "Pods-CustomLightTests" */;
+			buildPhases = (
+				EA09A9732E9FE9C4C04BEBFA985159AF /* Sources */,
+				698276CC0DA1602CE8B3C9A578736D0A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-CustomLightTests";
+			productName = "Pods-CustomLightTests";
+			productReference = 482A2D720A1E2AC82445CEEF304A3E1D /* libPods-CustomLightTests.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		F3F010DDB74FDEFCD806CF654981336A /* Pods-CustomLight */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4FC3DB0C20D8B4FDDD03A7E3A001B36D /* Build configuration list for PBXNativeTarget "Pods-CustomLight" */;
+			buildPhases = (
+				C4DB08C2E8F9A402C7935702B4E5978B /* Sources */,
+				A279EE218F5741711ED30B9B7436FEE3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2072D32F598A2D8E53BC4B47C8FC70F0 /* PBXTargetDependency */,
+				CC3CA908A3F818E399577D54005C2B8C /* PBXTargetDependency */,
+			);
+			name = "Pods-CustomLight";
+			productName = "Pods-CustomLight";
+			productReference = F01F0771171B8C07639277F937FBD4F4 /* libPods-CustomLight.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 36D2120E85120FF9A1D89C97D6046F0E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9819CA677A9C7F1A817F76B6C0BC12F0 /* iOS-color-wheel */,
+				1A066829034C51701BCA6587CBC9E95F /* MultiSelectSegmentedControl */,
+				F3F010DDB74FDEFCD806CF654981336A /* Pods-CustomLight */,
+				9BA38F5A9CCB30E18751F3CBE231B71E /* Pods-CustomLightTests */,
+				7A99F00BC1D44A85FA49F3ED7D473BBE /* Pods-CustomLightUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A3772F863BDF1DD5F9336B67C5FBAC2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2FBBB68E2C71F411E6AD7375046ABCC /* MultiSelectSegmentedControl-dummy.m in Sources */,
+				DAA0EFDFB58D6BE9DFEF5463475FB36F /* MultiSelectSegmentedControl.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B8DE0B39698ACD71A1C7E75405627614 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB532DC4EFB6BC9ECC527C5C81CC81D1 /* Pods-CustomLightUITests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4DB08C2E8F9A402C7935702B4E5978B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D503C97CF74287F6A6FF7A4E8C3C8A5C /* Pods-CustomLight-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E63A987D0528346630082440E6FC3347 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48AB880EFADDF024DA84FC5285C04B9F /* iOS-color-wheel-dummy.m in Sources */,
+				ECF6BE73E718B337D4FF24BE2100C888 /* ISColorWheel.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA09A9732E9FE9C4C04BEBFA985159AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B0842AC805811F787150223385227EA /* Pods-CustomLightTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2072D32F598A2D8E53BC4B47C8FC70F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultiSelectSegmentedControl;
+			target = 1A066829034C51701BCA6587CBC9E95F /* MultiSelectSegmentedControl */;
+			targetProxy = 4662E9D634B82D9862EC77743BBEA8BB /* PBXContainerItemProxy */;
+		};
+		CC3CA908A3F818E399577D54005C2B8C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "iOS-color-wheel";
+			target = 9819CA677A9C7F1A817F76B6C0BC12F0 /* iOS-color-wheel */;
+			targetProxy = 086C94B1AEDBCB69BDCF4209F79F076A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A2607C689E00D921EB5FC4E462BC6A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 346519A851ABD95BA2CA4E0DC28FC39F /* Pods-CustomLightUITests.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		59B042A655B7C20CBAB90E385BF4E4C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		5E1A277B4BEF28CEA8B3BCC5F37215B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9D9FB5D508BC4C5C831F35F72821980 /* Pods-CustomLightTests.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		601E635042D6BAB5ECCA678295490917 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C8BA68385AF8590EED244581CDD3C211 /* Pods-CustomLight.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6DBECBECA22AB9052AAC8E1580B695D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4952526DFDE58D5ABAC8A6B338715E8A /* iOS-color-wheel.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/iOS-color-wheel/iOS-color-wheel-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		714FF244A806E586E3159F7DB96D81D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4952526DFDE58D5ABAC8A6B338715E8A /* iOS-color-wheel.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/iOS-color-wheel/iOS-color-wheel-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		977765F631E6B34D7FD9BA293B6EABC7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B8B9796AB724CAA134DF92559B9A0590 /* Pods-CustomLightUITests.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		AE7F76C4D3C6828FADDB7FD986A6D2B1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5C953806135841550CC527262FA3B0B9 /* Pods-CustomLight.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B7324857C38B065FEB1EEE3105C2367A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CAB45CAE65F976425ADA596EEECECFD9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9D7C6A2B23DD3A3325C40892862CF865 /* MultiSelectSegmentedControl.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/MultiSelectSegmentedControl/MultiSelectSegmentedControl-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		D1BAB823A68F732B5BC13EC7D060D751 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 246169AF888C68A8B6825A0D3C6730DD /* Pods-CustomLightTests.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		D3CF1EC9484B9367FE45CFCE2CAB5EDC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9D7C6A2B23DD3A3325C40892862CF865 /* MultiSelectSegmentedControl.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/MultiSelectSegmentedControl/MultiSelectSegmentedControl-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		09ACC4EAC5F89B040E90BF9050BC2C11 /* Build configuration list for PBXNativeTarget "iOS-color-wheel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				714FF244A806E586E3159F7DB96D81D5 /* Debug */,
+				6DBECBECA22AB9052AAC8E1580B695D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				59B042A655B7C20CBAB90E385BF4E4C7 /* Debug */,
+				B7324857C38B065FEB1EEE3105C2367A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4FC3DB0C20D8B4FDDD03A7E3A001B36D /* Build configuration list for PBXNativeTarget "Pods-CustomLight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				601E635042D6BAB5ECCA678295490917 /* Debug */,
+				AE7F76C4D3C6828FADDB7FD986A6D2B1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A99193436A868B1048A270495CAEBC93 /* Build configuration list for PBXNativeTarget "Pods-CustomLightTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1BAB823A68F732B5BC13EC7D060D751 /* Debug */,
+				5E1A277B4BEF28CEA8B3BCC5F37215B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AAE2B958498B5912C33B0E3AC8C5C0C4 /* Build configuration list for PBXNativeTarget "Pods-CustomLightUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				977765F631E6B34D7FD9BA293B6EABC7 /* Debug */,
+				0A2607C689E00D921EB5FC4E462BC6A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E83A47C09F3AFC17C7CE04FE3B52B7BC /* Build configuration list for PBXNativeTarget "MultiSelectSegmentedControl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAB45CAE65F976425ADA596EEECECFD9 /* Debug */,
+				D3CF1EC9484B9367FE45CFCE2CAB5EDC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

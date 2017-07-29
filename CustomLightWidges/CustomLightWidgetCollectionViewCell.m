@@ -74,6 +74,8 @@
         case SETTINGTYPE_SHAKE:
             self.typeLabel.text = @"Shake";
             break;
+        case SETTINGTYPE_SUNRISE_SUNSET:
+            self.typeLabel.text = @"Sunrise/Sunset";
         default:
             break;
     }

@@ -7,6 +7,7 @@
 //
 
 #import "SettingManager.h"
+#import "HueLight.h"
 #import <UIKit/UIKit.h>
 
 @interface SettingManager()
@@ -107,11 +108,24 @@
 }
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType {
+    if (settingType == SETTINGTYPE_SUNRISE_SUNSET) {
+        return [self getSunriseSunsetSetting]? @[[self getSunriseSunsetSetting]] : @[];
+    }
     return [self getActiveSettingWith:settingType withinAnHour:NO];
 }
 
 - (NSArray *)getFutureActiveSettingWith:(SETTINGTYPE)settingType {
     return [self getActiveSettingWith:settingType withinAnHour:YES];
+}
+
+- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId {
+    NSMutableDictionary *currentDic = [[NSMutableDictionary alloc] initWithDictionary:[self getSunriseSunsetSetting]];
+    currentDic[@"scheduleId"] = scheduleId;
+    [self addSettingForSunriseSunset:currentDic];
+}
+
+- (NSDictionary *)getSunriseSunsetSetting {
+    return self.settingsDict[@"sunrise_sunset"];
 }
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
@@ -179,7 +193,16 @@
     return uniqueKey;
 }
 
+- (NSString *)addSettingForSunriseSunset:(NSDictionary *)newSettingDic {
+    self.settingsDict[@"sunrise_sunset"] = newSettingDic;
+    [self writeToPlistSetting];
+    return @"sunrise_sunset";
+}
+
 - (void)removeSettingWithUniqueKey:(NSString *)uniqueKey {
+    if ([uniqueKey isEqualToString:@"sunrise_sunset"]) {
+        [[HueLight sharedHueLight] deleteSunriseSunsetData];
+    }
     [self.settingsDict removeObjectForKey:uniqueKey];
     [self refreshWidgetForUniqueKey:uniqueKey];
     [self writeToPlistSetting];
