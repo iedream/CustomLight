@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import <HueSDK_iOS/HueSDK.h>
 
 typedef NS_ENUM(NSInteger, LIGHTNAME)
 {
@@ -34,4 +35,5 @@ typedef NS_ENUM(NSInteger, LIGHTNAME)
 - (void)hasEnterRange;
 - (NSDictionary*)convertUIColorToHueColorNumber:(UIColor *)color andGroupName:(NSArray *)groupNames;
 - (void) deleteSunriseSunsetData;
+- (void) setSunriseSunsetDataStatus:(PHScheduleStatus)status;
 @end

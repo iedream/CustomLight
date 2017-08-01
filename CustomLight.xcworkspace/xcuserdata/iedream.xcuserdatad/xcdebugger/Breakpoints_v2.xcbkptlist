@@ -20,11 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CustomLight/HueLight.m"
-            timestampString = "523257761.942906"
+            timestampString = "523260075.969239"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "378"
-            endingLineNumber = "378"
+            startingLineNumber = "380"
+            endingLineNumber = "380"
             landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
          </BreakpointContent>
@@ -36,11 +36,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CustomLight/HueLight.m"
-            timestampString = "523257761.942906"
+            timestampString = "523260075.969239"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
+            startingLineNumber = "405"
+            endingLineNumber = "405"
             landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
          </BreakpointContent>
@@ -52,13 +52,157 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CustomLight/HueLight.m"
-            timestampString = "523257761.942906"
+            timestampString = "523260075.969239"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
+            startingLineNumber = "384"
+            endingLineNumber = "384"
             landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523260075.969239"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "487"
+            endingLineNumber = "487"
+            landmarkName = "-setSunriseSunsetDataStatus:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523260136.400946"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "489"
+            endingLineNumber = "489"
+            landmarkName = "-setSunriseSunsetDataStatus:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[HueLight setSunriseSunsetDataStatus:]"
+                  moduleName = "CustomLight"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
+                  timestampString = "523260315.086392"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "489"
+                  endingLineNumber = "489"
+                  offsetFromSymbolStart = "340">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__39-[HueLight setSunriseSunsetDataStatus:]_block_invoke"
+                  moduleName = "CustomLight"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
+                  timestampString = "523260315.09205"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "489"
+                  endingLineNumber = "489"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523260139.233076"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "493"
+            endingLineNumber = "493"
+            landmarkName = "-setSunriseSunsetDataStatus:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523260160.641561"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "504"
+            endingLineNumber = "504"
+            landmarkName = "-setSunriseSunsetDataStatus:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523260161.531682"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "500"
+            endingLineNumber = "500"
+            landmarkName = "-setSunriseSunsetDataStatus:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[HueLight setSunriseSunsetDataStatus:]"
+                  moduleName = "CustomLight"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
+                  timestampString = "523260315.108161"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "500"
+                  endingLineNumber = "500"
+                  offsetFromSymbolStart = "564">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__39-[HueLight setSunriseSunsetDataStatus:]_block_invoke.483"
+                  moduleName = "CustomLight"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
+                  timestampString = "523260315.109847"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "500"
+                  endingLineNumber = "500"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

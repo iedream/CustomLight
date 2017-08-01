@@ -307,8 +307,10 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     NSDictionary *valueDict = [activeDict objectForKey:@"color"];
     NSDictionary *colorDictForLightModel = [valueDict objectForKey:modelNum];
     CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
-    lightState.x = @(round(lightColorPoint.x * 100) / 100);
-    lightState.y = @(round(lightColorPoint.y * 100) / 100);
+    lightState.x = @(0);
+    //@(round(lightColorPoint.x * 100) / 100);
+    lightState.y = @(0);
+    //@(round(lightColorPoint.y * 100) / 100);
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
@@ -479,6 +481,38 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
         }
     }];
     [task resume];
+}
+
+- (void) setSunriseSunsetDataStatus:(PHScheduleStatus)status {
+    NSDictionary *sunriseSunsetDict1 = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
+    NSDictionary *sunriseSunsetDict2 = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].lastObject;
+    self.sunriseTimer = [NSTimer timerWithTimeInterval:0 repeats:false block:^(NSTimer * _Nonnull timer) {
+        PHSchedule *schedule = [self.cache.schedules objectForKey:sunriseSunsetDict1[@"scheduleId"]];
+        [schedule setStatusAsEnum:status];
+        [self.sendAPI updateScheduleWithSchedule:schedule completionHandler:^(NSArray *errors) {
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Error: %@", errors);
+            }
+        }];
+    }];
+    self.sunsetTimer = [NSTimer timerWithTimeInterval:30 repeats:false block:^(NSTimer * _Nonnull timer) {
+        PHSchedule *schedule = [self.cache.schedules objectForKey:sunriseSunsetDict2[@"scheduleId"]];
+        [schedule setStatusAsEnum:status];
+        [self.sendAPI updateScheduleWithSchedule:schedule completionHandler:^(NSArray *errors) {
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Error: %@", errors);
+            }
+        }];
+
+    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSRunLoop currentRunLoop] addTimer: self.sunriseTimer forMode: NSDefaultRunLoopMode];
+        [[NSRunLoop currentRunLoop] addTimer: self.sunsetTimer forMode: NSDefaultRunLoopMode];
+    });
 }
 
 - (void) deleteSunriseSunsetData {

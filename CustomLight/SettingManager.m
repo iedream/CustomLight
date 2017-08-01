@@ -74,7 +74,21 @@
             mutableCopy[@"on"] = [NSNumber numberWithBool:YES];
         }
         if (mutableCopy) {
-            self.settingsDict[uniqueKey] = [mutableCopy copy];
+            if ([uniqueKey isEqualToString:@"Sunset"]) {
+                if ([mutableCopy[@"groupNames"] count] == 0 && [[self.settingsDict[uniqueKey] objectForKey:@"groupNames"] count] != [mutableCopy[@"groupNames"] count]) {
+                    [[HueLight sharedHueLight] setSunriseSunsetDataStatus:SCHEDULE_STATUS_DISABLED];
+                } else if ([mutableCopy[@"groupNames"] count] == 1 && [[self.settingsDict[uniqueKey] objectForKey:@"groupNames"] count] != [mutableCopy[@"groupNames"] count]) {
+                    [[HueLight sharedHueLight] setSunriseSunsetDataStatus:SCHEDULE_STATUS_ENABLED];
+                }
+                NSMutableDictionary *originalSunrise = [[NSMutableDictionary alloc] initWithDictionary: self.settingsDict[@"Sunrise"]];
+                NSMutableDictionary *originalSunset = [[NSMutableDictionary alloc] initWithDictionary: self.settingsDict[@"Sunset"]];
+                originalSunset[@"groupNames"] = mutableCopy[@"groupNames"];
+                originalSunrise[@"groupNames"] = mutableCopy[@"groupNames"];
+                self.settingsDict[@"Sunrise"] = originalSunrise;
+                self.settingsDict[@"Sunset"] = originalSunset;
+            } else {
+                self.settingsDict[uniqueKey] = [mutableCopy copy];
+            }
             [self writeToPlistSetting];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];
         }
@@ -93,6 +107,9 @@
         }
     }
     
+    if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
+        uniqueKey = @"Sunset";
+    }
     NSDictionary *dict = self.settingsDict[uniqueKey];
     if ([dict[@"useWidgets"] boolValue] ) {
         NSArray *groupNames = dict[@"groupNames"];
@@ -195,13 +212,13 @@
     if ([arr containsObject:@"Sunset"]) {
         [arr removeObject:@"Sunset"];
         [arr removeObject:@"Sunrise"];
-        [arr addObject:@"Sunrise/Sunset"];
+        [arr addObject:@"Sunrise_Sunset"];
     }
     return arr;
 }
 
 - (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey {
-    if ([uniqueKey isEqualToString:@"Sunrise/Sunset"]) {
+    if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
         return self.settingsDict[@"Sunset"];
     }
     return self.settingsDict[uniqueKey];
@@ -228,11 +245,11 @@
     self.settingsDict[@"Sunset"] = newSunsetDic.copy;
     
     [self writeToPlistSetting];
-    return @"sunrise_sunset";
+    return @"Sunrise_Sunset";
 }
 
 - (void)removeSettingWithUniqueKey:(NSString *)uniqueKey {
-    if ([uniqueKey isEqualToString:@"Sunrise/Sunset"]) {
+    if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
         [[HueLight sharedHueLight] deleteSunriseSunsetData];
     }
     [self.settingsDict removeObjectForKey:@"Sunrise"];
