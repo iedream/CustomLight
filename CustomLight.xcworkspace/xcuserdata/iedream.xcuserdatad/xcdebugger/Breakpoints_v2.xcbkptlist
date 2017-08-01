@@ -4,22 +4,6 @@
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CustomLight/HueLight.m"
-            timestampString = "522823381.600754"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "250"
-            endingLineNumber = "250"
-            landmarkName = "-detectSurrondingBrightness:andActiveDict:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
          <BreakpointContent
             shouldBeEnabled = "Yes"
@@ -36,12 +20,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CustomLight/HueLight.m"
-            timestampString = "522995162.12635"
+            timestampString = "523257761.942906"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "461"
-            endingLineNumber = "461"
-            landmarkName = "-deleteSunriseSunsetData"
+            startingLineNumber = "378"
+            endingLineNumber = "378"
+            landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -52,45 +36,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CustomLight/HueLight.m"
-            timestampString = "522995235.083413"
+            timestampString = "523257761.942906"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "460"
-            endingLineNumber = "460"
-            landmarkName = "-deleteSunriseSunsetData"
+            startingLineNumber = "403"
+            endingLineNumber = "403"
+            landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[HueLight deleteSunriseSunsetData]"
-                  moduleName = "CustomLight"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
-                  timestampString = "522996193.613061"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "460"
-                  endingLineNumber = "460"
-                  offsetFromSymbolStart = "164">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__35-[HueLight deleteSunriseSunsetData]_block_invoke"
-                  moduleName = "CustomLight"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/iedream/Documents/CustomLight/CustomLight/HueLight.m"
-                  timestampString = "522996193.616942"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "461"
-                  endingLineNumber = "461"
-                  offsetFromSymbolStart = "48">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -99,13 +51,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CustomLight/SettingManager.m"
-            timestampString = "522995266.306965"
+            filePath = "CustomLight/HueLight.m"
+            timestampString = "523257761.942906"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
-            landmarkName = "-removeSettingWithUniqueKey:"
+            startingLineNumber = "382"
+            endingLineNumber = "382"
+            landmarkName = "-setLightSchedule:andDate:andLightId:andScheduleId:andRecurringMode:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

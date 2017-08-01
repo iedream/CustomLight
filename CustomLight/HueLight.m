@@ -25,6 +25,8 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
 
 @property (nonatomic) BOOL actionInProgress;
 @property (nonatomic, strong) NSTimer *setupTimer;
+@property (nonatomic, strong) NSTimer *sunriseTimer;
+@property (nonatomic, strong) NSTimer *sunsetTimer;
 
 @property (nonatomic, strong) NSMutableDictionary *settings;
 @end
@@ -239,7 +241,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                     light.lightState.on = [NSNumber numberWithBool:YES];
                 }
                 light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                [self setLightStateColorForLight:light andActiveDict:activeDict];
+                [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
                 [self setLightState:light.lightState andLightId:light.identifier];
             }
         }
@@ -259,7 +261,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                 NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
                 if (![lightStateValue isEqualToNumber:@(-1)]) {
                     light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                    [self setLightStateColorForLight:light andActiveDict:activeDict];
+                    [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
                     light.lightState.on = lightStateValue;
                     [self setLightState:light.lightState andLightId:light.identifier];
                 }
@@ -281,7 +283,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                 if ([light.lightState.on boolValue] != lightSwitch) {
                     light.lightState.on = [NSNumber numberWithBool:lightSwitch];
                     light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                    [self setLightStateColorForLight:light andActiveDict:activeDict];
+                    [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
                     [self setLightState:light.lightState andLightId:light.identifier];
                 }
             }
@@ -301,12 +303,12 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
 
 }
 
-- (void)setLightStateColorForLight:(PHLight *)light andActiveDict:(NSDictionary *)activeDict {
+- (void)setLightStateColorForLight:(PHLightState *)lightState andModelNum:(NSString *)modelNum andActiveDict:(NSDictionary *)activeDict {
     NSDictionary *valueDict = [activeDict objectForKey:@"color"];
-    NSDictionary *colorDictForLightModel = [valueDict objectForKey:light.modelNumber];
+    NSDictionary *colorDictForLightModel = [valueDict objectForKey:modelNum];
     CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
-    light.lightState.x = @(lightColorPoint.x);
-    light.lightState.y = @(lightColorPoint.y);
+    lightState.x = @(round(lightColorPoint.x * 100) / 100);
+    lightState.y = @(round(lightColorPoint.y * 100) / 100);
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
@@ -330,7 +332,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     }];
 }
 
--(void)setLightSchedule:(PHLightState *)lightState andDate:(NSDate *)date andLightId:(NSString *)groupId andScheduleId:(NSString *)scheduleId andRecurringMode:(NSArray *)recurringDaysArr {
+-(void)setLightSchedule:(PHLightState *)lightState andDate:(NSDate *)date andLightId:(NSString *)lightId andScheduleId:(NSString *)scheduleId andRecurringMode:(NSArray *)recurringDaysArr {
     if (_actionInProgress) {
         return;
     }
@@ -384,41 +386,54 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
             }
         }];
     } else {
-        //schedule = [[PHSchedule alloc] init];
-//        schedule = self.cache.schedules.allValues.firstObject;
-//        schedule.name = @"Sunrise/Sunset";
-//        schedule.localTime = YES;
-//        schedule.date = newTime;
-//        schedule.state = lightState;
-//        schedule.groupIdentifier = groupId;
-//        schedule.recurringDays = recurringDays;
-//        [self.sendAPI createSchedule:schedule completionHandler:^(NSString *scheduleIdentifier, NSArray *errors) {
-//            _actionInProgress = NO;
-//            [[SettingManager sharedSettingManager] setScheduleIdOfSunriseSunsetSetting:scheduleIdentifier];
-//            if (!errors) {
-//                NSLog(@"Success");
-//            } else {
-//                NSLog(@"Failure");
-//            }
-//        }];
+        schedule = [[PHSchedule alloc] init];
+        if ([lightState.on  isEqual: @(1)]) {
+            schedule.name = @"Sunset";
+        } else {
+            schedule.name = @"Sunrise";
+        }
+        schedule.localTime = YES;
+        schedule.date = newTime;
+        schedule.state = lightState;
+        schedule.lightIdentifier = lightId;
+        schedule.recurringDays = recurringDays;
+        [self.sendAPI createSchedule:schedule completionHandler:^(NSString *scheduleIdentifier, NSArray *errors) {
+            _actionInProgress = NO;
+            [[SettingManager sharedSettingManager] setScheduleIdOfSunriseSunsetSetting:scheduleIdentifier andUniqueKey:schedule.name];
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Failure");
+            }
+        }];
    }
 }
 
-- (void)configureLightScheduleWithLightSwitch:(BOOL)lightSwitch andDate:(NSDate *)date {
+- (void)configureLightScheduleWithLightSwitch:(BOOL)lightSwitch andDate:(NSDate *)date andUniqueKey:(NSString *)uniqueKey {
     if (_actionInProgress) {
         return;
     }
     
-    NSDictionary *activeDict =  [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
+    NSDictionary *activeDict =  [[[SettingManager sharedSettingManager] getSunriseSunsetSetting] objectForKey:uniqueKey];
+    if (activeDict.count <= 0) {
+        return;
+    }
     NSArray *groupNames = [activeDict objectForKey:@"groupNames"];
     for (PHGroup *group in self.cache.groups.allValues) {
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
-                light.lightState.on = [NSNumber numberWithBool:lightSwitch];
-                light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                [self setLightStateColorForLight:light andActiveDict:activeDict];
-                [self setLightSchedule:light.lightState andDate:date andLightId:group.identifier andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"]];
+                PHLightState *newLightState = [[PHLightState alloc] init];
+                
+                if ([uniqueKey isEqualToString:@"Sunrise"]) {
+                    newLightState.on = @(0);
+                } else {
+                    newLightState.on = @(1);
+                }
+                
+                newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict];
+                [self setLightSchedule:newLightState andDate:date andLightId:lightId andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"]];
             }
         }
     }
@@ -443,12 +458,23 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                 NSString *sunsetTimeString = json[@"results"][@"sunset"];
                 sunsetTimeString = [sunsetTimeString substringToIndex:[sunsetTimeString length]-3];
                 NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-                [outputFormatter setDateFormat:@"HH:mm:ss"];
+                [outputFormatter setDateFormat:@"hh:mm:ss"];
                 outputFormatter.timeZone = [NSTimeZone systemTimeZone];
                 NSDate *sunriseTime = [outputFormatter dateFromString:sunriseTimeString];
                 NSDate *sunsetTime = [outputFormatter dateFromString:sunsetTimeString];
-                [self configureLightScheduleWithLightSwitch:true andDate:sunsetTime];
-                [self configureLightScheduleWithLightSwitch:false andDate:sunriseTime];
+                NSTimeInterval timeZoneSeconds = [[NSTimeZone localTimeZone] secondsFromGMT];
+                sunriseTime = [sunriseTime dateByAddingTimeInterval:timeZoneSeconds];
+                sunsetTime = [sunsetTime dateByAddingTimeInterval:timeZoneSeconds];
+                self.sunriseTimer = [NSTimer timerWithTimeInterval:0 repeats:false block:^(NSTimer * _Nonnull timer) {
+                    [self configureLightScheduleWithLightSwitch:true andDate:sunsetTime andUniqueKey:@"Sunrise"];
+                }];
+                self.sunsetTimer = [NSTimer timerWithTimeInterval:30 repeats:false block:^(NSTimer * _Nonnull timer) {
+                    [self configureLightScheduleWithLightSwitch:false andDate:sunriseTime andUniqueKey:@"Sunset"];
+                }];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSRunLoop currentRunLoop] addTimer: self.sunriseTimer forMode: NSDefaultRunLoopMode];
+                    [[NSRunLoop currentRunLoop] addTimer: self.sunsetTimer forMode: NSDefaultRunLoopMode];
+                });
             }
         }
     }];
@@ -456,14 +482,30 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
 }
 
 - (void) deleteSunriseSunsetData {
-    NSDictionary *sunriseSunsetDict = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
-    [self.sendAPI removeScheduleWithId:@"5" completionHandler:^(NSArray *errors) {
-        if (!errors) {
-            NSLog(@"Success");
-        } else {
-            NSLog(@"Error: %@", errors);
-        }
+    NSDictionary *sunriseSunsetDict1 = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].firstObject;
+    NSDictionary *sunriseSunsetDict2 = [[SettingManager sharedSettingManager] getActiveSettingWith:SETTINGTYPE_SUNRISE_SUNSET].lastObject;
+    self.sunriseTimer = [NSTimer timerWithTimeInterval:0 repeats:false block:^(NSTimer * _Nonnull timer) {
+        [self.sendAPI removeScheduleWithId:sunriseSunsetDict1[@"scheduleId"] completionHandler:^(NSArray *errors) {
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Error: %@", errors);
+            }
+        }];
     }];
+    self.sunsetTimer = [NSTimer timerWithTimeInterval:30 repeats:false block:^(NSTimer * _Nonnull timer) {
+        [self.sendAPI removeScheduleWithId:sunriseSunsetDict2[@"scheduleId"] completionHandler:^(NSArray *errors) {
+            if (!errors) {
+                NSLog(@"Success");
+            } else {
+                NSLog(@"Error: %@", errors);
+            }
+        }];
+    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSRunLoop currentRunLoop] addTimer: self.sunriseTimer forMode: NSDefaultRunLoopMode];
+        [[NSRunLoop currentRunLoop] addTimer: self.sunsetTimer forMode: NSDefaultRunLoopMode];
+    });
 }
 
 // MARK: - Hue Light Data Helper Methods -

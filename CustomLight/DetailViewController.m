@@ -236,7 +236,7 @@
             [settingManager removeSettingWithUniqueKey:currentUniqueKey];
             self.settingData = [[SettingManager sharedSettingManager] getAllSettingData];
             [self.lightSettingsTableView reloadData];
-            if ([currentUniqueKey isEqualToString:@"sunrise_sunset"]) {
+            if ([currentUniqueKey isEqualToString:@"Sunrise/Sunset"]) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForSunriseSunset" object:nil];
             } else {
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"checkForData" object:nil];

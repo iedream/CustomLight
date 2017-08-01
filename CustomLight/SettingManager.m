@@ -109,7 +109,7 @@
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType {
     if (settingType == SETTINGTYPE_SUNRISE_SUNSET) {
-        return [self getSunriseSunsetSetting]? @[[self getSunriseSunsetSetting]] : @[];
+        return [self getSunriseSunsetSetting].allValues;
     }
     return [self getActiveSettingWith:settingType withinAnHour:NO];
 }
@@ -118,14 +118,28 @@
     return [self getActiveSettingWith:settingType withinAnHour:YES];
 }
 
-- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId {
-    NSMutableDictionary *currentDic = [[NSMutableDictionary alloc] initWithDictionary:[self getSunriseSunsetSetting]];
-    currentDic[@"scheduleId"] = scheduleId;
-    [self addSettingForSunriseSunset:currentDic];
+- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId andUniqueKey:(NSString *)uniqueKey {
+    if ([uniqueKey isEqualToString:@"Sunrise"]) {
+        NSMutableDictionary *sunriseDic = [[NSMutableDictionary alloc] initWithDictionary:self.settingsDict[@"Sunrise"]];
+        sunriseDic[@"scheduleId"] = scheduleId;
+        self.settingsDict[@"Sunrise"] = sunriseDic.copy;
+    } else {
+        NSMutableDictionary *sunriseDic = [[NSMutableDictionary alloc] initWithDictionary:self.settingsDict[@"Sunset"]];
+        sunriseDic[@"scheduleId"] = scheduleId;
+        self.settingsDict[@"Sunset"] = sunriseDic.copy;
+    }
+    [self writeToPlistSetting];
 }
 
 - (NSDictionary *)getSunriseSunsetSetting {
-    return self.settingsDict[@"sunrise_sunset"];
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    if (self.settingsDict[@"Sunrise"]) {
+        [dict setObject:self.settingsDict[@"Sunrise"] forKey:@"Sunrise"];
+    }
+    if (self.settingsDict[@"Sunset"]) {
+        [dict setObject:self.settingsDict[@"Sunset"] forKey:@"Sunset"];
+    }
+    return dict.copy;
 }
 
 - (NSArray *)getActiveSettingWith:(SETTINGTYPE)settingType withinAnHour:(BOOL)withinAnHour {
@@ -177,10 +191,19 @@
 }
 
 - (NSArray *)getAllSettingData {
-    return self.settingsDict.allKeys;
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithArray:self.settingsDict.allKeys];
+    if ([arr containsObject:@"Sunset"]) {
+        [arr removeObject:@"Sunset"];
+        [arr removeObject:@"Sunrise"];
+        [arr addObject:@"Sunrise/Sunset"];
+    }
+    return arr;
 }
 
 - (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey {
+    if ([uniqueKey isEqualToString:@"Sunrise/Sunset"]) {
+        return self.settingsDict[@"Sunset"];
+    }
     return self.settingsDict[uniqueKey];
 }
 
@@ -194,16 +217,26 @@
 }
 
 - (NSString *)addSettingForSunriseSunset:(NSDictionary *)newSettingDic {
-    self.settingsDict[@"sunrise_sunset"] = newSettingDic;
+    NSDictionary *oldSunriseDic = self.settingsDict[@"Sunrise"];
+    NSMutableDictionary *newSunriseDic = [[NSMutableDictionary alloc] initWithDictionary:newSettingDic];
+    newSunriseDic[@"scheduleId"] = oldSunriseDic[@"scheduleId"];
+    self.settingsDict[@"Sunrise"] = newSunriseDic.copy;
+    
+    NSDictionary *oldSunsetDic = self.settingsDict[@"Sunset"];
+    NSMutableDictionary *newSunsetDic = [[NSMutableDictionary alloc] initWithDictionary:newSettingDic];
+    newSunsetDic[@"scheduleId"] = oldSunsetDic[@"scheduleId"];
+    self.settingsDict[@"Sunset"] = newSunsetDic.copy;
+    
     [self writeToPlistSetting];
     return @"sunrise_sunset";
 }
 
 - (void)removeSettingWithUniqueKey:(NSString *)uniqueKey {
-    if ([uniqueKey isEqualToString:@"sunrise_sunset"]) {
+    if ([uniqueKey isEqualToString:@"Sunrise/Sunset"]) {
         [[HueLight sharedHueLight] deleteSunriseSunsetData];
     }
-    [self.settingsDict removeObjectForKey:uniqueKey];
+    [self.settingsDict removeObjectForKey:@"Sunrise"];
+    [self.settingsDict removeObjectForKey:@"Sunset"];
     [self refreshWidgetForUniqueKey:uniqueKey];
     [self writeToPlistSetting];
 }

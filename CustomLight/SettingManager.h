@@ -35,9 +35,10 @@ typedef NS_ENUM(NSInteger, SETTINGTYPE)
 - (NSArray *)getAllSettingData;
 - (NSDictionary *)getDataForUniqueKey:(NSString *)uniqueKey;
 
-- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId;
+- (void)setScheduleIdOfSunriseSunsetSetting:(NSString *)scheduleId andUniqueKey:(NSString *)uniqueKey;
 
 - (NSString *)addSettingForSunriseSunset:(NSDictionary *)newSettingDic;
+- (NSDictionary *)getSunriseSunsetSetting;
 
 - (void)writeBridgeSetupToPlistSetting;
 - (BOOL)readBridgeSetupFromPlistSetting;
