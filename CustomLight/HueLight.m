@@ -307,10 +307,8 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     NSDictionary *valueDict = [activeDict objectForKey:@"color"];
     NSDictionary *colorDictForLightModel = [valueDict objectForKey:modelNum];
     CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
-    lightState.x = @(0);
-    //@(round(lightColorPoint.x * 100) / 100);
-    lightState.y = @(0);
-    //@(round(lightColorPoint.y * 100) / 100);
+    lightState.x = @(round(lightColorPoint.x * 100) / 100);
+    lightState.y = @(round(lightColorPoint.y * 100) / 100);
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
@@ -334,21 +332,14 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     }];
 }
 
--(void)setLightSchedule:(PHLightState *)lightState andDate:(NSDate *)date andLightId:(NSString *)lightId andScheduleId:(NSString *)scheduleId andRecurringMode:(NSArray *)recurringDaysArr {
+-(void)setLightSchedule:(PHLightState *)lightState andDate:(NSDate *)date andLightId:(NSString *)lightId andScheduleId:(NSString *)scheduleId andRecurringMode:(NSArray *)recurringDaysArr andUniqueKey:(NSString *)uniqueKey {
     if (_actionInProgress) {
         return;
     }
     
     _actionInProgress = YES;
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *currentComponents = [calendar components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate dateWithTimeInterval:(24*60*60) sinceDate:[NSDate date]]];
-    NSDateComponents *components = [calendar components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:date];
-    currentComponents.hour = components.hour;
-    currentComponents.minute = components.minute;
-    currentComponents.second = components.second;
-    
-    // Set created time
-    NSDate *newTime = [calendar dateFromComponents:currentComponents];
+    NSTimeInterval timeZoneSeconds = [[NSTimeZone localTimeZone] secondsFromGMT];
+    NSDate *dateInLocalTimezone = [date dateByAddingTimeInterval:timeZoneSeconds];
     
     RecurringDay recurringDays;
     for (NSString *recurringDay in recurringDaysArr) {
@@ -378,7 +369,8 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     
     PHSchedule *schedule = [self.cache.schedules objectForKey:scheduleId];
     if (schedule) {
-        schedule.date = newTime;
+        schedule.date = dateInLocalTimezone;
+        schedule.localTime = YES;
         [self.sendAPI updateScheduleWithSchedule:schedule completionHandler:^(NSArray *errors) {
             _actionInProgress = NO;
             if (!errors) {
@@ -389,13 +381,9 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
         }];
     } else {
         schedule = [[PHSchedule alloc] init];
-        if ([lightState.on  isEqual: @(1)]) {
-            schedule.name = @"Sunset";
-        } else {
-            schedule.name = @"Sunrise";
-        }
+        schedule.name = uniqueKey;
         schedule.localTime = YES;
-        schedule.date = newTime;
+        schedule.date = dateInLocalTimezone;
         schedule.state = lightState;
         schedule.lightIdentifier = lightId;
         schedule.recurringDays = recurringDays;
@@ -426,16 +414,10 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
                 PHLightState *newLightState = [[PHLightState alloc] init];
-                
-                if ([uniqueKey isEqualToString:@"Sunrise"]) {
-                    newLightState.on = @(0);
-                } else {
-                    newLightState.on = @(1);
-                }
-                
+                newLightState.on = [NSNumber numberWithBool:lightSwitch];
                 newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
                 [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict];
-                [self setLightSchedule:newLightState andDate:date andLightId:lightId andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"]];
+                [self setLightSchedule:newLightState andDate:date andLightId:lightId andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"] andUniqueKey:uniqueKey];
             }
         }
     }
@@ -468,10 +450,10 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                 sunriseTime = [sunriseTime dateByAddingTimeInterval:timeZoneSeconds];
                 sunsetTime = [sunsetTime dateByAddingTimeInterval:timeZoneSeconds];
                 self.sunriseTimer = [NSTimer timerWithTimeInterval:0 repeats:false block:^(NSTimer * _Nonnull timer) {
-                    [self configureLightScheduleWithLightSwitch:true andDate:sunsetTime andUniqueKey:@"Sunrise"];
+                    [self configureLightScheduleWithLightSwitch:true andDate:sunsetTime andUniqueKey:@"Sunset"];
                 }];
                 self.sunsetTimer = [NSTimer timerWithTimeInterval:30 repeats:false block:^(NSTimer * _Nonnull timer) {
-                    [self configureLightScheduleWithLightSwitch:false andDate:sunriseTime andUniqueKey:@"Sunset"];
+                    [self configureLightScheduleWithLightSwitch:false andDate:sunriseTime andUniqueKey:@"Sunrise"];
                 }];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[NSRunLoop currentRunLoop] addTimer: self.sunriseTimer forMode: NSDefaultRunLoopMode];

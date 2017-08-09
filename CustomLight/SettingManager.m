@@ -101,6 +101,10 @@
         return;
     }
     
+    if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
+        uniqueKey = @"Sunset";
+    }
+    
     for (NSString *uniqueKeyInit in self.widgetsDict.allKeys) {
         if ([[[uniqueKeyInit componentsSeparatedByString:@"/"] firstObject] isEqualToString:uniqueKey]) {
             [self.widgetsDict removeObjectForKey:uniqueKeyInit];
@@ -109,6 +113,7 @@
     
     if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
         uniqueKey = @"Sunset";
+        [self.widgetsDict removeObjectForKey:uniqueKey];
     }
     NSDictionary *dict = self.settingsDict[uniqueKey];
     if ([dict[@"useWidgets"] boolValue] ) {
