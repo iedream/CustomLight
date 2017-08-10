@@ -235,14 +235,15 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
+                PHLightState *newLightState = [[PHLightState alloc] init];
                 if (light.lightState.on == [NSNumber numberWithBool:YES]) {
-                    light.lightState.on = [NSNumber numberWithBool:NO];
+                    newLightState.on = [NSNumber numberWithBool:NO];
                 } else {
-                    light.lightState.on = [NSNumber numberWithBool:YES];
+                    newLightState.on = [NSNumber numberWithBool:YES];
                 }
-                light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
-                [self setLightState:light.lightState andLightId:light.identifier];
+                newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict andUseHueColor:false];
+                [self setLightState:newLightState andLightId:light.identifier];
             }
         }
     }
@@ -258,12 +259,13 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
+                PHLightState *newLightState = [[PHLightState alloc] init];
                 NSNumber *lightStateValue = [self getLightStateWithBrightness:brightness andLightState:light.lightState];
                 if (![lightStateValue isEqualToNumber:@(-1)]) {
-                    light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                    [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
-                    light.lightState.on = lightStateValue;
-                    [self setLightState:light.lightState andLightId:light.identifier];
+                    newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                    [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict andUseHueColor:false];
+                    newLightState.on = lightStateValue;
+                    [self setLightState:newLightState andLightId:light.identifier];
                 }
             }
         }
@@ -280,11 +282,12 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
         if ([groupNames containsObject:group.name]) {
             for (NSString *lightId in group.lightIdentifiers) {
                 PHLight *light = [self.cache.lights objectForKey:lightId];
+                PHLightState *newLightState = [[PHLightState alloc] init];
                 if ([light.lightState.on boolValue] != lightSwitch) {
-                    light.lightState.on = [NSNumber numberWithBool:lightSwitch];
-                    light.lightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                    [self setLightStateColorForLight:light.lightState andModelNum:light.modelNumber andActiveDict:activeDict];
-                    [self setLightState:light.lightState andLightId:light.identifier];
+                    newLightState.on = [NSNumber numberWithBool:lightSwitch];
+                    newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
+                    [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict andUseHueColor:false];
+                    [self setLightState:newLightState andLightId:light.identifier];
                 }
             }
         }
@@ -303,12 +306,20 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
 
 }
 
-- (void)setLightStateColorForLight:(PHLightState *)lightState andModelNum:(NSString *)modelNum andActiveDict:(NSDictionary *)activeDict {
+- (void)setLightStateColorForLight:(PHLightState *)lightState andModelNum:(NSString *)modelNum andActiveDict:(NSDictionary *)activeDict andUseHueColor:(BOOL)useHueColor {
     NSDictionary *valueDict = [activeDict objectForKey:@"color"];
     NSDictionary *colorDictForLightModel = [valueDict objectForKey:modelNum];
-    CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
-    lightState.x = @(lightColorPoint.x);
-    lightState.y = @(lightColorPoint.y);
+    
+    if (useHueColor) {
+        [lightState setColormode:COLORMODE_HUE_SATURATION];
+        [lightState setHue:@([colorDictForLightModel[@"hue"] intValue])];
+        [lightState setSaturation:@([colorDictForLightModel[@"saturation"] intValue])];
+    } else {
+        CGPoint lightColorPoint = CGPointMake([colorDictForLightModel[@"x"] floatValue], [colorDictForLightModel[@"y"] floatValue]);
+        [lightState setColormode:COLORMODE_XY];
+        [lightState setX:@(lightColorPoint.x)];
+        [lightState setY:@(lightColorPoint.y)];
+    }
 }
 
 - (void)setLightState:(PHLightState *)lightState andLightId:(NSString *)lightId {
@@ -376,6 +387,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
     if (schedule) {
         schedule.date = dateInLocalTimezone;
         schedule.localTime = YES;
+        schedule.state = lightState;
         [self.sendAPI updateScheduleWithSchedule:schedule completionHandler:^(NSArray *errors) {
             _actionInProgress = NO;
             if (!errors) {
@@ -421,7 +433,7 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                 PHLightState *newLightState = [[PHLightState alloc] init];
                 newLightState.on = [NSNumber numberWithBool:lightSwitch];
                 newLightState.brightness = [NSNumber numberWithFloat:[[activeDict objectForKey:@"brightness"] intValue]];
-                [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict];
+                [self setLightStateColorForLight:newLightState andModelNum:light.modelNumber andActiveDict:activeDict andUseHueColor:true];
                 [self setLightSchedule:newLightState andDate:date andLightId:lightId andScheduleId:[activeDict objectForKey:@"scheduleId"] andRecurringMode:[activeDict objectForKey:@"selectedRepeatDays"] andUniqueKey:uniqueKey];
             }
         }
@@ -549,8 +561,13 @@ const NSString *SUNRISESUNSET = @"Sunrise/Sunset";
                     PHLight *light = [self.cache.lights objectForKey:lightId];
                     NSString *lightModel = light.modelNumber;
                     if (![resultDic valueForKey: lightModel]) {
+                        CGFloat hue;
+                        CGFloat saturation;
+                        [color getHue:&hue saturation:&saturation brightness:nil alpha:nil];
+                        saturation = saturation * 254;
+                        hue = hue * 65535;
                         CGPoint xy = [PHUtilities calculateXY:color forModel:lightModel];
-                        NSDictionary *dict = @{@"x":@(xy.x), @"y":@(xy.y)};
+                        NSDictionary *dict = @{@"hue":@(hue), @"saturation":@(saturation), @"x":@(xy.x), @"y": @(xy.y)};
                         [resultDic setValue:dict forKey:lightModel];
                     }
                 }

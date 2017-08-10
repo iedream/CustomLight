@@ -256,9 +256,10 @@
 - (void)removeSettingWithUniqueKey:(NSString *)uniqueKey {
     if ([uniqueKey isEqualToString:@"Sunrise_Sunset"]) {
         [[HueLight sharedHueLight] deleteSunriseSunsetData];
+        [self.settingsDict removeObjectForKey:@"Sunrise"];
+        [self.settingsDict removeObjectForKey:@"Sunset"];
     }
-    [self.settingsDict removeObjectForKey:@"Sunrise"];
-    [self.settingsDict removeObjectForKey:@"Sunset"];
+    [self.settingsDict removeObjectForKey:uniqueKey];
     [self refreshWidgetForUniqueKey:uniqueKey];
     [self writeToPlistSetting];
 }
