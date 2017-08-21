@@ -41,6 +41,7 @@
 		4FF724381DCE7F3700B1AB5E /* HueLight.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FF724371DCE7F3700B1AB5E /* HueLight.m */; };
 		85DE9B4C0DBCB73053EC7EA8 /* libPods-CustomLightTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 022D39C8FE636EC563ED069B /* libPods-CustomLightTests.a */; };
 		90EBE78DBBE0F927F2CDBEBB /* libPods-CustomLightUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D99CAACB5CE515C3341A1084 /* libPods-CustomLightUITests.a */; };
+		E216C14F1F4B651C00A67F64 /* SettingDetailItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E216C14E1F4B651C00A67F64 /* SettingDetailItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,6 +149,9 @@
 		8BBFF52B0FEF880364E99EEB /* Pods-CustomLightTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightTests/Pods-CustomLightTests.release.xcconfig"; sourceTree = "<group>"; };
 		9A84C3BF37F4A4DCC2DA6FE2 /* Pods-CustomLight.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLight.release.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLight/Pods-CustomLight.release.xcconfig"; sourceTree = "<group>"; };
 		D99CAACB5CE515C3341A1084 /* libPods-CustomLightUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CustomLightUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E216C14C1F4B63D300A67F64 /* FeatureType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeatureType.h; sourceTree = "<group>"; };
+		E216C14D1F4B651C00A67F64 /* SettingDetailItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingDetailItem.h; sourceTree = "<group>"; };
+		E216C14E1F4B651C00A67F64 /* SettingDetailItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingDetailItem.m; sourceTree = "<group>"; };
 		E31F8B78A290C84B31797772 /* Pods-CustomLightUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomLightUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CustomLightUITests/Pods-CustomLightUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -223,6 +227,7 @@
 				4F2E32DD1E31B0C60084ADBB /* checkMark.png */,
 				4F909FA41DCDA4BF00593FDF /* AppDelegate.h */,
 				4F909FA51DCDA4BF00593FDF /* AppDelegate.m */,
+				E216C14C1F4B63D300A67F64 /* FeatureType.h */,
 				4F909FA71DCDA4BF00593FDF /* MasterViewController.h */,
 				4F909FA81DCDA4BF00593FDF /* MasterViewController.m */,
 				4F909FAA1DCDA4BF00593FDF /* DetailViewController.h */,
@@ -242,6 +247,8 @@
 				4FF5FF861DD56FC700523C8A /* CustomLightSettingTableViewCell.m */,
 				4F1896301DD7D43B00B07558 /* CornerCoordinateView.h */,
 				4F1896311DD7D43B00B07558 /* CornerCoordinateView.m */,
+				E216C14D1F4B651C00A67F64 /* SettingDetailItem.h */,
+				E216C14E1F4B651C00A67F64 /* SettingDetailItem.m */,
 			);
 			path = CustomLight;
 			sourceTree = "<group>";
@@ -685,6 +692,7 @@
 				4FF724351DCE7EE300B1AB5E /* DispatchQueueLogFormatter.m in Sources */,
 				4F00361D1DD4213B00991B02 /* SettingManager.m in Sources */,
 				4FF5FF871DD56FC700523C8A /* CustomLightSettingTableViewCell.m in Sources */,
+				E216C14F1F4B651C00A67F64 /* SettingDetailItem.m in Sources */,
 				4F909FAC1DCDA4BF00593FDF /* DetailViewController.m in Sources */,
 				4F1896321DD7D43B00B07558 /* CornerCoordinateView.m in Sources */,
 				4FF7242F1DCE7EE300B1AB5E /* DDAbstractDatabaseLogger.m in Sources */,
